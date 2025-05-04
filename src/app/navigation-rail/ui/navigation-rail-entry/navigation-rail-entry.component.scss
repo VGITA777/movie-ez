@@ -1,0 +1,16 @@
+@use '../../../../foundations/mixins';
+@use '../../../../foundations/constants';
+
+.container {
+  @include mixins.flex();
+  @include mixins.transition($property: background-color);
+
+  border-radius: constants.$border-radius-md;
+  padding: 0.5em 1em;
+
+  &:hover {
+    cursor: pointer;
+    background-color: constants.$dark-surface-600;
+  }
+
+}

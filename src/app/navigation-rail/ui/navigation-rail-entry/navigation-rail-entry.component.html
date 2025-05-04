@@ -1,0 +1,8 @@
+<div (click)="onClickHandler()" class="container">
+  @if (active()) {
+    <ng-content select="[iconActive]"></ng-content>
+  } @else {
+    <ng-content select="[iconInactive]"></ng-content>
+  }
+  <ng-content select="[content]"></ng-content>
+</div>
