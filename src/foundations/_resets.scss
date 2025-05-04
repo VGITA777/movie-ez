@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'Inter';
+  src: url("/fonts/Inter.ttf");
+}
+
+@font-face {
+  font-family: 'Inter Italic';
+  src: url("/fonts/Inter-Italic.ttf");
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
