@@ -1,0 +1,16 @@
+@use '../../foundations/mixins';
+@use '../../foundations/constants';
+
+nav {
+  @include mixins.flex($direction: column, $gap: 0);
+  padding: constants.$spacing-md;
+
+  app-navigation-rail-entry {
+    width: 100%;
+
+    span {
+      user-select: none;
+    }
+  }
+}
+
