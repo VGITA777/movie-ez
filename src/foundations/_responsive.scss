@@ -1,0 +1,43 @@
+@use "constants";
+
+@mixin mobile-large {
+  @media screen and (max-width: constants.$media-mobile-large-max) {
+    @content;
+  }
+}
+
+@mixin mobile-medium {
+  @media screen and (max-width: constants.$media-mobile-medium-max) {
+    @content;
+  }
+}
+
+@mixin mobile-small {
+  @media screen and (max-width: constants.$media-mobile-small-max) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media screen and (min-width: constants.$media-tablet-min) and (max-width: constants.$media-tablet-max) {
+    @content;
+  }
+}
+
+@mixin tablet-half {
+  @media screen and (min-width: constants.$media-tablet-min) and (max-width: constants.$media-tablet-mid) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media screen and (min-width: constants.$media-desktop-min) and (max-width: constants.$media-laptop-max) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media screen and (min-width: constants.$media-desktop-min) {
+    @content;
+  }
+}
