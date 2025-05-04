@@ -1,8 +1,8 @@
 import {Component, Signal} from '@angular/core';
-import {NavigationRailEntryComponent} from './ui/navigation-entry/navigation-rail-entry.component';
 import {Page} from './utils/page';
 import {LocationListenerService} from '../shared/utils/location-listener.service';
 import {NavigatorService} from '../shared/utils/navigator.service';
+import {NavigationRailEntryComponent} from './ui/navigation-rail-entry/navigation-rail-entry.component';
 
 @Component({
   selector: 'app-navigation-rail',
