@@ -8,8 +8,13 @@ nav {
   app-navigation-rail-entry {
     width: 100%;
 
+    svg {
+      @include mixins.one-by-one(1.5rem);
+    }
+
     span {
       user-select: none;
+      font-size: .9rem;
     }
   }
 }

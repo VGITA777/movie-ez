@@ -1,8 +1,11 @@
 import {Component, input, InputSignal, output, OutputEmitterRef} from '@angular/core';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-navigation-rail-entry',
-  imports: [],
+  imports: [
+    NgClass
+  ],
   templateUrl: './navigation-rail-entry.component.html',
   styleUrl: './navigation-rail-entry.component.scss'
 })
