@@ -18,3 +18,8 @@
   margin: 0;
   padding: 0;
 }
+
+svg {
+  @include mixins.one-by-one(2rem);
+  fill: constants.$light-surface-50;
+}
