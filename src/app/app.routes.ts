@@ -2,6 +2,8 @@ import {Routes} from '@angular/router';
 import {ErrorRoutes} from './error/routing';
 import {WatchRoutes} from './watch/routing';
 import {HomeRoutes} from './home/routing';
+import {TvShowsRoutes} from './tv-shows/routing';
+import {MoviesRoutes} from './movies/routing';
 
 export const routes: Routes = [
   {
@@ -19,6 +21,18 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       ...WatchRoutes
+    ]
+  },
+  {
+    path: 'movies',
+    children: [
+      ...MoviesRoutes
+    ]
+  },
+  {
+    path: 'tv-shows',
+    children: [
+      ...TvShowsRoutes
     ]
   },
   {
