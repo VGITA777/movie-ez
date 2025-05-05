@@ -32,6 +32,10 @@ export class NavigatorService {
     this.navigate(['watch', 'series', id], extras, onNavigate);
   }
 
+  navigateToSettingsPlayer(extras?: NavigationExtras, onNavigate?: () => void): void {
+    this.navigate(['settings', 'player'], extras, onNavigate);
+  }
+
   navigateToError(message?: string, errorCode?: number, onNavigate?: () => void): void {
     this.navigate(['error'], {state: {message: message, errorCode: errorCode}}, onNavigate);
   }

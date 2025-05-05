@@ -5,5 +5,6 @@ export enum Page {
   TV_SHOWS = 'tv-shows',
   WATCH_MOVIE = 'watch-movie',
   WATCH_TV_SHOW = 'watch-tv-show',
+  SETTINGS = 'settings',
   ERROR = 'error',
 }

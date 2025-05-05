@@ -27,6 +27,8 @@ export class LocationListenerService {
       this._currentLocation.set(Page.WATCH_MOVIE);
     } else if (url.startsWith('/watch/tv-show')) {
       this._currentLocation.set(Page.WATCH_TV_SHOW);
+    } else if (url.startsWith('/settings')) {
+      this._currentLocation.set(Page.SETTINGS);
     } else {
       this._currentLocation.set(Page.HOME);
     }

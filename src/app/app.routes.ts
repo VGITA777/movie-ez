@@ -5,6 +5,7 @@ import {HomeRoutes} from './home/routing';
 import {TvShowsRoutes} from './tv-shows/routing';
 import {MoviesRoutes} from './movies/routing';
 import {SearchRoutes} from './search/routing';
+import {SettingsRoutes} from './settings/routing';
 
 export const routes: Routes = [
   {
@@ -40,6 +41,17 @@ export const routes: Routes = [
     path: 'tv-shows',
     children: [
       ...TvShowsRoutes
+    ]
+  },
+  {
+    path: 'settings',
+    children: [
+      {
+        path: '',
+        redirectTo: 'player',
+        pathMatch: 'full'
+      },
+      ...SettingsRoutes
     ]
   },
   {
