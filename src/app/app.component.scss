@@ -8,12 +8,15 @@
   padding: constants.$spacing-lg;
 
   .content-container {
-    background-color: constants.$dark-surface-800;
     border-radius: constants.$border-radius-lg;
 
     app-navigation-rail {
       @include mixins.width-height();
       display: block;
     }
+  }
+
+  .with-background {
+    background-color: constants.$dark-surface-800;
   }
 }

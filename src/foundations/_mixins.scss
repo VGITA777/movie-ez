@@ -13,6 +13,10 @@
   height: $size;
 }
 
+@mixin border-radius($size: 12px) {
+  border-radius: $size;
+}
+
 @mixin transition(
   $property: all,
   $duration: 0.3s,

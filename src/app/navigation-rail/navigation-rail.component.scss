@@ -2,8 +2,20 @@
 @use '../../foundations/constants';
 
 nav {
-  @include mixins.flex($direction: column, $gap: 0);
-  padding: constants.$spacing-md;
+  @include mixins.flex($direction: column, $gap: constants.$spacing-lg);
+  @include mixins.width-height();
+
+  .nav-section {
+    @include mixins.flex($direction: column, $gap: constants.$spacing-s);
+    @include mixins.border-radius();
+    background-color: constants.$dark-surface-800;
+    padding: constants.$spacing-md;
+    width: 100%;
+  }
+
+  .nav-body {
+    flex-grow: 1;
+  }
 
   app-navigation-rail-entry {
     width: 100%;
