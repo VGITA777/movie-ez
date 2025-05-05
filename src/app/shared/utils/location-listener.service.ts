@@ -21,6 +21,8 @@ export class LocationListenerService {
       this._currentLocation.set(Page.MOVIES);
     } else if (url === '/tv-shows') {
       this._currentLocation.set(Page.TV_SHOWS);
+    } else if (url === '/search') {
+      this._currentLocation.set(Page.SEARCH);
     } else if (url.startsWith('/watch/movie')) {
       this._currentLocation.set(Page.WATCH_MOVIE);
     } else if (url.startsWith('/watch/tv-show')) {

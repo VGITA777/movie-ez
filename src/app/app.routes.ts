@@ -4,6 +4,7 @@ import {WatchRoutes} from './watch/routing';
 import {HomeRoutes} from './home/routing';
 import {TvShowsRoutes} from './tv-shows/routing';
 import {MoviesRoutes} from './movies/routing';
+import {SearchRoutes} from './search/routing';
 
 export const routes: Routes = [
   {
@@ -21,6 +22,12 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       ...WatchRoutes
+    ]
+  },
+  {
+    path: 'search',
+    children: [
+      ...SearchRoutes
     ]
   },
   {

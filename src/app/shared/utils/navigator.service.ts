@@ -5,7 +5,6 @@ import {NavigationExtras, Router} from '@angular/router';
   providedIn: 'root'
 })
 export class NavigatorService {
-
   constructor(readonly router: Router) {
   }
 
@@ -13,24 +12,28 @@ export class NavigatorService {
     this.navigate(['/'], undefined, onNavigate);
   }
 
+  navigateToSearch(onNavigate?: () => void): void {
+    this.navigate(['search'], undefined, onNavigate);
+  }
+
   navigateToMovies(onNavigate?: () => void): void {
-    this.navigate(['/movies'], undefined, onNavigate);
+    this.navigate(['movies'], undefined, onNavigate);
   }
 
   navigateToTvShows(onNavigate?: () => void): void {
-    this.navigate(['/tv-shows'], undefined, onNavigate);
+    this.navigate(['tv-shows'], undefined, onNavigate);
   }
 
   navigateToWatchMovie(id: number, extras?: NavigationExtras, onNavigate?: () => void): void {
-    this.navigate(['/watch/movie', id], extras, onNavigate);
+    this.navigate(['watch', 'movie', id], extras, onNavigate);
   }
 
   navigateToWatchSeries(id: number, extras?: NavigationExtras, onNavigate?: () => void): void {
-    this.navigate(['/watch/series', id], extras, onNavigate);
+    this.navigate(['watch', 'series', id], extras, onNavigate);
   }
 
   navigateToError(message?: string, errorCode?: number, onNavigate?: () => void): void {
-    this.navigate(['/error'], {state: {message: message, errorCode: errorCode}}, onNavigate);
+    this.navigate(['error'], {state: {message: message, errorCode: errorCode}}, onNavigate);
   }
 
   private navigate(commands: any[], extras?: NavigationExtras, onNavigate?: () => void): void {

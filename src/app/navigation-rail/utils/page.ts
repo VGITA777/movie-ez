@@ -1,5 +1,6 @@
 export enum Page {
   HOME = 'home',
+  SEARCH = 'search',
   MOVIES = 'movies',
   TV_SHOWS = 'tv-shows',
   WATCH_MOVIE = 'watch-movie',
