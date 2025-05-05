@@ -1,3 +1,7 @@
+@if (progressType() !== 'hidden') {
+  <p-progress-bar [mode]="(progressType() === 'indeterminate') ? 'indeterminate' : ''"
+                  [style]="{ 'height': '3px', 'background-color': 'transparent' }"/>
+}
 <p-toast/>
 <div class="container">
   <aside class="content-container">

@@ -20,3 +20,8 @@
     background-color: constants.$dark-surface-800;
   }
 }
+
+p-progress-bar {
+  @include mixins.absolute($top: 0, $left: 0);
+  width: 100%;
+}

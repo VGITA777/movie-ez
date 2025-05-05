@@ -1,14 +1,16 @@
-import {Component} from '@angular/core';
+import {Component, Signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NavigationRailComponent} from './navigation-rail/navigation-rail.component';
 import {Toast} from 'primeng/toast';
 import {MessageService} from 'primeng/api';
 import {ToastService} from './shared/utils/toast.service';
 import {Subscription} from 'rxjs';
+import {ProgressBar} from 'primeng/progressbar';
+import {ProgressShowerService, ProgressType} from './shared/utils/progress-shower.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationRailComponent, Toast],
+  imports: [RouterOutlet, NavigationRailComponent, Toast, ProgressBar],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [MessageService]
@@ -16,9 +18,12 @@ import {Subscription} from 'rxjs';
 export class AppComponent {
 
   toastSubscription!: Subscription;
+  readonly progress: Signal<number>;
+  readonly progressType: Signal<ProgressType>;
 
-  constructor(readonly messageService: MessageService, readonly toast: ToastService) {
-
+  constructor(readonly messageService: MessageService, readonly toast: ToastService, readonly progressShower: ProgressShowerService) {
+    this.progress = this.progressShower.progress;
+    this.progressType = this.progressShower.progressType;
   }
 
   ngOnInit() {
