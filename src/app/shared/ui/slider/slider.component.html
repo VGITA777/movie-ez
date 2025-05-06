@@ -1,0 +1,18 @@
+<div [style.gap]="gap()" class="container">
+  <div class="top-texts">
+    <ng-content select="[header]"></ng-content>
+    <ng-content select="[subheader]"></ng-content>
+    <div #swiperPagination class="swiper-pagination"></div>
+  </div>
+
+  <div class="contents">
+    <swiper-container #swiper init="false">
+      @for (item of data(); track $index; let i = $index) {
+        <swiper-slide>
+          <ng-container [ngTemplateOutlet]="design()"
+                        [ngTemplateOutletContext]="{ $implicit: item, $index: i }"></ng-container>
+        </swiper-slide>
+      }
+    </swiper-container>
+  </div>
+</div>
