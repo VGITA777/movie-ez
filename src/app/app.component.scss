@@ -2,13 +2,13 @@
 @use '../foundations/mixins';
 
 .container {
-  @include mixins.width-height(100%, 100vh);
+  @include mixins.width-height();
   @include mixins.grid(min(250px, 100%) 3fr, $gap: constants.$spacing-lg);
-  background-color: constants.$dark-surface-950;
   padding: constants.$spacing-lg;
 
   .content-container {
     border-radius: constants.$border-radius-lg;
+    overflow: hidden;
 
     app-navigation-rail {
       @include mixins.width-height();
