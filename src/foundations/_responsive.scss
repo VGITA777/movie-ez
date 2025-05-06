@@ -24,8 +24,20 @@
   }
 }
 
+@mixin tablet-below {
+  @media screen and (max-width: constants.$media-tablet-max) {
+    @content;
+  }
+}
+
 @mixin tablet-half {
   @media screen and (min-width: constants.$media-tablet-min) and (max-width: constants.$media-tablet-mid) {
+    @content;
+  }
+}
+
+@mixin tablet-half-below {
+  @media screen and (max-width: constants.$media-tablet-mid) {
     @content;
   }
 }
@@ -36,8 +48,20 @@
   }
 }
 
+@mixin laptop-below {
+  @media screen and (max-width: constants.$media-laptop-max) {
+    @content;
+  }
+}
+
 @mixin desktop {
   @media screen and (min-width: constants.$media-desktop-min) {
+    @content;
+  }
+}
+
+@mixin desktop-below {
+  @media screen and (max-width: constants.$media-desktop-min) {
     @content;
   }
 }
