@@ -1,9 +1,11 @@
 @use '../foundations/constants';
 @use '../foundations/mixins';
+@use '../foundations/responsive';
 
 .container {
   @include mixins.width-height();
   @include mixins.grid(min(250px, 100%) 3fr, $gap: constants.$spacing-lg);
+  @include mixins.transition($property: all, $timing-function: ease, $duration: .8s);
   padding: constants.$spacing-lg;
 
   .content-container {
@@ -16,6 +18,10 @@
     }
   }
 
+  aside {
+    width: auto;
+  }
+
   main {
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
@@ -25,4 +31,25 @@
 p-progress-bar {
   @include mixins.absolute($top: 0, $left: 0);
   width: 100%;
+}
+
+@include responsive.tablet-below {
+  .container {
+    @include mixins.grid(auto 3fr, $gap: constants.$spacing-lg);
+  }
+}
+
+@include responsive.mobile-large {
+  .container {
+    @include mixins.grid(1fr, $gap: constants.$spacing-lg);
+    padding: 0;
+
+    aside {
+      display: none;
+    }
+
+    main {
+      background-color: transparent;
+    }
+  }
 }
