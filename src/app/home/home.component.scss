@@ -1,0 +1,5 @@
+@use '../../foundations/mixins';
+
+.container {
+  @include mixins.width-height();
+}
