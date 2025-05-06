@@ -16,8 +16,9 @@
     }
   }
 
-  .with-background {
+  main {
     background-color: constants.$dark-surface-800;
+    padding: constants.$spacing-md;
   }
 }
 
