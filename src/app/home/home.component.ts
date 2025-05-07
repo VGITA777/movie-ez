@@ -1,4 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, signal, WritableSignal} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult} from 'tmdb-ts';
+import {take} from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -7,5 +10,20 @@ import {Component} from '@angular/core';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
+  readonly discoverMovies: WritableSignal<MovieDiscoverResult | undefined> = signal(undefined);
+  readonly discoverTvShows: WritableSignal<TvShowDiscoverResult | undefined> = signal(undefined);
+  readonly popularMovies: WritableSignal<PopularMovies | undefined> = signal(undefined);
+  readonly popularTvShows: WritableSignal<PopularTvShows | undefined> = signal(undefined);
 
+  constructor(readonly activatedRoute: ActivatedRoute) {
+  }
+
+  ngOnInit() {
+    this.activatedRoute.data.pipe(take(1)).subscribe((data) => {
+      this.discoverMovies.set(data['discoverMovies']);
+      this.discoverTvShows.set(data['discoverTvShows']);
+      this.popularMovies.set(data['popularMovies']);
+      this.popularTvShows.set(data['popularTvShows']);
+    })
+  }
 }
