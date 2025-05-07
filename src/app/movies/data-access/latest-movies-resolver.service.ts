@@ -3,7 +3,7 @@ import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStat
 import {LatestMovie} from 'tmdb-ts';
 import {MoviesService} from './movies.service';
 import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
-import {finalize, from} from 'rxjs';
+import {finalize, from, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +13,11 @@ export class LatestMoviesResolverService implements Resolve<LatestMovie> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<LatestMovie | RedirectCommand> {
-    this.progressShower.show('indeterminate');
-    return from(this.movieService.getLatest()).pipe(finalize(() => {
-      this.progressShower.hide()
-    }));
+    return from(this.movieService.getLatest()).pipe(tap(() => {
+        this.progressShower.show('indeterminate');
+      }),
+      finalize(() => {
+        this.progressShower.hide()
+      }));
   }
 }
