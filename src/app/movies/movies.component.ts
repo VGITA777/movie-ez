@@ -2,6 +2,7 @@ import {Component, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {LatestMovie, MoviesPlayingNow, PopularMovies, TopRatedMovies} from 'tmdb-ts';
 import {take} from 'rxjs';
+import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 
 @Component({
   selector: 'app-movies',
@@ -16,7 +17,7 @@ export class MoviesComponent {
   protected readonly topRatedMovies: WritableSignal<TopRatedMovies | undefined> = signal(undefined);
   protected readonly latestMovies: WritableSignal<LatestMovie | undefined> = signal(undefined);
 
-  constructor(readonly activatedRoute: ActivatedRoute) {
+  constructor(readonly activatedRoute: ActivatedRoute, readonly progressShower: ProgressShowerService) {
   }
 
   ngOnInit() {
@@ -25,6 +26,7 @@ export class MoviesComponent {
       this.nowPlayingMovies.set(data['nowPlaying']);
       this.topRatedMovies.set(data['topRated']);
       this.latestMovies.set(data['latest']);
+      this.progressShower.hide();
     })
   }
 }

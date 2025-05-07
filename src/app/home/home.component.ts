@@ -2,6 +2,7 @@ import {Component, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult} from 'tmdb-ts';
 import {take} from 'rxjs';
+import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,7 @@ export class HomeComponent {
   readonly popularMovies: WritableSignal<PopularMovies | undefined> = signal(undefined);
   readonly popularTvShows: WritableSignal<PopularTvShows | undefined> = signal(undefined);
 
-  constructor(readonly activatedRoute: ActivatedRoute) {
+  constructor(readonly activatedRoute: ActivatedRoute, readonly progressShower: ProgressShowerService) {
   }
 
   ngOnInit() {
@@ -24,6 +25,7 @@ export class HomeComponent {
       this.discoverTvShows.set(data['discoverTvShows']);
       this.popularMovies.set(data['popularMovies']);
       this.popularTvShows.set(data['popularTvShows']);
+      this.progressShower.hide();
     })
   }
 }
