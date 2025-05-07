@@ -3,7 +3,7 @@ import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStat
 import {TvShowDiscoverResult} from 'tmdb-ts';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
 import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
-import {finalize, from, tap} from 'rxjs';
+import {finalize, from} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +14,8 @@ export class DiscoverTvShowResolverService implements Resolve<TvShowDiscoverResu
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<TvShowDiscoverResult | RedirectCommand> {
+    this.progressShower.show('indeterminate')
     return from(this.tmdb.discover.tvShow()).pipe(
-      tap(() => {
-        this.progressShower.show('indeterminate')
-      }),
       finalize(() => {
         this.progressShower.hide()
       })

@@ -3,7 +3,7 @@ import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStat
 import {PopularTvShows} from 'tmdb-ts';
 import {TmdbService} from './tmdb.service';
 import {ProgressShowerService} from '../utils/progress-shower.service';
-import {finalize, from, tap} from 'rxjs';
+import {finalize, from} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +13,8 @@ export class PopularTvShowResolverService implements Resolve<PopularTvShows> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<PopularTvShows | RedirectCommand> {
+    this.progressShower.show('indeterminate')
     return from(this.tmdb.tvShows.popular()).pipe(
-      tap(() => {
-        this.progressShower.show('indeterminate');
-      }),
       finalize(() => {
         this.progressShower.hide()
       })

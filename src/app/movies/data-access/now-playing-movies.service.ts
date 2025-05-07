@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStateSnapshot} from '@angular/router';
 import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
-import {finalize, from, tap} from 'rxjs';
+import {finalize, from} from 'rxjs';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
 import {MoviesPlayingNow} from 'tmdb-ts';
 
@@ -13,10 +13,8 @@ export class NowPlayingMoviesService implements Resolve<MoviesPlayingNow> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<MoviesPlayingNow | RedirectCommand> {
+    this.progressShower.show('indeterminate')
     return from(this.tmdb.movies.nowPlaying()).pipe(
-      tap(() => {
-        this.progressShower.show('indeterminate');
-      }),
       finalize(() => {
         this.progressShower.hide()
       })

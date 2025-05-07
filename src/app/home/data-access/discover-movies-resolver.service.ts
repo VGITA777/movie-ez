@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStateSnapshot} from '@angular/router';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
 import {MovieDiscoverResult} from 'tmdb-ts';
-import {finalize, from, tap} from 'rxjs';
+import {finalize, from} from 'rxjs';
 import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
 
 @Injectable({
@@ -14,10 +14,8 @@ export class DiscoverMoviesResolverService implements Resolve<MovieDiscoverResul
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<MovieDiscoverResult | RedirectCommand> {
+    this.progressShower.show('indeterminate')
     return from(this.tmdb.discover.movie()).pipe(
-      tap(() => {
-        this.progressShower.show('indeterminate')
-      }),
       finalize(() => {
         this.progressShower.hide()
       })
