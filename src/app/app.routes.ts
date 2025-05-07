@@ -1,64 +1,54 @@
 import {Routes} from '@angular/router';
-import {ErrorRoutes} from './error/routing';
-import {WatchRoutes} from './watch/routing';
-import {HomeRoutes} from './home/routing';
-import {TvShowsRoutes} from './tv-shows/routing';
-import {MoviesRoutes} from './movies/routing';
-import {SearchRoutes} from './search/routing';
-import {SettingsRoutes} from './settings/routing';
 
 export const routes: Routes = [
   {
     path: '',
-    children: [
-      ...HomeRoutes
-    ]
+    loadChildren: async () => {
+      const m = await import('./home/home.routes');
+      return m.HomeRoutes;
+    }
   },
   {
     path: 'watch',
-    children: [
-      {
-        path: '',
-        redirectTo: '/',
-        pathMatch: 'full'
-      },
-      ...WatchRoutes
-    ]
+    loadChildren: async () => {
+      const m = await import('./watch/watch.routes');
+      return m.WatchRoutes;
+    }
   },
   {
     path: 'search',
-    children: [
-      ...SearchRoutes
-    ]
+    loadChildren: async () => {
+      const m = await import('./search/search.routes');
+      return m.SearchRoutes;
+    }
   },
   {
     path: 'movies',
-    children: [
-      ...MoviesRoutes
-    ]
+    loadChildren: async () => {
+      const m = await import('./movies/movies.routes');
+      return m.MoviesRoutes;
+    }
   },
   {
     path: 'tv-shows',
-    children: [
-      ...TvShowsRoutes
-    ]
+    loadChildren: async () => {
+      const m = await import('./tv-shows/tv-shows.routes');
+      return m.TvShowsRoutes;
+    }
   },
   {
     path: 'settings',
-    children: [
-      {
-        path: '',
-        redirectTo: 'player',
-        pathMatch: 'full'
-      },
-      ...SettingsRoutes
-    ]
+    loadChildren: async () => {
+      const m = await import('./settings/settings.routes');
+      return m.SettingsRoutes;
+    }
   },
   {
     path: 'error',
-    children: [
-      ...ErrorRoutes
-    ]
+    loadChildren: async () => {
+      const m = await import('./error/error.routes');
+      return m.ErrorRoutes;
+    }
   },
   {
     path: '**',

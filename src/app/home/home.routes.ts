@@ -1,5 +1,4 @@
 import {Routes} from '@angular/router';
-import {HomeComponent} from './home.component';
 import {DiscoverMoviesResolverService} from './data-access/discover-movies-resolver.service';
 import {DiscoverTvShowResolverService} from './data-access/discover-tv-show-resolver.service';
 import {PopularMoviesResolverService} from '../shared/data-access/popular-movies-resolver.service';
@@ -8,7 +7,7 @@ import {PopularTvShowResolverService} from '../shared/data-access/popular-tv-sho
 export const HomeRoutes: Routes = [
   {
     path: '',
-    component: HomeComponent,
+    loadComponent: () => import('./home.component').then(m => m.HomeComponent),
     resolve: {
       discoverMovies: DiscoverMoviesResolverService,
       discoverTvShows: DiscoverTvShowResolverService,
