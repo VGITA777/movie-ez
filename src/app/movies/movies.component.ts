@@ -1,6 +1,7 @@
 import {Component, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {LatestMovie, MoviesPlayingNow, PopularMovies, TopRatedMovies} from 'tmdb-ts';
+import {take} from 'rxjs';
 
 @Component({
   selector: 'app-movies',
@@ -19,7 +20,7 @@ export class MoviesComponent {
   }
 
   ngOnInit() {
-    this.activatedRoute.data.subscribe((data) => {
+    this.activatedRoute.data.pipe(take(1)).subscribe((data) => {
       this.popularMovies.set(data['popular']);
       this.nowPlayingMovies.set(data['nowPlaying']);
       this.topRatedMovies.set(data['topRated']);
