@@ -1,4 +1,5 @@
 import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
+import {debouncedSignal} from './utility-fucntions';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class ProgressShowerService {
   readonly progress: Signal<number> = this._progress.asReadonly();
 
   private readonly _type: WritableSignal<ProgressType> = signal('hidden');
-  readonly progressType: Signal<ProgressType> = this._type.asReadonly();
+  readonly progressType: Signal<ProgressType> = debouncedSignal(this._type.asReadonly(), 500);
 
   updateProgress(value: number): void {
     this._progress.set(value);
