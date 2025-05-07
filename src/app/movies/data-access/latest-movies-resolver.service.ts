@@ -13,6 +13,7 @@ export class LatestMoviesResolverService implements Resolve<LatestMovie> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<LatestMovie | RedirectCommand> {
+    this.progressShower.show('indeterminate');
     return from(this.movieService.getLatest()).pipe(finalize(() => {
       this.progressShower.hide()
     }));

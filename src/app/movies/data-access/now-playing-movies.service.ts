@@ -13,6 +13,7 @@ export class NowPlayingMoviesService implements Resolve<MoviesPlayingNow> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<MoviesPlayingNow | RedirectCommand> {
+    this.progressShower.show('indeterminate');
     return from(this.movieService.getNowPlaying()).pipe(finalize(() => {
       this.progressShower.hide()
     }));

@@ -13,6 +13,7 @@ export class TopRatedMoviesResolverService implements Resolve<TopRatedMovies> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<TopRatedMovies | RedirectCommand> {
+    this.progressShower.show('indeterminate');
     return from(this.movieService.getTopRated()).pipe(finalize(() => {
       this.progressShower.hide()
     }));

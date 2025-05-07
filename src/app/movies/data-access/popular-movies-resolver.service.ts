@@ -13,6 +13,7 @@ export class PopularMoviesResolverService implements Resolve<PopularMovies> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<PopularMovies | RedirectCommand> {
+    this.progressShower.show('indeterminate');
     return from(this.movieService.getPopular()).pipe(finalize(() => {
       this.progressShower.hide()
     }));
