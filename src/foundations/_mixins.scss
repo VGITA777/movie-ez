@@ -30,9 +30,9 @@
 
 @mixin flex(
   $direction: row,
-  $wrap: nowrap,
-  $justify-content: start,
-  $align-items: center,
+  $wrap: unset,
+  $justify-content: unset,
+  $align-items: unset,
   $gap: .8em
 ) {
   display: flex;
