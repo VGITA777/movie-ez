@@ -1,0 +1,6 @@
+<app-media-slider [customDesign]="skeleton" [data]="skeletonData()" [mediaType]="'Skeleton'"
+                  [subHeader]="subheader()" [title]='title()'/>
+
+<ng-template #skeleton>
+  <p-skeleton [style]="{ 'aspect-ratio': '2 / 3' }" height="auto" width="100%"/>
+</ng-template>
