@@ -1,4 +1,4 @@
-import {Component, input, InputSignal, output, OutputEmitterRef, Signal, viewChild} from '@angular/core';
+import {Component, input, InputSignal, output, OutputEmitterRef, Signal, TemplateRef, viewChild} from '@angular/core';
 import {MediaCardComponent} from "../media-card/media-card.component";
 import {environment} from '../../../../environments/environment';
 import {SliderComponent} from '../slider/slider.component';
@@ -8,7 +8,7 @@ import {SwiperOptions} from 'swiper/types';
   selector: 'app-media-slider',
   imports: [
     MediaCardComponent,
-    SliderComponent
+    SliderComponent,
   ],
   templateUrl: './media-slider.component.html',
   styleUrl: './media-slider.component.scss'
@@ -19,6 +19,7 @@ export class MediaSliderComponent {
   readonly subHeader: InputSignal<string> = input.required();
   readonly data: InputSignal<MediaLike[]> = input.required();
   readonly mediaType: InputSignal<string> = input.required();
+  readonly customDesign: InputSignal<TemplateRef<any> | undefined> = input();
   readonly onCardClick: OutputEmitterRef<MediaLike> = output();
 
   protected readonly environment = environment;

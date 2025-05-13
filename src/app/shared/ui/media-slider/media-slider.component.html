@@ -1,4 +1,4 @@
-<app-slider #slider [data]="this.data()" [design]="design" [init]="false" gap="24px">
+<app-slider #slider [data]="this.data()" [design]="customDesign() ?? design" [init]="false" gap="24px">
   <h2 header>{{ title() }}</h2>
   <span subheader>{{ subHeader() }}</span>
 </app-slider>
@@ -9,4 +9,3 @@
                   [poster]="`${environment.imageBaseUrl}/w500${model.poster_path}`"
                   [title]="model.title ?? model.name ?? 'Unknown'"/>
 </ng-template>
-
