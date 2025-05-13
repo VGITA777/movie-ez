@@ -11,7 +11,7 @@ import {
 import {NgTemplateOutlet} from '@angular/common';
 import {SwiperOptions} from 'swiper/types';
 import {SwiperContainer} from 'swiper/element';
-import {Pagination} from 'swiper/modules';
+import {FreeMode, Pagination} from 'swiper/modules';
 
 @Component({
   selector: 'app-slider',
@@ -34,7 +34,7 @@ export class SliderComponent {
 
   ngOnInit() {
     this.defaultSwiperOptions = {
-      modules: [Pagination],
+      modules: [Pagination, FreeMode],
       slidesPerView: 8,
       direction: 'horizontal',
       spaceBetween: 8,
@@ -46,6 +46,9 @@ export class SliderComponent {
         renderBullet: (_index: number, className: string) => {
           return '<span class="' + className + '"></span>';
         }
+      },
+      freeMode: {
+        enabled: true,
       },
       breakpointsBase: 'container',
       breakpoints: {
