@@ -30,12 +30,13 @@ export class SliderComponent {
   readonly gap: InputSignal<string> = input('unset');
   readonly swiperOptions: InputSignal<SwiperOptions | undefined> = input()
   readonly swiperContainer: Signal<ElementRef<SwiperContainer>> = viewChild.required('swiper')
+  readonly init: InputSignal<boolean> = input(true);
   protected readonly swiperPagination: Signal<ElementRef<HTMLDivElement>> = viewChild.required('swiperPagination');
 
   ngOnInit() {
     this.defaultSwiperOptions = {
       modules: [Pagination, FreeMode],
-      slidesPerView: 8,
+      slidesPerView: 'auto',
       direction: 'horizontal',
       spaceBetween: 8,
       pagination: {
@@ -49,46 +50,22 @@ export class SliderComponent {
       },
       freeMode: {
         enabled: true,
-      },
-      breakpointsBase: 'container',
-      breakpoints: {
-        0: {
-          slidesPerView: 2.2,
-        },
-        375: {
-          slidesPerView: 2.5,
-        },
-        425: {
-          slidesPerView: 2.8,
-        },
-        475: {
-          slidesPerView: 3.5,
-        },
-        500: {
-          slidesPerView: 3.5,
-        },
-        600: {
-          slidesPerView: 4.5,
-        },
-        768: {
-          slidesPerView: 5.5,
-        },
-        1024: {
-          slidesPerView: 6.5,
-        },
-        1280: {
-          slidesPerView: 7.5,
-        },
-        1536: {
-          slidesPerView: 8.5,
-        },
-        1920: {
-          slidesPerView: 9.5,
-        }
       }
     }
+
+    if (this.init()) {
+      this.initSwiper();
+    }
+  }
+
+  initSwiperWithOptions(options: SwiperOptions): void {
     const sp: SwiperContainer = this.swiperContainer().nativeElement;
-    Object.assign(sp, this.swiperOptions() ?? this.defaultSwiperOptions);
+    Object.assign(sp, options);
+    console.log("Initializing swiper with options: ", options);
     sp.initialize();
+  }
+
+  initSwiper(): void {
+    this.initSwiperWithOptions(this.swiperOptions() ?? this.defaultSwiperOptions);
   }
 }
