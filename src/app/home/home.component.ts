@@ -3,12 +3,12 @@ import {ActivatedRoute} from '@angular/router';
 import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult} from 'tmdb-ts';
 import {take} from 'rxjs';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
-import {SliderComponent} from '../shared/ui/slider/slider.component';
+import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
 
 @Component({
   selector: 'app-home',
   imports: [
-    SliderComponent
+    MediaSliderComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'

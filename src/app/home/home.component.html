@@ -1,9 +1,13 @@
 <div class="container">
-  <app-slider [data]="this.popularMovies()?.results ?? []" [design]="design">
-    <h2 header>Popular Movies</h2>
-    <span subheader>Check out the latest popular movies</span>
-  </app-slider>
-</div>
+  <app-media-slider [data]="this.popularMovies()?.results ?? []" [mediaType]="'Movie'" subHeader="Check out the latest popular movies"
+                    title="Popular Movies"/>
 
-<ng-template #design let-model>
-</ng-template>
+  <app-media-slider [data]="this.popularTvShows()?.results ?? []" [mediaType]="'TvShow'" subHeader="Check out the latest popular TV shows"
+                    title="Popular TV Shows"/>
+
+  <app-media-slider [data]="this.discoverMovies()?.results ?? []" [mediaType]="'Movie'" subHeader="Explore new and exciting movies"
+                    title="Discover Movies"/>
+
+  <app-media-slider [data]="this.discoverTvShows()?.results ?? []" [mediaType]="'TvShow'" subHeader="Explore new and exciting TV shows"
+                    title="Discover TV Shows"/>
+</div>
