@@ -9,8 +9,9 @@
   padding: constants.$spacing-lg;
 
   .content-container {
+    @include mixins.hidden-scrollbar();
     border-radius: constants.$border-radius-lg;
-    overflow: hidden;
+    overflow: auto;
 
     app-navigation-rail {
       @include mixins.width-height();
