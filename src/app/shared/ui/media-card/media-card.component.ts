@@ -14,4 +14,7 @@ export class MediaCardComponent {
   readonly poster: InputSignal<string> = input.required();
   readonly mediaType: InputSignal<string> = input.required();
   readonly date: InputSignal<string> = input.required({transform: (date) => date.split('-')[0]});
+  readonly imageLoadType: InputSignal<ImageLoadType> = input<ImageLoadType>('lazy');
 }
+
+export type ImageLoadType = 'lazy' | 'eager' | 'auto'
