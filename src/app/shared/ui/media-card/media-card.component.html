@@ -1,0 +1,19 @@
+<div class="wrapper">
+  <div class="container">
+    <div class="image-wrapper">
+      <img
+        [alt]="title()"
+        [ngSrc]="poster()"
+        fill
+      />
+    </div>
+    <div class="info-container">
+      <h4 class="title">{{ title() }}</h4>
+      <div class="other-info">
+        <span class="media-type">{{ mediaType() }}</span>
+        <span class="separator">●</span>
+        <span class="release-date">{{ date() }}</span>
+      </div>
+    </div>
+  </div>
+</div>

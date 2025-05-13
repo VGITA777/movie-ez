@@ -1,0 +1,56 @@
+@use '../../../../foundations/mixins';
+@use '../../../../foundations/constants';
+
+.wrapper {
+  @include mixins.transition($property: background-color, $duration: .5s);
+  @include mixins.border-radius(constants.$border-radius-md);
+
+
+  .container {
+    @include mixins.flex($direction: column, $gap: constants.$spacing-lg);
+    @include mixins.transition($property: scale);
+
+    .image-wrapper {
+      @include mixins.container-border-radius(constants.$border-radius-md);
+      @include mixins.width-height();
+      position: relative;
+      aspect-ratio: 2 / 3;
+      width: 100%;
+
+      img {
+        object-fit: cover;
+      }
+    }
+
+    .info-container {
+      @include mixins.flex($direction: column, $gap: constants.$spacing-s);
+      width: 100%;
+
+      .title {
+        @include mixins.max-lines(1);
+      }
+
+      .other-info {
+        @include mixins.flex($gap: constants.$spacing-s, $align-items: center);
+
+        .separator {
+          font-size: .4rem;
+        }
+
+        span {
+          color: constants.$dark-surface-200;
+          font-size: .8rem;
+        }
+      }
+    }
+
+    &:hover {
+      scale: .94;
+    }
+  }
+
+  &:hover {
+    background-color: constants.$dark-surface-700;
+    cursor: pointer;
+  }
+}
