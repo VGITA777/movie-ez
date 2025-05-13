@@ -38,6 +38,14 @@
   overflow: hidden;
 }
 
+@mixin hidden-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 // Layout mixins
 
 @mixin flex(
