@@ -18,7 +18,13 @@
       @include mixins.width-height();
 
       swiper-slide {
+        @include mixins.transition($duration: 500ms, $delay: calc(var(--index) * 100ms));
         width: auto;
+
+        @starting-style {
+          transform: translateY(100%);
+          opacity: 0;
+        }
       }
     }
 
