@@ -1,3 +1,9 @@
 <div class="container">
-  <p>home works!</p>
+  <app-slider [data]="this.popularMovies()?.results ?? []" [design]="design">
+    <h2 header>Popular Movies</h2>
+    <span subheader>Check out the latest popular movies</span>
+  </app-slider>
 </div>
+
+<ng-template #design let-model>
+</ng-template>
