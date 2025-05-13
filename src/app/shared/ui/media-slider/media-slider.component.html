@@ -1,0 +1,11 @@
+<app-slider [data]="this.data()" [design]="design" gap="24px">
+  <h2 header>{{ title() }}</h2>
+  <span subheader>{{ subHeader() }}</span>
+</app-slider>
+
+<ng-template #design let-model>
+  <app-media-card (click)="onCardClickHandler(model)" [date]="model.release_date"
+                  [mediaType]="model.media_type ?? mediaType()"
+                  [poster]="`${environment.imageBaseUrl}/w500${model.poster_path}`" [title]="model.title"/>
+</ng-template>
+
