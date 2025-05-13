@@ -29,7 +29,10 @@ export class MediaSliderComponent {
 
 export type MediaLike = {
   id: number,
+  title?: string,
+  name?: string,
   poster_path: string,
-  release_date: string,
+  release_date?: string,
+  first_air_date?: string,
   media_type?: string,
 }

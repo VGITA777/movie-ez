@@ -4,8 +4,9 @@
 </app-slider>
 
 <ng-template #design let-model>
-  <app-media-card (click)="onCardClickHandler(model)" [date]="model.release_date"
+  <app-media-card (click)="onCardClickHandler(model)" [date]="model.release_date ?? model.first_air_date ?? 'N/A'"
                   [mediaType]="model.media_type ?? mediaType()"
-                  [poster]="`${environment.imageBaseUrl}/w500${model.poster_path}`" [title]="model.title"/>
+                  [poster]="`${environment.imageBaseUrl}/w500${model.poster_path}`"
+                  [title]="model.title ?? model.name ?? 'Unknown'"/>
 </ng-template>
 
