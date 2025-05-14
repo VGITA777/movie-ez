@@ -2,13 +2,12 @@
 @use '../../../../foundations/constants';
 
 .wrapper {
-  @include mixins.transition($property: background-color, $duration: .5s);
   @include mixins.border-radius(constants.$border-radius-md);
-
+  @include mixins.transition($property: background-color, $duration: .7s, $timing-function: ease);
 
   .container {
     @include mixins.flex($direction: column, $gap: constants.$spacing-lg);
-    @include mixins.transition($property: scale);
+    @include mixins.transition($property: scale, $duration: 1.2s, $timing-function: ease);
 
     .image-wrapper {
       @include mixins.container-border-radius(constants.$border-radius-md);
@@ -44,13 +43,26 @@
       }
     }
 
-    &:hover {
-      scale: .94;
-    }
   }
 
   &:hover {
-    background-color: constants.$dark-surface-700;
+    @include mixins.transition($property: background-color, $duration: .5s, $timing-function: ease, $delay: .5s);
+    @include mixins.background-color(constants.$dark-surface-600, .6);
     cursor: pointer;
+
+    .container {
+      @include mixins.transition($property: scale, $duration: .5s, $timing-function: ease, $delay: .5s);
+      scale: .92;
+    }
+  }
+
+  &:active {
+    @include mixins.transition($property: background-color, $duration: .3s, $timing-function: ease, $delay: 0s);
+    @include mixins.background-color(constants.$dark-surface-500, .8);
+
+    .container {
+      @include mixins.transition($property: scale, $duration: .5s, $timing-function: ease, $delay: 0s);
+      scale: .9;
+    }
   }
 }
