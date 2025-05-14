@@ -46,6 +46,10 @@
   scrollbar-width: none; /* Firefox */
 }
 
+@mixin background-color($color: transparent, $opacity: 1) {
+  background-color: rgba($color, $opacity);
+}
+
 // Layout mixins
 
 @mixin flex(
