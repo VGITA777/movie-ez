@@ -38,7 +38,7 @@ export class SliderComponent {
       modules: [Pagination, FreeMode],
       slidesPerView: 'auto',
       direction: 'horizontal',
-      spaceBetween: 8,
+      spaceBetween: 12,
       pagination: {
         enabled: true,
         el: this.swiperPagination().nativeElement,
@@ -61,7 +61,6 @@ export class SliderComponent {
   initSwiperWithOptions(options: SwiperOptions): void {
     const sp: SwiperContainer = this.swiperContainer().nativeElement;
     Object.assign(sp, options);
-    console.log("Initializing swiper with options: ", options);
     sp.initialize();
   }
 

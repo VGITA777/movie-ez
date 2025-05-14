@@ -40,8 +40,6 @@ export class MediaSliderComponent {
   protected readonly nextNavigator: Signal<ElementRef<HTMLButtonElement>> = viewChild.required('nextNavigator')
 
   ngAfterViewInit() {
-    console.log(this.prevNavigator())
-
     const defaultModules: SwiperModule[] = this.slider().defaultSwiperOptions.modules ?? [];
     const swiperOptions: SwiperOptions = {
       ...this.slider().defaultSwiperOptions,
