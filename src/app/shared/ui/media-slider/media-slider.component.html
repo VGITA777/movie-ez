@@ -1,6 +1,18 @@
 <app-slider #slider [data]="this.data()" [design]="customDesign() ?? design" [init]="false" gap="24px">
   <h2 header>{{ title() }}</h2>
   <span subheader>{{ subHeader() }}</span>
+  <div class="navigation" inContentsNavigation>
+    <button #prevNavigator class="navigator prev">
+      <svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+        <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
+      </svg>
+    </button>
+    <button #nextNavigator class="navigator next">
+      <svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+        <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+      </svg>
+    </button>
+  </div>
 </app-slider>
 
 <ng-template #design let-model>

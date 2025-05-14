@@ -1,14 +1,26 @@
-import {Component, input, InputSignal, output, OutputEmitterRef, Signal, TemplateRef, viewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  input,
+  InputSignal,
+  output,
+  OutputEmitterRef,
+  Signal,
+  TemplateRef,
+  viewChild
+} from '@angular/core';
 import {MediaCardComponent} from "../media-card/media-card.component";
 import {environment} from '../../../../environments/environment';
 import {SliderComponent} from '../slider/slider.component';
-import {SwiperOptions} from 'swiper/types';
+import {SwiperModule, SwiperOptions} from 'swiper/types';
+import {Navigation} from 'swiper/modules';
 
 @Component({
   selector: 'app-media-slider',
   imports: [
     MediaCardComponent,
     SliderComponent,
+
   ],
   templateUrl: './media-slider.component.html',
   styleUrl: './media-slider.component.scss'
@@ -24,10 +36,20 @@ export class MediaSliderComponent {
 
   protected readonly environment = environment;
   protected readonly slider: Signal<SliderComponent> = viewChild.required('slider')
+  protected readonly prevNavigator: Signal<ElementRef<HTMLButtonElement>> = viewChild.required('prevNavigator')
+  protected readonly nextNavigator: Signal<ElementRef<HTMLButtonElement>> = viewChild.required('nextNavigator')
 
   ngAfterViewInit() {
+    console.log(this.prevNavigator())
+
+    const defaultModules: SwiperModule[] = this.slider().defaultSwiperOptions.modules ?? [];
     const swiperOptions: SwiperOptions = {
       ...this.slider().defaultSwiperOptions,
+      modules: [...defaultModules, Navigation],
+      navigation: {
+        prevEl: this.prevNavigator().nativeElement,
+        nextEl: this.nextNavigator().nativeElement,
+      },
       breakpointsBase: 'container',
       breakpoints: {
         0: {

@@ -1,0 +1,40 @@
+@use '../../../../foundations/mixins';
+@use '../../../../foundations/responsive';
+@use '../../../../foundations/constants';
+
+app-slider {
+  .navigation {
+    @include mixins.width-height();
+    @include mixins.flex($justify-content: space-between, $gap: 0);
+    position: absolute;
+    user-select: none;
+    top: 0;
+    left: 0;
+
+    .navigator {
+      @include mixins.transition($property: background-color, $duration: 0.2s, $timing-function: ease);
+      @include mixins.background-color(constants.$dark-surface-700, .2);
+      border: none;
+      border-radius: 0 4px 4px 0;
+      height: 100%;
+      z-index: 100;
+
+      &:hover {
+        @include mixins.background-color(constants.$dark-surface-700, 0.5);
+        cursor: pointer;
+      }
+
+      &:active {
+        @include mixins.background-color(constants.$dark-surface-700, 0.6);
+
+        svg {
+          transform: scale(0.95);
+        }
+      }
+    }
+
+    ::ng-deep .swiper-button-disabled {
+      visibility: hidden;
+    }
+  }
+}
