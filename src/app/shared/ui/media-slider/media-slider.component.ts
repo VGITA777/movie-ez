@@ -14,12 +14,14 @@ import {environment} from '../../../../environments/environment';
 import {SliderComponent} from '../slider/slider.component';
 import {SwiperModule, SwiperOptions} from 'swiper/types';
 import {Navigation} from 'swiper/modules';
+import {ShineCardComponent} from '../shine-card/shine-card.component';
 
 @Component({
   selector: 'app-media-slider',
   imports: [
     MediaCardComponent,
     SliderComponent,
+    ShineCardComponent,
 
   ],
   templateUrl: './media-slider.component.html',
