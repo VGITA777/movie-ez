@@ -16,7 +16,8 @@
 </app-slider>
 
 <ng-template #design let-model>
-  <app-shine-card>
+  <app-shine-card [backgroundColor]="{ red: 25, green: 25, blue: 25, opacity: 1 }"
+                  [shineColor]="{ red: 100, green: 100, blue: 100, opacity: 0.1 }" padding=".4em">
     <app-media-card (click)="onCardClickHandler(model)" [date]="model.release_date ?? model.first_air_date ?? 'N/A'"
                     [mediaType]="model.media_type ?? mediaType()"
                     [poster]="`${environment.imageBaseUrl}/w500${model.poster_path}`"

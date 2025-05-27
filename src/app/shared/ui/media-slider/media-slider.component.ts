@@ -25,7 +25,7 @@ import {ShineCardComponent} from '../shine-card/shine-card.component';
 
   ],
   templateUrl: './media-slider.component.html',
-  styleUrl: './media-slider.component.scss'
+  styleUrl: './media-slider.component.scss',
 })
 export class MediaSliderComponent {
 
@@ -45,6 +45,7 @@ export class MediaSliderComponent {
     const defaultModules: SwiperModule[] = this.slider().defaultSwiperOptions.modules ?? [];
     const swiperOptions: SwiperOptions = {
       ...this.slider().defaultSwiperOptions,
+      spaceBetween: 4,
       modules: [...defaultModules, Navigation],
       navigation: {
         prevEl: this.prevNavigator().nativeElement,

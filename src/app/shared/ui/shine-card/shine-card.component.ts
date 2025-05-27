@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  computed,
-  ElementRef,
-  input,
-  InputSignal,
-  Signal,
-  viewChild, ViewEncapsulation
-} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, input, InputSignal, Signal, viewChild} from '@angular/core';
 import {NgStyle} from '@angular/common';
 
 @Component({
@@ -23,6 +14,7 @@ export class ShineCardComponent implements AfterViewInit {
   readonly shineColor: InputSignal<Color> = input({red: 255, blue: 255, green: 255});
   readonly backgroundColor: InputSignal<Color> = input({red: 15, blue: 15, green: 15});
   readonly shineRadius: InputSignal<number> = input(200);
+  readonly padding: InputSignal<string> = input('0px');
 
   private cardRef: Signal<ElementRef<HTMLDivElement>> = viewChild.required('cardRef');
 
@@ -45,4 +37,5 @@ export interface Color {
   readonly red: number;
   readonly green: number;
   readonly blue: number;
+  readonly opacity?: number;
 }
