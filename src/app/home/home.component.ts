@@ -4,7 +4,6 @@ import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult
 import {take} from 'rxjs';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
-import {ShineCardComponent} from '../shared/ui/shine-card/shine-card.component';
 
 @Component({
   selector: 'app-home',

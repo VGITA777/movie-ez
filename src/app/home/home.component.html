@@ -1,17 +1,17 @@
 <div class="container">
-    <app-media-slider [data]="this.popularMovies()?.results ?? []" [mediaType]="'Movie'"
-                      subHeader="Check out the latest popular movies"
-                      title="Popular Movies"/>
+  <app-media-slider [data]="this.popularMovies()?.results ?? []" [mediaType]="'Movie'"
+                    subHeader="Check out the latest popular movies"
+                    title="Popular Movies"/>
 
-    <app-media-slider [data]="this.popularTvShows()?.results ?? []" [mediaType]="'TvShow'"
-                      subHeader="Check out the latest popular TV shows"
-                      title="Popular TV Shows"/>
+  <app-media-slider [data]="this.popularTvShows()?.results ?? []" [mediaType]="'TvShow'"
+                    subHeader="Check out the latest popular TV shows"
+                    title="Popular TV Shows"/>
 
-    <app-media-slider [data]="this.discoverMovies()?.results ?? []" [mediaType]="'Movie'"
-                      subHeader="Explore new and exciting movies"
-                      title="Discover Movies"/>
+  <app-media-slider [data]="this.discoverMovies()?.results ?? []" [mediaType]="'Movie'"
+                    subHeader="Explore new and exciting movies"
+                    title="Discover Movies"/>
 
-    <app-media-slider [data]="this.discoverTvShows()?.results ?? []" [mediaType]="'TvShow'"
-                      subHeader="Explore new and exciting TV shows"
-                      title="Discover TV Shows"/>
+  <app-media-slider [data]="this.discoverTvShows()?.results ?? []" [mediaType]="'TvShow'"
+                    subHeader="Explore new and exciting TV shows"
+                    title="Discover TV Shows"/>
 </div>

@@ -1,5 +1,4 @@
-<div #cardRef class="card"
-     [ngStyle]="{
+<div #cardRef [ngStyle]="{
        '--shine-color-r': shineColor().red,
        '--shine-color-g': shineColor().green,
        '--shine-color-b': shineColor().blue,
@@ -11,6 +10,7 @@
        '--shine-radius': shineRadius() + 'px',
        '--content-padding': padding(),
      }"
+     class="card"
 >
   <div class="card-content">
     <ng-content></ng-content>
