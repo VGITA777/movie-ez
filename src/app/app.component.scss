@@ -4,28 +4,21 @@
 
 .container {
   @include mixins.width-height();
-  @include mixins.grid(min(250px, 100%) 3fr, $gap: constants.$spacing-lg);
   @include mixins.transition($property: all, $timing-function: ease, $duration: .8s);
+  gap: constants.$spacing-lg;
   padding: constants.$spacing-lg;
+  display: grid;
+  grid-template-columns: min(225px, 100%) 1fr;
 
   .content-container {
     @include mixins.hidden-scrollbar();
     border-radius: constants.$border-radius-lg;
-    overflow: auto;
-
-    app-navigation-rail {
-      @include mixins.width-height();
-      display: block;
-    }
-  }
-
-  aside {
-    width: auto;
   }
 
   main {
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
+    overflow-x: hidden;
   }
 }
 
