@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {LocalStorageCacheManager} from '../interface/cache-manager';
 import {from, Observable} from 'rxjs';
-import {SimpleCache} from '../interface/simple-cache';
 import {MOVIES_CACHE_NAMESPACE} from '../constants';
+import {LocalStorageCacheManager} from './cache-manager';
+import {SimpleCache} from './simple-cache';
 
 @Injectable({
   providedIn: 'root'
