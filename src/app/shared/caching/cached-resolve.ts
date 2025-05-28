@@ -19,7 +19,7 @@ export abstract class CachedResolve<T, C extends SimpleCache> implements Resolve
         this.cacheManager,
         this.key,
         () => this.fetch(),
-        ONE_DAY_MILLIS
+        Date.now() + ONE_DAY_MILLIS
       ),
       tap(() => {
         this.onFinish?.()

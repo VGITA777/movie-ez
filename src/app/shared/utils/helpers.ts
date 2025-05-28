@@ -9,7 +9,7 @@ export function getOrFetchAndCache<T, C extends SimpleCache>(
   expiration: number
 ) {
   return mergeMap((cached: C | undefined) => {
-    if (cached && cached?.expiration !== undefined && cached?.expiration < Date.now()) {
+    if (cached && cached?.expiration !== undefined && cached?.expiration > Date.now()) {
       try {
         const value = typeof cached.value === 'string' ? JSON.parse(cached.value) : cached.value;
         return of(value as T);
