@@ -1,27 +1,32 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStateSnapshot} from '@angular/router';
+import {inject, Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, RouterStateSnapshot} from '@angular/router';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
 import {MovieDiscoverResult} from 'tmdb-ts';
 import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
-import {
-  MoviesLocalStorageCacheManagerService
-} from '../../shared/data-access/movies-local-storage-cache-manager.service';
-import {DISCOVER_MOVIES_CACHE_KEY, ONE_DAY_MILLIS} from '../../shared/constants';
-import {getOrFetchAndCache} from '../../shared/utils/helpers';
+import {DISCOVER_MOVIES_CACHE_KEY, DISCOVER_MOVIES_NAMESPACE} from '../../shared/constants';
+import {ExpirableSimpleCache} from '../../shared/caching/simple-cache';
+import {LocalStorageCacheManager} from '../../shared/caching/cache-manager';
+import {CachedResolve} from '../../shared/caching/cached-resolve';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DiscoverMoviesResolverService implements Resolve<MovieDiscoverResult> {
+export class DiscoverMoviesResolverService extends CachedResolve<MovieDiscoverResult, ExpirableSimpleCache> {
 
-  constructor(readonly tmdb: TmdbService, readonly progressShower: ProgressShowerService, private readonly moviesLocalStorageManager: MoviesLocalStorageCacheManagerService) {
+  private readonly tmdb: TmdbService = inject(TmdbService);
+  private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
+
+  constructor() {
+    const localStorage = new LocalStorageCacheManager(DISCOVER_MOVIES_NAMESPACE);
+    super(localStorage, DISCOVER_MOVIES_CACHE_KEY);
   }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<MovieDiscoverResult | RedirectCommand> {
-    this.progressShower.show('indeterminate');
+  override fetch(): Promise<MovieDiscoverResult> {
+    return this.tmdb.discover.movie();
+  }
 
-    return this.moviesLocalStorageManager.get(DISCOVER_MOVIES_CACHE_KEY).pipe(
-      getOrFetchAndCache(this.moviesLocalStorageManager, DISCOVER_MOVIES_CACHE_KEY, () => this.tmdb.discover.movie(), ONE_DAY_MILLIS,),
-    );
+  override resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<MovieDiscoverResult | RedirectCommand> {
+    this.progressShower.show('indeterminate');
+    return super.resolve(route, state);
   }
 }

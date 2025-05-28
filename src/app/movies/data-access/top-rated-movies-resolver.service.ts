@@ -1,25 +1,32 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStateSnapshot} from '@angular/router';
+import {inject, Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, RouterStateSnapshot} from '@angular/router';
 import {TopRatedMovies} from 'tmdb-ts';
 import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
-import {
-  MoviesLocalStorageCacheManagerService
-} from '../../shared/data-access/movies-local-storage-cache-manager.service';
-import {ONE_DAY_MILLIS, TOP_RATED_MOVIES_CACHE_KEY} from '../../shared/constants';
-import {getOrFetchAndCache} from '../../shared/utils/helpers';
+import {TOP_RATED_MOVIES_CACHE_KEY, TOP_RATED_MOVIES_NAMESPACE} from '../../shared/constants';
+import {CacheManager, LocalStorageCacheManager} from '../../shared/caching/cache-manager';
+import {ExpirableSimpleCache} from '../../shared/caching/simple-cache';
+import {CachedResolve} from '../../shared/caching/cached-resolve';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TopRatedMoviesResolverService implements Resolve<TopRatedMovies> {
-  constructor(readonly tmdb: TmdbService, readonly progressShower: ProgressShowerService, private readonly moviesLocalStorageManager: MoviesLocalStorageCacheManagerService) {
+export class TopRatedMoviesResolverService extends CachedResolve<TopRatedMovies, ExpirableSimpleCache> {
+
+  private readonly tmdb: TmdbService = inject(TmdbService);
+  private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
+
+  constructor() {
+    const localStorage: CacheManager<ExpirableSimpleCache> = new LocalStorageCacheManager(TOP_RATED_MOVIES_NAMESPACE);
+    super(localStorage, TOP_RATED_MOVIES_CACHE_KEY);
   }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<TopRatedMovies | RedirectCommand> {
+  override fetch(): Promise<TopRatedMovies> {
+    return this.tmdb.movies.topRated();
+  }
+
+  override resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<TopRatedMovies | RedirectCommand> {
     this.progressShower.show('indeterminate')
-    return this.moviesLocalStorageManager.get(TOP_RATED_MOVIES_CACHE_KEY).pipe(
-      getOrFetchAndCache(this.moviesLocalStorageManager, TOP_RATED_MOVIES_CACHE_KEY, () => this.tmdb.movies.topRated(), ONE_DAY_MILLIS,)
-    );
+    return super.resolve(route, state);
   }
 }

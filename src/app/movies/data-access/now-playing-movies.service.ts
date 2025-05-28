@@ -1,25 +1,31 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStateSnapshot} from '@angular/router';
+import {inject, Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, RouterStateSnapshot} from '@angular/router';
 import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
 import {MoviesPlayingNow} from 'tmdb-ts';
-import {
-  MoviesLocalStorageCacheManagerService
-} from '../../shared/data-access/movies-local-storage-cache-manager.service';
-import {NOW_PLAYING_MOVIES_CACHE_KEY, ONE_DAY_MILLIS} from '../../shared/constants';
-import {getOrFetchAndCache} from '../../shared/utils/helpers';
+import {NOW_PLAYING_MOVIES_CACHE_KEY, NOW_PLAYING_MOVIES_NAMESPACE} from '../../shared/constants';
+import {CachedResolve} from '../../shared/caching/cached-resolve';
+import {ExpirableSimpleCache} from '../../shared/caching/simple-cache';
+import {CacheManager, LocalStorageCacheManager} from '../../shared/caching/cache-manager';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NowPlayingMoviesService implements Resolve<MoviesPlayingNow> {
-  constructor(readonly tmdb: TmdbService, readonly progressShower: ProgressShowerService, private readonly moviesLocalStorageManager: MoviesLocalStorageCacheManagerService) {
+export class NowPlayingMoviesService extends CachedResolve<MoviesPlayingNow, ExpirableSimpleCache> {
+  private readonly tmdb: TmdbService = inject(TmdbService);
+  private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
+
+  constructor() {
+    const localStorage: CacheManager<ExpirableSimpleCache> = new LocalStorageCacheManager(NOW_PLAYING_MOVIES_NAMESPACE);
+    super(localStorage, NOW_PLAYING_MOVIES_CACHE_KEY);
   }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<MoviesPlayingNow | RedirectCommand> {
+  override fetch(): Promise<MoviesPlayingNow> {
+    return this.tmdb.movies.nowPlaying();
+  }
+
+  override resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<MoviesPlayingNow | RedirectCommand> {
     this.progressShower.show('indeterminate')
-    return this.moviesLocalStorageManager.get(NOW_PLAYING_MOVIES_CACHE_KEY).pipe(
-      getOrFetchAndCache(this.moviesLocalStorageManager, NOW_PLAYING_MOVIES_CACHE_KEY, () => this.tmdb.movies.nowPlaying(), ONE_DAY_MILLIS,)
-    );
+    return super.resolve(route, state);
   }
 }
