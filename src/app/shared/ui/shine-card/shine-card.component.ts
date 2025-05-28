@@ -27,7 +27,6 @@ export class ShineCardComponent implements AfterViewInit {
     const rect = element.getBoundingClientRect();
     const x = ev.clientX - rect.left;
     const y = ev.clientY - rect.top;
-    console.log(`Shine effect at: ${x}, ${y}`);
     element.style.setProperty('--shine-pos-x', `${x}px`);
     element.style.setProperty('--shine-pos-y', `${y}px`);
   }
