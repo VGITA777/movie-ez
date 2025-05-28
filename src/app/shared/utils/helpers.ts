@@ -14,6 +14,7 @@ export function getOrFetchAndCache<T, C extends SimpleCache>(
         const value = typeof cached.value === 'string' ? JSON.parse(cached.value) : cached.value;
         return of(value as T);
       } catch (e) {
+        cacheManager.clear()
         console.log(`Error parsing cached value for key ${cacheKey}:`, e);
         console.log(`Cached value:`, cached.value);
       }
