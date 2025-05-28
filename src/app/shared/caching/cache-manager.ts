@@ -20,7 +20,7 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
   private data: Map<string, ExpirableSimpleCache> = new Map<string, ExpirableSimpleCache>();
 
   constructor(private readonly namespace: string) {
-    JSON.parse(localStorage.getItem(this.namespace) ?? '[]').forEach((d: ExpirableSimpleCache) => this.data.set(d.key, d));
+    this._load();
   }
 
   async clear(): Promise<void> {
@@ -73,8 +73,16 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
   }
 
   async load(): Promise<void> {
-    JSON.parse(localStorage.getItem(this.namespace) ?? '[]').forEach((d: ExpirableSimpleCache) => this.data.set(d.key, d));
+    this._load();
     return Promise.resolve();
+  }
+
+  private _load(): void {
+    try {
+      JSON.parse(localStorage.getItem(this.namespace) ?? '[]').forEach((d: ExpirableSimpleCache) => this.data.set(d.key, d));
+    } catch (e) {
+      localStorage.setItem(this.namespace, '[]');
+    }
   }
 
   private async _save(): Promise<void> {
