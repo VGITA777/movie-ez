@@ -15,11 +15,18 @@ export class ShineCardComponent implements AfterViewInit {
   readonly backgroundColor: InputSignal<Color> = input({red: 15, blue: 15, green: 15});
   readonly shineRadius: InputSignal<number> = input(200);
   readonly padding: InputSignal<string> = input('0px');
-
-  private cardRef: Signal<ElementRef<HTMLDivElement>> = viewChild.required('cardRef');
+  readonly initShine: InputSignal<boolean> = input(true);
+  readonly cardRef: Signal<ElementRef<HTMLDivElement>> = viewChild.required('cardRef');
 
   ngAfterViewInit(): void {
-    this.cardRef().nativeElement.onmousemove = ev => this.addShineEffect(ev);
+    if (this.initShine()) {
+      this.cardRef().nativeElement.onmousemove = ev => this.addShineEffect(ev);
+    }
+  }
+
+  public setShineProperties(x: number, y: number): void {
+    this.cardRef().nativeElement.style.setProperty('--shine-pos-x', `${x}px`);
+    this.cardRef().nativeElement.style.setProperty('--shine-pos-y', `${y}px`);
   }
 
   private addShineEffect(ev: MouseEvent): void {
@@ -27,8 +34,7 @@ export class ShineCardComponent implements AfterViewInit {
     const rect = element.getBoundingClientRect();
     const x = ev.clientX - rect.left;
     const y = ev.clientY - rect.top;
-    element.style.setProperty('--shine-pos-x', `${x}px`);
-    element.style.setProperty('--shine-pos-y', `${y}px`);
+    this.setShineProperties(x, y);
   }
 }
 
