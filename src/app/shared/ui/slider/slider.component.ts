@@ -17,6 +17,7 @@ import {FreeMode, Pagination} from 'swiper/modules';
   selector: 'app-slider',
   imports: [
     NgTemplateOutlet,
+
   ],
   templateUrl: './slider.component.html',
   styleUrl: './slider.component.scss',
@@ -25,8 +26,8 @@ import {FreeMode, Pagination} from 'swiper/modules';
 export class SliderComponent {
   defaultSwiperOptions!: SwiperOptions;
 
-  readonly design: InputSignal<TemplateRef<any>> = input.required();
-  readonly data: InputSignal<any[]> = input.required();
+  readonly design: InputSignal<TemplateRef<unknown>> = input.required();
+  readonly data: InputSignal<unknown[]> = input.required();
   readonly gap: InputSignal<string> = input('unset');
   readonly swiperOptions: InputSignal<SwiperOptions | undefined> = input()
   readonly swiperContainer: Signal<ElementRef<SwiperContainer>> = viewChild.required('swiper')
