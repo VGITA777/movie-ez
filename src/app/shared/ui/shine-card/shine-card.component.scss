@@ -65,6 +65,7 @@
     background-color: rgba(var(--bg-color-r), var(--bg-color-g), var(--bg-color-b), var(--bg-opacity));
     position: relative;
     border-radius: inherit;
+    overflow: hidden;
     margin: 2px;
     z-index: 2;
   }
