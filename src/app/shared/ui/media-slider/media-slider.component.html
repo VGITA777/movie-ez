@@ -1,4 +1,5 @@
-<app-slider #slider [data]="this.data()" [design]="customDesign() ?? design" [init]="false" gap="24px">
+<app-slider #slider [data]="this.data()" [design]="customDesign() ?? design" [init]="false"
+            gap="24px">
   <h2 header>{{ title() }}</h2>
   <span subheader>{{ subHeader() }}</span>
   <div class="navigation" inContentsNavigation>
@@ -16,7 +17,7 @@
 </app-slider>
 
 <ng-template #design let-model>
-  <app-shine-card [backgroundColor]="{ red: 25, green: 25, blue: 25, opacity: 1 }"
+  <app-shine-card [backgroundColor]="{ red: 25, green: 25, blue: 25, opacity: 1 }" [initShine]="true"
                   [shineColor]="{ red: 100, green: 100, blue: 100, opacity: 0.1 }" padding=".4em">
     <app-media-card (click)="onCardClickHandler(model)" [date]="model.release_date ?? model.first_air_date ?? 'N/A'"
                     [mediaType]="model.media_type ?? mediaType()"
