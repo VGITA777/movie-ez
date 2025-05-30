@@ -26,16 +26,12 @@
         rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), .7) 0%,
         rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), 0) 100%
     );
-    opacity: 1;
+    opacity: var(--border-opacity, 0);
     z-index: 1;
   }
 
-  &:hover::before {
-    opacity: 1;
-
-    .card {
-      background-color: rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), var(--shine-opacity));
-    }
+  &:hover .card-border {
+    opacity: var(--border-opacity-hover, 1);
   }
 
   // Used for shine effect
@@ -55,8 +51,12 @@
     z-index: 3;
   }
 
-  &:hover::after {
+  &:hover::before {
     opacity: 1;
+
+    .card {
+      background-color: rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), var(--shine-opacity));
+    }
   }
 
   .card-content {
