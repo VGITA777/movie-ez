@@ -22,7 +22,6 @@ import {ShineCardComponent} from '../shine-card/shine-card.component';
     MediaCardComponent,
     SliderComponent,
     ShineCardComponent,
-
   ],
   templateUrl: './media-slider.component.html',
   styleUrl: './media-slider.component.scss',
