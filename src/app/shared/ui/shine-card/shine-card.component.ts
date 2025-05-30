@@ -11,13 +11,13 @@ import {NgStyle} from '@angular/common';
   host: {'style.background-color': 'red'},
 })
 export class ShineCardComponent implements AfterViewInit {
+  readonly initShine: InputSignal<boolean> = input(true);
   readonly shineColor: InputSignal<Color> = input({red: 255, blue: 255, green: 255});
   readonly backgroundColor: InputSignal<Color> = input({red: 15, blue: 15, green: 15});
   readonly shineRadius: InputSignal<number> = input(200);
   readonly padding: InputSignal<string> = input('0px');
   readonly borderOpacity: InputSignal<number> = input(0);
   readonly borderOpacityHover: InputSignal<number> = input(1);
-  readonly initShine: InputSignal<boolean> = input(true);
   readonly cardRef: Signal<ElementRef<HTMLDivElement>> = viewChild.required('cardRef');
 
   ngAfterViewInit(): void {
