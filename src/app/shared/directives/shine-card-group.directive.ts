@@ -1,15 +1,15 @@
-import {AfterViewInit, contentChildren, Directive, ElementRef, inject, Signal, viewChildren} from '@angular/core';
+import {AfterContentInit, contentChildren, Directive, ElementRef, inject, Signal} from '@angular/core';
 import {ShineCardComponent} from '../ui/shine-card/shine-card.component';
 
 @Directive({
   selector: '[appShineCardGroup]'
 })
-export class ShineCardGroupDirective implements AfterViewInit {
+export class ShineCardGroupDirective implements AfterContentInit {
 
   protected readonly containerRef: ElementRef<HTMLElement> = inject(ElementRef)
   protected readonly shineCards: Signal<readonly ShineCardComponent[]> = contentChildren<ShineCardComponent>(ShineCardComponent, {descendants: true});
 
-  ngAfterViewInit(): void {
+  ngAfterContentInit(): void {
     this.addShineEffect();
   }
 
