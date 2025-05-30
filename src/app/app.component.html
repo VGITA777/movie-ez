@@ -7,7 +7,8 @@
   <aside class="content-container">
     <app-navigation-rail/>
   </aside>
-  <main class="content-container">
+  <main #scrollToTarget class="content-container">
+    <app-scroll-top [target]="scrollToTarget"/>
     <router-outlet></router-outlet>
   </main>
 </div>

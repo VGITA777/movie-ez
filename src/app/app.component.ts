@@ -7,10 +7,11 @@ import {ToastService} from './shared/utils/toast.service';
 import {Subscription} from 'rxjs';
 import {ProgressBar} from 'primeng/progressbar';
 import {ProgressShowerService, ProgressType} from './shared/utils/progress-shower.service';
+import {ScrollTopComponent} from './shared/ui/scroll-top/scroll-top.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationRailComponent, Toast, ProgressBar],
+  imports: [RouterOutlet, NavigationRailComponent, Toast, ProgressBar, ScrollTopComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [MessageService]

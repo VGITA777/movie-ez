@@ -12,6 +12,7 @@
 
   .content-container {
     @include mixins.hidden-scrollbar();
+    position: relative;
     border-radius: constants.$border-radius-lg;
   }
 
