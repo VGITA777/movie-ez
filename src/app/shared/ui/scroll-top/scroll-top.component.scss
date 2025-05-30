@@ -1,0 +1,53 @@
+@use '../../../../foundations/mixins';
+@use '../../../../foundations/constants';
+
+
+:host {
+  position: sticky;
+  top: 0;
+  left: 50%;
+  z-index: 1000;
+}
+
+
+button {
+  @include mixins.transition($property: all, $duration: .5s, $timing-function: ease);
+  position: absolute;
+  background-color: transparent;
+  border: none;
+
+  @starting-style {
+    transform: translateY(-125%);
+    bottom: constants.$spacing-lg;
+    opacity: 0;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    svg {
+      background-color: constants.$dark-surface-500;
+    }
+  }
+
+  &:active {
+    svg {
+      background-color: constants.$dark-surface-400;
+    }
+  }
+
+  svg {
+    @include mixins.width-height(2.8rem, 2.8rem);
+    border-radius: constants.$border-radius-full;
+    overflow: hidden;
+    fill: constants.$dark-surface-50;
+    background-color: constants.$dark-surface-600;
+    padding: constants.$spacing-md;
+  }
+}
+
+.deleting {
+  @include mixins.transition($property: all, $duration: .5s, $timing-function: ease);
+  transform: translateY(-125%);
+  opacity: 0;
+}
