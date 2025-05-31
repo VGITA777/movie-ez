@@ -1,14 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  input,
-  InputSignal,
-  OnInit,
-  Signal,
-  signal,
-  viewChild,
-  WritableSignal
-} from '@angular/core';
+import {Component, ElementRef, inject, input, InputSignal, OnInit, signal, WritableSignal} from '@angular/core';
 
 @Component({
   selector: 'app-scroll-top',
@@ -21,7 +11,7 @@ export class ScrollTopComponent implements OnInit {
   readonly scrollThreshold: InputSignal<number> = input(100);
   readonly visible: WritableSignal<boolean> = signal(false);
   readonly deleting: WritableSignal<boolean> = signal(false);
-  private readonly elementRef: Signal<ElementRef<HTMLButtonElement>> = viewChild.required('button');
+  private readonly elementRef: ElementRef = inject(ElementRef);
 
   ngOnInit(): void {
     this.target().onscroll = () => {
@@ -45,7 +35,12 @@ export class ScrollTopComponent implements OnInit {
   }
 
   protected startDelete(): void {
-    const elementRef: HTMLButtonElement = this.elementRef().nativeElement;
+    const elementRef: HTMLButtonElement = this.elementRef.nativeElement.querySelector('button');
+
+    if (elementRef === null) {
+      return;
+    }
+
     elementRef.addEventListener('transitionend', () => this.hide(), {once: true});
     this.deleting.set(true);
   }
