@@ -14,6 +14,8 @@ export interface CacheManager<T> {
   values(): Promise<T[]>;
 
   keys(): Promise<any[]>;
+
+  reload(): Promise<void>;
 }
 
 export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCache> {
@@ -23,6 +25,10 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
     this._load();
   }
 
+  private get now(): number {
+    return Date.now();
+  }
+
   async clear(): Promise<void> {
     this.data.clear();
     localStorage.removeItem(this.namespace);
@@ -30,49 +36,48 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
   }
 
   async delete(key: string): Promise<void> {
-    await this.load();
+    await this.reload();
     this.data.delete(key);
     await this._save();
     return Promise.resolve();
   }
 
   async get(key: string): Promise<ExpirableSimpleCache | undefined> {
-    await this.load();
+    await this.reload();
     return this.data.get(key);
   }
 
   async has(key: string): Promise<boolean> {
-    await this.load();
+    await this.reload();
     return this.data.has(key);
   }
 
   async set(key: string, value: any, expiration: number): Promise<ExpirableSimpleCache> {
-    await this.load();
-    const now = Date.now();
+    await this.reload();
     const existingData: ExpirableSimpleCache | undefined = await this.get(key);
-    const data: ExpirableSimpleCache = existingData ? {...existingData, updatedAt: now} : {
+    const data: ExpirableSimpleCache = {
       key: key,
       value: value,
       expiration: expiration,
-      createdAt: now,
-      updatedAt: now
-    };
+      createdAt: existingData ? existingData.createdAt : this.now,
+      updatedAt: this.now
+    }
     this.data.set(key, data);
     await this._save();
     return data;
   }
 
   async keys(): Promise<string[]> {
-    await this.load();
+    await this.reload();
     return Array.from(this.data.keys());
   }
 
   async values(): Promise<ExpirableSimpleCache[]> {
-    await this.load();
+    await this.reload();
     return Array.from(this.data.values());
   }
 
-  async load(): Promise<void> {
+  async reload(): Promise<void> {
     this._load();
     return Promise.resolve();
   }
