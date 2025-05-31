@@ -1,4 +1,4 @@
-import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
+import {inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {Page} from '../../navigation-rail/utils/page';
 import {Location} from '@angular/common';
 
@@ -9,8 +9,9 @@ export class LocationListenerService {
 
   private readonly _currentLocation: WritableSignal<Page> = signal(Page.HOME);
   readonly currentLocation: Signal<Page> = this._currentLocation.asReadonly();
+  readonly location: Location = inject(Location);
 
-  constructor(readonly location: Location) {
+  constructor() {
     this.location.onUrlChange(this.onUrlChangeHandler.bind(this))
   }
 

@@ -1,4 +1,4 @@
-import {Component, OnInit, Signal} from '@angular/core';
+import {Component, inject, OnInit, Signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NavigationRailComponent} from './navigation-rail/navigation-rail.component';
 import {Toast} from 'primeng/toast';
@@ -19,13 +19,11 @@ import {ScrollTopComponent} from './shared/ui/scroll-top/scroll-top.component';
 export class AppComponent implements OnInit {
 
   toastSubscription!: Subscription;
-  readonly progress: Signal<number>;
-  readonly progressType: Signal<ProgressType>;
-
-  constructor(readonly messageService: MessageService, readonly toast: ToastService, readonly progressShower: ProgressShowerService) {
-    this.progress = this.progressShower.progress;
-    this.progressType = this.progressShower.progressType;
-  }
+  readonly messageService: MessageService = inject(MessageService);
+  readonly toast: ToastService = inject(ToastService);
+  readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
+  readonly progress: Signal<number> = this.progressShower.progress;
+  readonly progressType: Signal<ProgressType> = this.progressShower.progressType;
 
   ngOnInit() {
     this.toastSubscription = this.toast.message.subscribe((e) => {

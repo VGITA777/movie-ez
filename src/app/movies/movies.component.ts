@@ -1,4 +1,4 @@
-import {Component, OnInit, signal, WritableSignal} from '@angular/core';
+import {Component, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MoviesPlayingNow, PopularMovies, TopRatedMovies, UpcomingMovies} from 'tmdb-ts';
 import {take} from 'rxjs';
@@ -20,8 +20,8 @@ export class MoviesComponent implements OnInit {
   protected readonly topRatedMovies: WritableSignal<TopRatedMovies> = signal({} as TopRatedMovies);
   protected readonly upcomingMovies: WritableSignal<UpcomingMovies> = signal({} as UpcomingMovies);
 
-  constructor(readonly activatedRoute: ActivatedRoute, readonly progressShower: ProgressShowerService) {
-  }
+  readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   ngOnInit() {
     this.activatedRoute.data.pipe(take(1)).subscribe((data) => {

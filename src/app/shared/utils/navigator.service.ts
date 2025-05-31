@@ -1,12 +1,11 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {NavigationExtras, Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavigatorService {
-  constructor(readonly router: Router) {
-  }
+  readonly router: Router = inject(Router);
 
   navigateToHome(onNavigate?: () => void): void {
     this.navigate(['/'], undefined, onNavigate);
