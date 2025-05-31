@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, Signal} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, Signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NavigationRailComponent} from './navigation-rail/navigation-rail.component';
 import {Toast} from 'primeng/toast';
@@ -16,7 +16,7 @@ import {ScrollTopComponent} from './shared/ui/scroll-top/scroll-top.component';
   styleUrl: './app.component.scss',
   providers: [MessageService]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
   toastSubscription!: Subscription;
   readonly messageService: MessageService = inject(MessageService);
