@@ -1,4 +1,4 @@
-import {Component, signal, WritableSignal} from '@angular/core';
+import {Component, OnInit, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult} from 'tmdb-ts';
 import {take} from 'rxjs';
@@ -13,7 +13,7 @@ import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.compo
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   readonly discoverMovies: WritableSignal<MovieDiscoverResult | undefined> = signal(undefined);
   readonly discoverTvShows: WritableSignal<TvShowDiscoverResult | undefined> = signal(undefined);
   readonly popularMovies: WritableSignal<PopularMovies | undefined> = signal(undefined);
