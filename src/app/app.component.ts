@@ -21,7 +21,6 @@ export class AppComponent {
   toastSubscription!: Subscription;
   readonly progress: Signal<number>;
   readonly progressType: Signal<ProgressType>;
-  protected readonly parent = parent;
 
   constructor(readonly messageService: MessageService, readonly toast: ToastService, readonly progressShower: ProgressShowerService) {
     this.progress = this.progressShower.progress;
@@ -40,5 +39,7 @@ export class AppComponent {
   ngOnDestroy() {
     this.toastSubscription.unsubscribe();
   }
+
+  protected readonly parent = parent;
 }
 
