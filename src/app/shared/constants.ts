@@ -25,3 +25,12 @@ export const DISCOVER_TV_SHOWS_CACHE_KEY = 'discover-tv-shows';
 export const POPULAR_TV_SHOWS_NAMESPACE = 'popular-tv-shows';
 export const POPULAR_TV_SHOWS_CACHE_KEY = 'popular-tv-shows';
 
+export const AIRING_TODAY_TV_SHOWS_NAMESPACE = 'airing-today-tv-series';
+export const AIRING_TODAY_TV_SHOWS_CACHE_KEY = 'airing-today-tv-series';
+
+
+export const ON_THE_AIR_TV_SHOWS_NAMESPACE = 'on-the-air-tv-series';
+export const ON_THE_AIR_TV_SHOWS_CACHE_KEY = 'on-the-air-tv-series';
+
+export const TOP_RATED_TV_SHOWS_NAMESPACE = 'top-rated-tv-series';
+export const TOP_RATED_TV_SHOWS_CACHE_KEY = 'top-rated-tv-series';
