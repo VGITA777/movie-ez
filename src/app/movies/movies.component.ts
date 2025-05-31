@@ -1,4 +1,4 @@
-import {Component, signal, WritableSignal} from '@angular/core';
+import {Component, OnInit, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MoviesPlayingNow, PopularMovies, TopRatedMovies, UpcomingMovies} from 'tmdb-ts';
 import {take} from 'rxjs';
@@ -13,7 +13,7 @@ import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.compo
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.scss'
 })
-export class MoviesComponent {
+export class MoviesComponent implements OnInit {
 
   protected readonly popularMovies: WritableSignal<PopularMovies> = signal({} as PopularMovies);
   protected readonly nowPlayingMovies: WritableSignal<MoviesPlayingNow> = signal({} as MoviesPlayingNow);

@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   input,
@@ -26,7 +27,7 @@ import {ShineCardComponent} from '../shine-card/shine-card.component';
   templateUrl: './media-slider.component.html',
   styleUrl: './media-slider.component.scss',
 })
-export class MediaSliderComponent {
+export class MediaSliderComponent implements AfterViewInit {
 
   readonly title: InputSignal<string> = input.required();
   readonly subHeader: InputSignal<string> = input.required();

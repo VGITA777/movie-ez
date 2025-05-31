@@ -4,6 +4,7 @@ import {
   ElementRef,
   input,
   InputSignal,
+  OnInit,
   Signal,
   TemplateRef,
   viewChild
@@ -23,7 +24,7 @@ import {FreeMode, Pagination} from 'swiper/modules';
   styleUrl: './slider.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class SliderComponent {
+export class SliderComponent implements OnInit {
   defaultSwiperOptions!: SwiperOptions;
 
   readonly design: InputSignal<TemplateRef<unknown>> = input.required();

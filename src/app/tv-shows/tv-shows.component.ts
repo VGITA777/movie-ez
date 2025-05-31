@@ -1,4 +1,4 @@
-import {Component, inject, signal, WritableSignal} from '@angular/core';
+import {Component, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {take} from 'rxjs';
 import {OnTheAir, PopularTvShows, TopRatedTvShows, TvShowsAiringToday} from 'tmdb-ts';
@@ -10,7 +10,7 @@ import {ProgressShowerService} from '../shared/utils/progress-shower.service';
   templateUrl: './tv-shows.component.html',
   styleUrl: './tv-shows.component.scss'
 })
-export class TvShowsComponent {
+export class TvShowsComponent implements OnInit {
 
   public readonly airingTodayTvSeries: WritableSignal<TvShowsAiringToday> = signal({} as TvShowsAiringToday);
   public readonly onTheAirTvSeries: WritableSignal<OnTheAir> = signal({} as OnTheAir);

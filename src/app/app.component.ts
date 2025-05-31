@@ -1,4 +1,4 @@
-import {Component, Signal} from '@angular/core';
+import {Component, OnInit, Signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NavigationRailComponent} from './navigation-rail/navigation-rail.component';
 import {Toast} from 'primeng/toast';
@@ -16,7 +16,7 @@ import {ScrollTopComponent} from './shared/ui/scroll-top/scroll-top.component';
   styleUrl: './app.component.scss',
   providers: [MessageService]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   toastSubscription!: Subscription;
   readonly progress: Signal<number>;
@@ -39,7 +39,4 @@ export class AppComponent {
   ngOnDestroy() {
     this.toastSubscription.unsubscribe();
   }
-
-  protected readonly parent = parent;
 }
-
