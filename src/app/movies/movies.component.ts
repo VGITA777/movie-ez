@@ -15,10 +15,10 @@ import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.compo
 })
 export class MoviesComponent {
 
-  protected readonly popularMovies: WritableSignal<PopularMovies | undefined> = signal(undefined);
-  protected readonly nowPlayingMovies: WritableSignal<MoviesPlayingNow | undefined> = signal(undefined);
-  protected readonly topRatedMovies: WritableSignal<TopRatedMovies | undefined> = signal(undefined);
-  protected readonly upcomingMovies: WritableSignal<UpcomingMovies | undefined> = signal(undefined);
+  protected readonly popularMovies: WritableSignal<PopularMovies> = signal({} as PopularMovies);
+  protected readonly nowPlayingMovies: WritableSignal<MoviesPlayingNow> = signal({} as MoviesPlayingNow);
+  protected readonly topRatedMovies: WritableSignal<TopRatedMovies> = signal({} as TopRatedMovies);
+  protected readonly upcomingMovies: WritableSignal<UpcomingMovies> = signal({} as UpcomingMovies);
 
   constructor(readonly activatedRoute: ActivatedRoute, readonly progressShower: ProgressShowerService) {
   }

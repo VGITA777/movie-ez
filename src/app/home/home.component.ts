@@ -14,10 +14,10 @@ import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.compo
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  readonly discoverMovies: WritableSignal<MovieDiscoverResult | undefined> = signal(undefined);
-  readonly discoverTvShows: WritableSignal<TvShowDiscoverResult | undefined> = signal(undefined);
-  readonly popularMovies: WritableSignal<PopularMovies | undefined> = signal(undefined);
-  readonly popularTvShows: WritableSignal<PopularTvShows | undefined> = signal(undefined);
+  readonly discoverMovies: WritableSignal<MovieDiscoverResult> = signal({} as MovieDiscoverResult);
+  readonly discoverTvShows: WritableSignal<TvShowDiscoverResult> = signal({} as TvShowDiscoverResult);
+  readonly popularMovies: WritableSignal<PopularMovies> = signal({} as PopularMovies);
+  readonly popularTvShows: WritableSignal<PopularTvShows> = signal({} as PopularTvShows);
 
   constructor(readonly activatedRoute: ActivatedRoute, readonly progressShower: ProgressShowerService) {
   }
