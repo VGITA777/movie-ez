@@ -39,5 +39,7 @@ export class AppComponent {
   ngOnDestroy() {
     this.toastSubscription.unsubscribe();
   }
+
+  protected readonly parent = parent;
 }
 
