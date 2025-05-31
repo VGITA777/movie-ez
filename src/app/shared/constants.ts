@@ -6,8 +6,8 @@ export const MOVIES_CACHE_NAMESPACE = 'movies-cache';
 export const DISCOVER_MOVIES_NAMESPACE = 'discover-movies';
 export const DISCOVER_MOVIES_CACHE_KEY = 'discover-movies';
 
-export const LATEST_MOVIES_NAMESPACE = 'latest-movies';
-export const LATEST_MOVIES_CACHE_KEY = 'latest-movies';
+export const UPCOMING_MOVIES_NAMESPACE = 'upcoming-movies';
+export const UPCOMING_MOVIES_CACHE_KEY = 'upcoming-movies';
 
 export const POPULAR_MOVIES_NAMESPACE = 'popular-movies';
 export const POPULAR_MOVIES_CACHE_KEY = 'popular-movies';
