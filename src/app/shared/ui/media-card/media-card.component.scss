@@ -23,6 +23,7 @@
 
     .info-container {
       @include mixins.flex($direction: column, $gap: constants.$spacing-s);
+      text-align: left;
       width: 100%;
 
       .title {
