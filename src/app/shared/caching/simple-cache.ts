@@ -1,11 +1,11 @@
-export interface SimpleCache {
+export interface SimpleCache<T> {
   key: string;
-  value: any;
+  value: T;
   expiration?: number;
   createdAt?: number;
   updatedAt?: number;
 }
 
-export interface ExpirableSimpleCache extends SimpleCache {
+export interface ExpirableSimpleCache<T> extends SimpleCache<T> {
   expiration: number;
 }

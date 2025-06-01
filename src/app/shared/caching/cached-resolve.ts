@@ -5,7 +5,7 @@ import {ONE_DAY_MILLIS} from '../constants';
 import {CacheManager} from './cache-manager';
 import {SimpleCache} from './simple-cache';
 
-export abstract class CachedResolve<T, C extends SimpleCache> implements Resolve<T> {
+export abstract class CachedResolve<T, C extends SimpleCache<T>> implements Resolve<T> {
   protected constructor(private readonly cacheManager: CacheManager<C>, private readonly key: string) {
   }
 

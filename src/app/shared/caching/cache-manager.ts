@@ -1,6 +1,6 @@
-import {ExpirableSimpleCache} from "./simple-cache";
+import {ExpirableSimpleCache, SimpleCache} from "./simple-cache";
 
-export interface CacheManager<T> {
+export interface CacheManager<T extends SimpleCache<any>> {
   get(key: string): Promise<T | undefined>;
 
   set(key: string, value: any, expiration: number): Promise<T>;
@@ -18,8 +18,8 @@ export interface CacheManager<T> {
   reload(): Promise<void>;
 }
 
-export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCache> {
-  private data: Map<string, ExpirableSimpleCache> = new Map<string, ExpirableSimpleCache>();
+export class LocalStorageCacheManager<T> implements CacheManager<ExpirableSimpleCache<T>> {
+  private data: Map<string, ExpirableSimpleCache<T>> = new Map<string, ExpirableSimpleCache<T>>();
 
   constructor(private readonly namespace: string) {
     this._load();
@@ -42,7 +42,7 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
     return Promise.resolve();
   }
 
-  async get(key: string): Promise<ExpirableSimpleCache | undefined> {
+  async get(key: string): Promise<ExpirableSimpleCache<T> | undefined> {
     await this.reload();
     return this.data.get(key);
   }
@@ -52,10 +52,10 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
     return this.data.has(key);
   }
 
-  async set(key: string, value: any, expiration: number): Promise<ExpirableSimpleCache> {
+  async set(key: string, value: any, expiration: number): Promise<ExpirableSimpleCache<T>> {
     await this.reload();
-    const existingData: ExpirableSimpleCache | undefined = await this.get(key);
-    const data: ExpirableSimpleCache = {
+    const existingData: ExpirableSimpleCache<T> | undefined = await this.get(key);
+    const data: ExpirableSimpleCache<T> = {
       key: key,
       value: value,
       expiration: expiration,
@@ -72,7 +72,7 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
     return Array.from(this.data.keys());
   }
 
-  async values(): Promise<ExpirableSimpleCache[]> {
+  async values(): Promise<ExpirableSimpleCache<T>[]> {
     await this.reload();
     return Array.from(this.data.values());
   }
@@ -84,7 +84,7 @@ export class LocalStorageCacheManager implements CacheManager<ExpirableSimpleCac
 
   private _load(): void {
     try {
-      JSON.parse(localStorage.getItem(this.namespace) ?? '[]').forEach((d: ExpirableSimpleCache) => this.data.set(d.key, d));
+      JSON.parse(localStorage.getItem(this.namespace) ?? '[]').forEach((d: ExpirableSimpleCache<T>) => this.data.set(d.key, d));
     } catch (e) {
       localStorage.setItem(this.namespace, '[]');
     }

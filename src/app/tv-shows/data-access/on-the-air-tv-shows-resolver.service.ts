@@ -11,12 +11,12 @@ import {ON_THE_AIR_TV_SHOWS_CACHE_KEY, ON_THE_AIR_TV_SHOWS_NAMESPACE} from '../.
 @Injectable({
   providedIn: 'root'
 })
-export class OnTheAirTvShowsResolverService extends CachedResolve<OnTheAir, ExpirableSimpleCache> {
+export class OnTheAirTvShowsResolverService extends CachedResolve<OnTheAir, ExpirableSimpleCache<OnTheAir>> {
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage = new LocalStorageCacheManager(ON_THE_AIR_TV_SHOWS_NAMESPACE);
+    const localStorage: LocalStorageCacheManager<OnTheAir> = new LocalStorageCacheManager(ON_THE_AIR_TV_SHOWS_NAMESPACE);
     super(localStorage, ON_THE_AIR_TV_SHOWS_CACHE_KEY);
   }
 

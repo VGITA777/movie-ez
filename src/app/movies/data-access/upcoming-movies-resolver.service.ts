@@ -11,13 +11,13 @@ import {LocalStorageCacheManager} from '../../shared/caching/cache-manager';
 @Injectable({
   providedIn: 'root'
 })
-export class UpcomingMoviesResolverService extends CachedResolve<UpcomingMovies, ExpirableSimpleCache> {
+export class UpcomingMoviesResolverService extends CachedResolve<UpcomingMovies, ExpirableSimpleCache<UpcomingMovies>> {
 
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage = new LocalStorageCacheManager(UPCOMING_MOVIES_NAMESPACE);
+    const localStorage: LocalStorageCacheManager<UpcomingMovies> = new LocalStorageCacheManager(UPCOMING_MOVIES_NAMESPACE);
     super(localStorage, UPCOMING_MOVIES_CACHE_KEY);
   }
 

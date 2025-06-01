@@ -11,13 +11,13 @@ import {CachedResolve} from '../../shared/caching/cached-resolve';
 @Injectable({
   providedIn: 'root'
 })
-export class TopRatedMoviesResolverService extends CachedResolve<TopRatedMovies, ExpirableSimpleCache> {
+export class TopRatedMoviesResolverService extends CachedResolve<TopRatedMovies, ExpirableSimpleCache<TopRatedMovies>> {
 
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage: CacheManager<ExpirableSimpleCache> = new LocalStorageCacheManager(TOP_RATED_MOVIES_NAMESPACE);
+    const localStorage: CacheManager<ExpirableSimpleCache<TopRatedMovies>> = new LocalStorageCacheManager(TOP_RATED_MOVIES_NAMESPACE);
     super(localStorage, TOP_RATED_MOVIES_CACHE_KEY);
   }
 

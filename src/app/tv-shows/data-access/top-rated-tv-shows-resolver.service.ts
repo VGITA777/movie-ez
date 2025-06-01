@@ -11,12 +11,12 @@ import {TOP_RATED_TV_SHOWS_CACHE_KEY, TOP_RATED_TV_SHOWS_NAMESPACE} from '../../
 @Injectable({
   providedIn: 'root'
 })
-export class TopRatedTvShowsResolverService extends CachedResolve<TopRatedTvShows, ExpirableSimpleCache> {
+export class TopRatedTvShowsResolverService extends CachedResolve<TopRatedTvShows, ExpirableSimpleCache<TopRatedTvShows>> {
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage = new LocalStorageCacheManager(TOP_RATED_TV_SHOWS_NAMESPACE);
+    const localStorage: LocalStorageCacheManager<TopRatedTvShows> = new LocalStorageCacheManager(TOP_RATED_TV_SHOWS_NAMESPACE);
     super(localStorage, TOP_RATED_TV_SHOWS_CACHE_KEY);
   }
 

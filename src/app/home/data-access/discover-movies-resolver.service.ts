@@ -11,13 +11,13 @@ import {CachedResolve} from '../../shared/caching/cached-resolve';
 @Injectable({
   providedIn: 'root'
 })
-export class DiscoverMoviesResolverService extends CachedResolve<MovieDiscoverResult, ExpirableSimpleCache> {
+export class DiscoverMoviesResolverService extends CachedResolve<MovieDiscoverResult, ExpirableSimpleCache<MovieDiscoverResult>> {
 
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage = new LocalStorageCacheManager(DISCOVER_MOVIES_NAMESPACE);
+    const localStorage: LocalStorageCacheManager<MovieDiscoverResult> = new LocalStorageCacheManager(DISCOVER_MOVIES_NAMESPACE);
     super(localStorage, DISCOVER_MOVIES_CACHE_KEY);
   }
 

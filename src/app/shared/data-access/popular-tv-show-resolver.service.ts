@@ -11,12 +11,12 @@ import {POPULAR_TV_SHOWS_CACHE_KEY, POPULAR_TV_SHOWS_NAMESPACE} from '../constan
 @Injectable({
   providedIn: 'root'
 })
-export class PopularTvShowResolverService extends CachedResolve<PopularTvShows, ExpirableSimpleCache> {
+export class PopularTvShowResolverService extends CachedResolve<PopularTvShows, ExpirableSimpleCache<PopularTvShows>> {
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage: CacheManager<ExpirableSimpleCache> = new LocalStorageCacheManager(POPULAR_TV_SHOWS_NAMESPACE);
+    const localStorage: CacheManager<ExpirableSimpleCache<PopularTvShows>> = new LocalStorageCacheManager(POPULAR_TV_SHOWS_NAMESPACE);
     super(localStorage, POPULAR_TV_SHOWS_CACHE_KEY);
   }
 

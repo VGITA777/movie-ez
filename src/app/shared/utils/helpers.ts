@@ -2,7 +2,7 @@ import {from, mergeMap, of, take, tap} from 'rxjs';
 import {CacheManager} from '../caching/cache-manager';
 import {SimpleCache} from '../caching/simple-cache';
 
-export function getOrFetchAndCache<T, C extends SimpleCache>(
+export function getOrFetchAndCache<T, C extends SimpleCache<T>>(
   cacheManager: CacheManager<C>,
   cacheKey: string,
   fetchFn: () => Promise<T>,

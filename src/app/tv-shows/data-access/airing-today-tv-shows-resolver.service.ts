@@ -11,12 +11,12 @@ import {AIRING_TODAY_TV_SHOWS_CACHE_KEY, AIRING_TODAY_TV_SHOWS_NAMESPACE} from '
 @Injectable({
   providedIn: 'root'
 })
-export class AiringTodayTvShowsResolverService extends CachedResolve<TvShowsAiringToday, ExpirableSimpleCache> {
+export class AiringTodayTvShowsResolverService extends CachedResolve<TvShowsAiringToday, ExpirableSimpleCache<TvShowsAiringToday>> {
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage = new LocalStorageCacheManager(AIRING_TODAY_TV_SHOWS_NAMESPACE);
+    const localStorage: LocalStorageCacheManager<TvShowsAiringToday> = new LocalStorageCacheManager(AIRING_TODAY_TV_SHOWS_NAMESPACE);
     super(localStorage, AIRING_TODAY_TV_SHOWS_CACHE_KEY);
   }
 

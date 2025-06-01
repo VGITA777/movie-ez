@@ -11,13 +11,13 @@ import {DISCOVER_TV_SHOWS_CACHE_KEY, DISCOVER_TV_SHOWS_NAMESPACE} from '../../sh
 @Injectable({
   providedIn: 'root'
 })
-export class DiscoverTvShowResolverService extends CachedResolve<TvShowDiscoverResult, ExpirableSimpleCache> {
+export class DiscoverTvShowResolverService extends CachedResolve<TvShowDiscoverResult, ExpirableSimpleCache<TvShowDiscoverResult>> {
 
   private readonly tmdb: TmdbService = inject(TmdbService);
   private readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
 
   constructor() {
-    const localStorage = new LocalStorageCacheManager(DISCOVER_TV_SHOWS_NAMESPACE);
+    const localStorage: LocalStorageCacheManager<TvShowDiscoverResult> = new LocalStorageCacheManager(DISCOVER_TV_SHOWS_NAMESPACE);
     super(localStorage, DISCOVER_TV_SHOWS_CACHE_KEY);
   }
 
