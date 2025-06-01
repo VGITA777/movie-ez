@@ -16,6 +16,7 @@ import {SliderComponent} from '../slider/slider.component';
 import {SwiperModule, SwiperOptions} from 'swiper/types';
 import {Navigation} from 'swiper/modules';
 import {ShineCardComponent} from '../shine-card/shine-card.component';
+import {MediaType} from 'tmdb-ts';
 
 @Component({
   selector: 'app-media-slider',
@@ -32,7 +33,7 @@ export class MediaSliderComponent implements AfterViewInit {
   readonly title: InputSignal<string> = input.required();
   readonly subHeader: InputSignal<string> = input.required();
   readonly data: InputSignal<MediaLike[]> = input.required();
-  readonly mediaType: InputSignal<string> = input.required();
+  readonly mediaType: InputSignal<MediaType> = input.required();
   readonly customDesign: InputSignal<TemplateRef<any> | undefined> = input();
   readonly onCardClick: OutputEmitterRef<MediaLike> = output();
 
