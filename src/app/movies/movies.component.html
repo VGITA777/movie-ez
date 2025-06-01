@@ -1,17 +1,17 @@
 <div class="container">
-  <app-media-slider [data]="this.popularMovies().results" [mediaType]="'Movie'"
+  <app-media-slider [data]="this.popularMovies().results" mediaType="movie"
                     subHeader="Check out the latest popular movies"
                     title="Popular Movies"/>
 
-  <app-media-slider [data]="this.nowPlayingMovies().results" [mediaType]="'Movie'"
+  <app-media-slider [data]="this.nowPlayingMovies().results" mediaType="movie"
                     subHeader="Check out movies playing in theaters now"
                     title="Now Playing"/>
 
-  <app-media-slider [data]="this.topRatedMovies().results" [mediaType]="'Movie'"
+  <app-media-slider [data]="this.topRatedMovies().results" mediaType="movie"
                     subHeader="Explore new and exciting movies"
                     title="Discover Movies"/>
 
-  <app-media-slider [data]="this.upcomingMovies().results" [mediaType]="'Movie'"
+  <app-media-slider [data]="this.upcomingMovies().results" mediaType="movie"
                     subHeader="Explore upcoming movies"
                     title="Upcoming Movies"/>
 </div>

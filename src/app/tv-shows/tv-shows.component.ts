@@ -3,10 +3,13 @@ import {ActivatedRoute} from '@angular/router';
 import {take} from 'rxjs';
 import {OnTheAir, PopularTvShows, TopRatedTvShows, TvShowsAiringToday} from 'tmdb-ts';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
+import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
 
 @Component({
   selector: 'app-tv-shows',
-  imports: [],
+  imports: [
+    MediaSliderComponent
+  ],
   templateUrl: './tv-shows.component.html',
   styleUrl: './tv-shows.component.scss'
 })
