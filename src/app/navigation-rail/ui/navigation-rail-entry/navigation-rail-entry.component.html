@@ -1,4 +1,4 @@
-<div (click)="onClickHandler()" [ngClass]="{ 'selected': active() }" class="container">
+<button (click)="onClickHandler()" [ngClass]="{ 'selected': active() }" class="container">
   <div class="icon">
     @if (active()) {
       <ng-content select="[iconActive]"></ng-content>
@@ -9,4 +9,4 @@
   <div class="content">
     <ng-content select="[content]"></ng-content>
   </div>
-</div>
+</button>

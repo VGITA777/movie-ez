@@ -5,6 +5,9 @@
 .container {
   @include mixins.flex();
   @include mixins.transition($property: background-color);
+  width: 100%;
+  background-color: transparent;
+  border: none;
 
   border-radius: constants.$border-radius-md;
   padding: .8em 1em;
