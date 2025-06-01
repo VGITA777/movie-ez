@@ -1,0 +1,6 @@
+@use '../../foundations/mixins';
+
+.container {
+  @include mixins.width-height($height: auto);
+  @include mixins.flex($direction: column, $gap: 3em);
+}
