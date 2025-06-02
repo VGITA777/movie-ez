@@ -27,7 +27,10 @@ export class IconInputFieldComponent {
   readonly text: ModelSignal<string> = model('');
   readonly placeHolder: InputSignal<string> = input('');
   readonly debounceTimeMillis: InputSignal<number> = input(750);
+
   readonly debouncedText: OutputEmitterRef<string> = output();
+  readonly onRightIconClick: OutputEmitterRef<void> = output();
+  readonly onLeftIconClick: OutputEmitterRef<void> = output();
 
   private readonly debouncedTextSignal: Signal<string>;
 
@@ -40,5 +43,13 @@ export class IconInputFieldComponent {
     effect(() => {
       this.debouncedText.emit(this.debouncedTextSignal());
     });
+  }
+
+  protected handleRightIconClick(): void {
+    this.onRightIconClick.emit();
+  }
+
+  protected handleLeftIconClick(): void {
+    this.onLeftIconClick.emit();
   }
 }
