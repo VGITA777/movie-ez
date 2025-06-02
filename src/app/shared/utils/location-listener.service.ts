@@ -7,9 +7,9 @@ import {Location} from '@angular/common';
 })
 export class LocationListenerService {
 
+  readonly location: Location = inject(Location);
   private readonly _currentLocation: WritableSignal<Page> = signal(Page.HOME);
   readonly currentLocation: Signal<Page> = this._currentLocation.asReadonly();
-  readonly location: Location = inject(Location);
 
   constructor() {
     this.location.onUrlChange(this.onUrlChangeHandler.bind(this))
