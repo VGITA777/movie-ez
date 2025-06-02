@@ -1,5 +1,6 @@
 @use '../../foundations/constants';
 @use '../../foundations/mixins';
+@use '../../foundations/responsive';
 
 .container {
   @include mixins.width-height($height: 100%);
@@ -14,5 +15,47 @@
     @include mixins.border-radius(constants.$border-radius-lg);
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
+
+    .result-cards {
+      @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)), $gap: constants.$spacing-md);
+
+      app-shine-card {
+        @include mixins.width-height();
+
+        app-media-card {
+          @include mixins.width-height();
+        }
+      }
+    }
+  }
+}
+
+@include responsive.laptop {
+  .container {
+    .search-results {
+      .result-cards {
+        @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)), $gap: constants.$spacing-md);
+      }
+    }
+  }
+}
+
+@include responsive.tablet {
+  .container {
+    .search-results {
+      .result-cards {
+        @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)), $gap: constants.$spacing-s);
+      }
+    }
+  }
+}
+
+@include responsive.mobile-large {
+  .container {
+    .search-results {
+      .result-cards {
+        @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)), $gap: constants.$spacing-s);
+      }
+    }
   }
 }
