@@ -1,4 +1,5 @@
-<div class="container">
+<div #scrollToTarget class="container">
+  <app-scroll-top [target]="scrollToTarget"/>
   <app-media-slider [data]="this.popularMovies().results" mediaType="movie"
                     subHeader="Check out the latest popular movies"
                     title="Popular Movies"/>

@@ -48,7 +48,7 @@
             <app-shine-card [initShine]="false" [padding]="'8px'"
                             [backgroundColor]="{red: 15, green: 15, blue: 15, opacity: 1}" [borderOpacity]="1">
               <app-media-card [title]="card?.title ?? card?.name ?? 'Unknown'" [mediaType]="card?.media_type"
-                              [poster]="`${environment.imageBaseUrl}original/${card?.poster_path ?? card?.backdrop_path ?? card?.profile_path}`"
+                              [poster]="`${environment.imageBaseUrl}w500/${card?.poster_path ?? card?.backdrop_path ?? card?.profile_path}`"
                               [date]="card?.release_date ?? card?.first_air_date ?? 'N/A'"/>
             </app-shine-card>
           }

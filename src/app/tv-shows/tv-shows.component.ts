@@ -4,11 +4,13 @@ import {take} from 'rxjs';
 import {OnTheAir, PopularTvShows, TopRatedTvShows, TvShowsAiringToday} from 'tmdb-ts';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
+import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
 
 @Component({
   selector: 'app-tv-shows',
   imports: [
-    MediaSliderComponent
+    MediaSliderComponent,
+    ScrollTopComponent
   ],
   templateUrl: './tv-shows.component.html',
   styleUrl: './tv-shows.component.scss'

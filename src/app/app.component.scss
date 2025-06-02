@@ -19,8 +19,7 @@
   main {
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
 
     ::ng-deep > :last-child {
       @include mixins.width-height();

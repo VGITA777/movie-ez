@@ -23,6 +23,8 @@ import {Skeleton} from 'primeng/skeleton';
 export class SearchComponent {
   readonly searchText: ModelSignal<string> = model('');
   readonly debouncedSearchText: WritableSignal<string> = signal('');
+  protected readonly environment = environment;
+  private readonly tmdb: TmdbService = inject(TmdbService);
   readonly searchResults: ResourceRef<Search<any>> = resource({
     defaultValue: {} as Search<MultiSearchResult>,
     params: () => {
@@ -34,9 +36,6 @@ export class SearchComponent {
       query: resource.params.query
     })
   })
-
-  protected readonly environment = environment;
-  private readonly tmdb: TmdbService = inject(TmdbService);
 
   search(event: string) {
     this.debouncedSearchText.set(event);

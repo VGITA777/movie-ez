@@ -4,11 +4,13 @@ import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult
 import {take} from 'rxjs';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
+import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
 
 @Component({
   selector: 'app-home',
   imports: [
-    MediaSliderComponent
+    MediaSliderComponent,
+    ScrollTopComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'

@@ -3,9 +3,8 @@
 @use '../../foundations/responsive';
 
 .container {
-  @include mixins.width-height($height: 100%);
+  @include mixins.width-height();
   @include mixins.grid($grid-template-rows: auto 1fr, $gap: constants.$spacing-md);
-
 
   .message-container {
     text-align: center;

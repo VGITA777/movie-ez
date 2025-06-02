@@ -1,5 +1,5 @@
-<div class="container">
-
+<div #scrollToTarget class="container">
+  <app-scroll-top [target]="scrollToTarget"/>
   <app-media-slider [data]="this.airingTodayTvSeries().results" mediaType="tv"
                     subHeader="New episodes airing today"
                     title="Airing Series"/>
