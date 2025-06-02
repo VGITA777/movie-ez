@@ -1,0 +1,11 @@
+<div class="input-container">
+  <div appButtonRole class="icon-wrapper">
+    <ng-content select="[icon]"></ng-content>
+  </div>
+  <div class="input-wrapper">
+    <input [(ngModel)]="text" [placeholder]="placeHolder()" type="text"/>
+  </div>
+  <div appButtonRole class="icon-wrapper">
+    <ng-content select="[right-icon]"></ng-content>
+  </div>
+</div>
