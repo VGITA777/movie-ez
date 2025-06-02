@@ -1,7 +1,8 @@
 <div class="container">
   <section class="search-wrapper">
     <app-shine-card>
-      <app-icon-input-field (debouncedText)="search($event)" [(text)]="searchText" placeHolder="Search...">
+      <app-icon-input-field (debouncedText)="search($event)" (onRightIconClick)="handleClearSearchText()"
+                            [(text)]="searchText" placeHolder="Search...">
         <svg icon viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
@@ -13,15 +14,46 @@
     </app-shine-card>
   </section>
   <section class="search-results">
-    <div appShineCardGroup class="result-cards">
-      @for (card of searchResults.value().results; track card.id) {
-        <app-shine-card [initShine]="false" [padding]="'8px'"
-                        [backgroundColor]="{red: 15, green: 15, blue: 15, opacity: 1}" [borderOpacity]="1">
-          <app-media-card [title]="card?.title ?? card?.name ?? 'Unknown'" [mediaType]="card?.media_type"
-                          [poster]="`${environment.imageBaseUrl}original/${card?.poster_path ?? card?.backdrop_path ?? card?.profile_path}`"
-                          [date]="card?.release_date ?? card?.first_air_date ?? 'N/A'"/>
-        </app-shine-card>
-      }
-    </div>
+    @let searchResults = this.searchResults.value().results;
+    @let hasResult = this.searchResults.value().total_results > 0;
+    @let isTyping = this.searchText().length > 0;
+    @let isLoading = this.searchResults.isLoading();
+
+    @if (!isTyping && !isLoading) {
+      <!-- FOR STARTING MESSAGE -->
+      <div class="message-container">
+        @let noSearchText = "Start searching for anything!";
+        @for (char of noSearchText; track char; let i = $index) {
+          <span [style.width]="(char === ' ') ? '.4rem' : 'auto'" [style.--delay]="i"
+                [style.--text-size]="noSearchText.length">{{ char }}</span>
+        }
+      </div>
+    } @else if (!hasResult && isTyping && !isLoading) {
+      <div class="message-container">
+        <!-- FOR NO RESULTS MESSAGE -->
+        @let noResultText = "No Results.";
+        @for (char of noResultText; track char; let i = $index) {
+          <span [style.width]="(char === ' ') ? '.4rem' : 'auto'" [style.--delay]="i"
+                [style.--text-size]="noResultText.length">{{ char }}</span>
+        }
+      </div>
+    } @else {
+      <div appShineCardGroup class="result-cards">
+        @if (isLoading && isTyping) {
+          @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; track i) {
+            <p-skeleton [style]="{ 'aspect-ratio': '2 / 3' }" height="auto" width="100%"/>
+          }
+        } @else if (hasResult && isTyping) {
+          @for (card of searchResults; track card.id) {
+            <app-shine-card [initShine]="false" [padding]="'8px'"
+                            [backgroundColor]="{red: 15, green: 15, blue: 15, opacity: 1}" [borderOpacity]="1">
+              <app-media-card [title]="card?.title ?? card?.name ?? 'Unknown'" [mediaType]="card?.media_type"
+                              [poster]="`${environment.imageBaseUrl}original/${card?.poster_path ?? card?.backdrop_path ?? card?.profile_path}`"
+                              [date]="card?.release_date ?? card?.first_air_date ?? 'N/A'"/>
+            </app-shine-card>
+          }
+        }
+      </div>
+    }
   </section>
 </div>

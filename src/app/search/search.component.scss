@@ -6,6 +6,18 @@
   @include mixins.width-height($height: 100%);
   @include mixins.grid($grid-template-rows: auto 1fr, $gap: constants.$spacing-md);
 
+
+  .message-container {
+    text-align: center;
+
+    span {
+      display: inline-block;
+      animation: fade-animation calc(var(--text-size) * 0.1s) ease infinite alternate;
+      will-change: opacity, scale;
+      animation-delay: calc(var(--delay) * 0.1s);
+    }
+  }
+
   svg {
     @include mixins.one-by-one(1.5rem);
     fill: constants.$dark-surface-200;
@@ -13,14 +25,23 @@
 
   .search-results {
     @include mixins.border-radius(constants.$border-radius-lg);
+    @include mixins.flex($justify-content: center, $align-items: center);
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
 
+    span {
+      letter-spacing: .2em;
+      font-size: 1.3rem;
+      font-weight: 200;
+    }
+
     .result-cards {
-      @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)), $gap: constants.$spacing-md);
+      @include mixins.width-height();
+      @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)), $gap: constants.$spacing-md);
+      position: relative;
 
       app-shine-card {
-        @include mixins.width-height();
+        @include mixins.width-height($height: fit-content);
 
         app-media-card {
           @include mixins.width-height();
@@ -30,11 +51,22 @@
   }
 }
 
+@keyframes fade-animation {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: .3;
+    transform: scale(0.85);
+  }
+}
+
 @include responsive.laptop {
   .container {
     .search-results {
       .result-cards {
-        @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)), $gap: constants.$spacing-md);
+        @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)), $gap: constants.$spacing-md);
       }
     }
   }

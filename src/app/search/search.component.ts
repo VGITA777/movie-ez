@@ -6,6 +6,7 @@ import {MultiSearchResult, Search} from 'tmdb-ts';
 import {MediaCardComponent} from '../shared/ui/media-card/media-card.component';
 import {environment} from '../../environments/environment';
 import {ShineCardGroupDirective} from '../shared/directives/shine-card-group.directive';
+import {Skeleton} from 'primeng/skeleton';
 
 @Component({
   selector: 'app-search',
@@ -13,7 +14,8 @@ import {ShineCardGroupDirective} from '../shared/directives/shine-card-group.dir
     IconInputFieldComponent,
     ShineCardComponent,
     MediaCardComponent,
-    ShineCardGroupDirective
+    ShineCardGroupDirective,
+    Skeleton
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
@@ -21,7 +23,6 @@ import {ShineCardGroupDirective} from '../shared/directives/shine-card-group.dir
 export class SearchComponent {
   readonly searchText: ModelSignal<string> = model('');
   readonly debouncedSearchText: WritableSignal<string> = signal('');
-  private readonly tmdb: TmdbService = inject(TmdbService);
   readonly searchResults: ResourceRef<Search<any>> = resource({
     defaultValue: {} as Search<MultiSearchResult>,
     params: () => {
@@ -34,9 +35,14 @@ export class SearchComponent {
     })
   })
 
+  protected readonly environment = environment;
+  private readonly tmdb: TmdbService = inject(TmdbService);
+
   search(event: string) {
     this.debouncedSearchText.set(event);
   }
 
-  protected readonly environment = environment;
+  protected handleClearSearchText() {
+    this.searchText.set('');
+  }
 }
