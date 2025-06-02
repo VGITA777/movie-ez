@@ -1,6 +1,9 @@
 @use '../../foundations/mixins';
+@use '../../foundations/constants';
 
 .container {
   @include mixins.width-height($height: auto);
   @include mixins.flex($direction: column, $gap: 3em);
+  background-color: constants.$dark-surface-800;
+  padding: constants.$spacing-md;
 }
