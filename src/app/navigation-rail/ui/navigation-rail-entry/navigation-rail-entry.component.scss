@@ -3,7 +3,7 @@
 @use '../../../../foundations/responsive';
 
 .container {
-  @include mixins.flex();
+  @include mixins.flex($align-items: center);
   @include mixins.transition($property: background-color);
   width: 100%;
   background-color: transparent;
