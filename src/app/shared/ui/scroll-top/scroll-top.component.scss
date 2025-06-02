@@ -1,18 +1,17 @@
 @use '../../../../foundations/mixins';
 @use '../../../../foundations/constants';
 
-
 :host {
-  position: sticky;
-  top: 0;
+  position: absolute;
+  top: constants.$spacing-lg;
   left: 50%;
   z-index: 1000;
+  width: fit-content;
+  transform: translateX(-50%);
 }
-
 
 button {
   @include mixins.transition($property: all, $duration: .5s, $timing-function: ease);
-  position: absolute;
   background-color: transparent;
   border: none;
 
