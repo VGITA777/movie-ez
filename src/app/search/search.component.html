@@ -14,12 +14,8 @@
     </app-shine-card>
   </section>
   <section class="search-results">
-    @let searchResults = this.searchResults.value().results;
-    @let hasResult = this.searchResults.value().total_results > 0;
-    @let isTyping = this.searchText().length > 0;
-    @let isLoading = this.searchResults.isLoading();
 
-    @if (!isTyping && !isLoading) {
+    @if (!isLoading() && !hasSearched()) {
       <!-- FOR STARTING MESSAGE -->
       <div class="message-container">
         @let noSearchText = "Start searching for anything!";
@@ -28,7 +24,7 @@
                 [style.--text-size]="noSearchText.length">{{ char }}</span>
         }
       </div>
-    } @else if (!hasResult && isTyping && !isLoading) {
+    } @else if (!isLoading() && !hasResults()) {
       <div class="message-container">
         <!-- FOR NO RESULTS MESSAGE -->
         @let noResultText = "No Results.";
@@ -39,12 +35,14 @@
       </div>
     } @else {
       <div appShineCardGroup class="result-cards">
-        @if (isLoading && isTyping) {
+        @if (isLoading()) {
+          <!-- FOR LOADING -->
           @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; track i) {
             <p-skeleton [style]="{ 'aspect-ratio': '2 / 3' }" height="auto" width="100%"/>
           }
-        } @else if (hasResult && isTyping) {
-          @for (card of searchResults; track card.id) {
+        } @else if (hasResults()) {
+          <!-- FOR RESULTS -->
+          @for (card of searchResults.value().results; track card.id) {
             <app-shine-card [initShine]="false" [padding]="'8px'"
                             [backgroundColor]="{red: 15, green: 15, blue: 15, opacity: 1}" [borderOpacity]="1">
               <app-media-card [title]="card?.title ?? card?.name ?? 'Unknown'" [mediaType]="card?.media_type"

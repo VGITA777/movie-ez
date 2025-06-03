@@ -1,4 +1,15 @@
-import {Component, inject, model, ModelSignal, resource, ResourceRef, signal, WritableSignal} from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  model,
+  ModelSignal,
+  resource,
+  ResourceRef,
+  Signal,
+  signal,
+  WritableSignal
+} from '@angular/core';
 import {IconInputFieldComponent} from '../shared/ui/icon-input-field/icon-input-field.component';
 import {ShineCardComponent} from '../shared/ui/shine-card/shine-card.component';
 import {TmdbService} from '../shared/data-access/tmdb.service';
@@ -21,10 +32,11 @@ import {Skeleton} from 'primeng/skeleton';
   styleUrl: './search.component.scss'
 })
 export class SearchComponent {
+  readonly hasSearched: Signal<boolean> = computed(() => this.debouncedSearchText() !== '');
+  readonly isLoading: Signal<boolean> = computed(() => this.searchResults.isLoading());
+
   readonly searchText: ModelSignal<string> = model('');
   readonly debouncedSearchText: WritableSignal<string> = signal('');
-  protected readonly environment = environment;
-  private readonly tmdb: TmdbService = inject(TmdbService);
   readonly searchResults: ResourceRef<Search<any>> = resource({
     defaultValue: {} as Search<MultiSearchResult>,
     params: () => {
@@ -36,6 +48,9 @@ export class SearchComponent {
       query: resource.params.query
     })
   })
+  readonly hasResults: Signal<boolean> = computed(() => this.searchResults.value().total_results > 0 && !this.isLoading() && this.hasSearched());
+  protected readonly environment = environment;
+  private readonly tmdb: TmdbService = inject(TmdbService);
 
   search(event: string) {
     this.debouncedSearchText.set(event);
