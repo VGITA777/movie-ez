@@ -25,8 +25,10 @@
   .search-results {
     @include mixins.border-radius(constants.$border-radius-lg);
     @include mixins.flex($justify-content: center, $align-items: center);
+    @include mixins.hidden-scrollbar();
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
+    overflow: auto;
 
     span {
       letter-spacing: .2em;
