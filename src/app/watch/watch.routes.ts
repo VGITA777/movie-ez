@@ -11,7 +11,7 @@ export const WatchRoutes: Routes = [
     loadComponent: () => import('./features/watch-movie/watch-movie.component').then(m => m.WatchMovieComponent)
   },
   {
-    path: 'series/:id',
-    loadComponent: () => import('./features/watch-series/watch-series.component').then(m => m.WatchSeriesComponent)
+    path: 'tv/:id',
+    loadComponent: () => import('./features/watch-tv/watch-tv.component').then(m => m.WatchTvComponent)
   }
 ]

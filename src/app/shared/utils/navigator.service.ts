@@ -37,7 +37,7 @@ export class NavigatorService {
   }
 
   navigateToWatchSeries(id: number, extras?: NavigationExtras, onNavigate?: () => void): void {
-    this.navigate(['watch', 'series', id], extras, onNavigate);
+    this.navigate(['watch', 'tv', id], extras, onNavigate);
   }
 
   navigateToSettingsPlayer(extras?: NavigationExtras, onNavigate?: () => void): void {
