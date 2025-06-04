@@ -3,52 +3,31 @@ import {Routes} from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadChildren: async () => {
-      const m = await import('./home/home.routes');
-      return m.HomeRoutes;
-    }
+    loadChildren: () => import('./home/home.routes').then(m => m.HomeRoutes)
   },
   {
     path: 'watch',
-    loadChildren: async () => {
-      const m = await import('./watch/watch.routes');
-      return m.WatchRoutes;
-    }
+    loadChildren: () => import('./watch/watch.routes').then(m => m.WatchRoutes)
   },
   {
     path: 'search',
-    loadChildren: async () => {
-      const m = await import('./search/search.routes');
-      return m.SearchRoutes;
-    }
+    loadChildren: () => import('./search/search.routes').then(m => m.SearchRoutes)
   },
   {
     path: 'movies',
-    loadChildren: async () => {
-      const m = await import('./movies/movies.routes');
-      return m.MoviesRoutes;
-    }
+    loadChildren: () => import('./movies/movies.routes').then(m => m.MoviesRoutes)
   },
   {
     path: 'tv-shows',
-    loadChildren: async () => {
-      const m = await import('./tv-shows/tv-shows.routes');
-      return m.TvShowsRoutes;
-    }
+    loadChildren: () => import('./tv-shows/tv-shows.routes').then(m => m.TvShowsRoutes)
   },
   {
     path: 'settings',
-    loadChildren: async () => {
-      const m = await import('./settings/settings.routes');
-      return m.SettingsRoutes;
-    }
+    loadChildren: () => import('./settings/settings.routes').then(m => m.SettingsRoutes)
   },
   {
     path: 'error',
-    loadChildren: async () => {
-      const m = await import('./error/error.routes');
-      return m.ErrorRoutes;
-    }
+    loadChildren: () => import('./error/error.routes').then(m => m.ErrorRoutes)
   },
   {
     path: '**',
