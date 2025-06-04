@@ -43,11 +43,17 @@
         } @else if (hasResults()) {
           <!-- FOR RESULTS -->
           @for (card of searchResults.value().results; track card.id) {
-            <app-shine-card [initShine]="false" [padding]="'8px'"
+          <app-shine-card (click)="handleCardClick(card)" [initShine]="false" [padding]="'8px'"
                             [backgroundColor]="{red: 15, green: 15, blue: 15, opacity: 1}" [borderOpacity]="1">
-              <app-media-card [title]="card?.title ?? card?.name ?? 'Unknown'" [mediaType]="card?.media_type"
-                              [poster]="`${environment.imageBaseUrl}w500/${card?.poster_path ?? card?.backdrop_path ?? card?.profile_path}`"
-                              [date]="card?.release_date ?? card?.first_air_date ?? 'N/A'"/>
+            @if (card.media_type === "movie") {
+              <app-media-card [title]="card?.title ?? 'Unknown'" [mediaType]="card.media_type"
+                              [poster]="`${environment.imageBaseUrl}w500/${card?.poster_path}`"
+                              [date]="card?.release_date ?? 'N/A'"/>
+            } @else if (card.media_type === "tv") {
+              <app-media-card [title]="card?.name ?? 'Unknown'" [mediaType]="card.media_type"
+                              [poster]="`${environment.imageBaseUrl}w500/${card?.backdrop_path}`"
+                              [date]="card?.first_air_date ?? 'N/A'"/>
+            }
             </app-shine-card>
           }
         }

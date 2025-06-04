@@ -5,6 +5,7 @@ import {take} from 'rxjs';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
 import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
+import {WatchNavigationHandler} from '../shared/utils/navigator.service';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,7 @@ import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent extends WatchNavigationHandler implements OnInit {
   readonly discoverMovies: WritableSignal<MovieDiscoverResult> = signal({} as MovieDiscoverResult);
   readonly discoverTvShows: WritableSignal<TvShowDiscoverResult> = signal({} as TvShowDiscoverResult);
   readonly popularMovies: WritableSignal<PopularMovies> = signal({} as PopularMovies);

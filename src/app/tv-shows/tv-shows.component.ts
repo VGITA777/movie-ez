@@ -5,6 +5,7 @@ import {OnTheAir, PopularTvShows, TopRatedTvShows, TvShowsAiringToday} from 'tmd
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
 import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
+import {WatchNavigationHandler} from '../shared/utils/navigator.service';
 
 @Component({
   selector: 'app-tv-shows',
@@ -15,7 +16,7 @@ import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
   templateUrl: './tv-shows.component.html',
   styleUrl: './tv-shows.component.scss'
 })
-export class TvShowsComponent implements OnInit {
+export class TvShowsComponent extends WatchNavigationHandler implements OnInit {
 
   public readonly airingTodayTvSeries: WritableSignal<TvShowsAiringToday> = signal({} as TvShowsAiringToday);
   public readonly onTheAirTvSeries: WritableSignal<OnTheAir> = signal({} as OnTheAir);

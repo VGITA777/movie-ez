@@ -5,6 +5,7 @@ import {take} from 'rxjs';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
 import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
+import {WatchNavigationHandler} from '../shared/utils/navigator.service';
 
 @Component({
   selector: 'app-movies',
@@ -15,7 +16,7 @@ import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.scss'
 })
-export class MoviesComponent implements OnInit {
+export class MoviesComponent extends WatchNavigationHandler implements OnInit {
 
   readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);

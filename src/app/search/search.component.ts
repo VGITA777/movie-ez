@@ -18,6 +18,7 @@ import {MediaCardComponent} from '../shared/ui/media-card/media-card.component';
 import {environment} from '../../environments/environment';
 import {ShineCardGroupDirective} from '../shared/directives/shine-card-group.directive';
 import {Skeleton} from 'primeng/skeleton';
+import {WatchNavigationHandler} from '../shared/utils/navigator.service';
 
 @Component({
   selector: 'app-search',
@@ -31,13 +32,13 @@ import {Skeleton} from 'primeng/skeleton';
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
-export class SearchComponent {
+export class SearchComponent extends WatchNavigationHandler {
   readonly hasSearched: Signal<boolean> = computed(() => this.debouncedSearchText() !== '');
   readonly isLoading: Signal<boolean> = computed(() => this.searchResults.isLoading());
 
   readonly searchText: ModelSignal<string> = model('');
   readonly debouncedSearchText: WritableSignal<string> = signal('');
-  readonly searchResults: ResourceRef<Search<any>> = resource({
+  readonly searchResults: ResourceRef<Search<MultiSearchResult>> = resource({
     defaultValue: {} as Search<MultiSearchResult>,
     params: () => {
       return {
@@ -58,5 +59,12 @@ export class SearchComponent {
 
   protected handleClearSearchText() {
     this.searchText.set('');
+  }
+
+  handleCardClick(searchItem: MultiSearchResult) {
+    if (searchItem.media_type === 'person') {
+      return;
+    }
+    this.handleNavigation(searchItem);
   }
 }
