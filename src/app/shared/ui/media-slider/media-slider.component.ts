@@ -16,7 +16,7 @@ import {SliderComponent} from '../slider/slider.component';
 import {SwiperModule, SwiperOptions} from 'swiper/types';
 import {Navigation} from 'swiper/modules';
 import {ShineCardComponent} from '../shine-card/shine-card.component';
-import {MediaType} from 'tmdb-ts';
+import {MediaType, Movie, PopularTvShowResult, TV} from 'tmdb-ts';
 
 @Component({
   selector: 'app-media-slider',
@@ -97,12 +97,4 @@ export class MediaSliderComponent implements AfterViewInit {
   }
 }
 
-export type MediaLike = {
-  id: number,
-  title?: string,
-  name?: string,
-  poster_path: string,
-  release_date?: string,
-  first_air_date?: string,
-  media_type?: string,
-}
+export type MediaLike = TV | Movie | PopularTvShowResult;
