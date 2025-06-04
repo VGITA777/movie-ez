@@ -1,5 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {NavigationExtras, Router} from '@angular/router';
+import {MediaLike} from '../ui/media-slider/media-slider.component';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,14 @@ export class NavigatorService {
 
   navigateToTvShows(onNavigate?: () => void): void {
     this.navigate(['tv-shows'], undefined, onNavigate);
+  }
+
+  navigateToWatch(media: MediaLike, extras?: NavigationExtras, onNavigate?: () => void): void {
+    if ('first_air_date' in media) {
+      this.navigateToWatchSeries(media.id, extras, onNavigate);
+      return;
+    }
+    this.navigateToWatchMovie(media.id, extras, onNavigate);
   }
 
   navigateToWatchMovie(id: number, extras?: NavigationExtras, onNavigate?: () => void): void {
@@ -45,5 +54,13 @@ export class NavigatorService {
         onNavigate();
       }
     });
+  }
+}
+
+export abstract class WatchNavigationHandler {
+  protected readonly navigator: NavigatorService = inject(NavigatorService);
+
+  handleNavigation(media: MediaLike, extras?: NavigationExtras, onNavigate?: () => void): void {
+    this.navigator.navigateToWatch(media, extras, onNavigate);
   }
 }
