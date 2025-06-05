@@ -33,11 +33,12 @@ import {WatchNavigationHandler} from '../shared/utils/navigator.service';
   styleUrl: './search.component.scss'
 })
 export class SearchComponent extends WatchNavigationHandler {
-  readonly hasSearched: Signal<boolean> = computed(() => this.debouncedSearchText() !== '');
-  readonly isLoading: Signal<boolean> = computed(() => this.searchResults.isLoading());
-
   readonly searchText: ModelSignal<string> = model('');
   readonly debouncedSearchText: WritableSignal<string> = signal('');
+  readonly hasSearched: Signal<boolean> = computed(() => this.debouncedSearchText() !== '');
+  readonly isLoading: Signal<boolean> = computed(() => this.searchResults.isLoading());
+  readonly hasResults: Signal<boolean> = computed(() => this.searchResults.value().total_results > 0 && !this.isLoading() && this.hasSearched());
+  protected readonly environment = environment;
   readonly searchResults: ResourceRef<Search<MultiSearchResult>> = resource({
     defaultValue: {} as Search<MultiSearchResult>,
     params: () => {
@@ -49,16 +50,10 @@ export class SearchComponent extends WatchNavigationHandler {
       query: resource.params.query
     })
   })
-  readonly hasResults: Signal<boolean> = computed(() => this.searchResults.value().total_results > 0 && !this.isLoading() && this.hasSearched());
-  protected readonly environment = environment;
   private readonly tmdb: TmdbService = inject(TmdbService);
 
   search(event: string) {
     this.debouncedSearchText.set(event);
-  }
-
-  protected handleClearSearchText() {
-    this.searchText.set('');
   }
 
   handleCardClick(searchItem: MultiSearchResult) {
@@ -66,5 +61,9 @@ export class SearchComponent extends WatchNavigationHandler {
       return;
     }
     this.handleNavigation(searchItem);
+  }
+
+  protected handleClearSearchText() {
+    this.searchText.set('');
   }
 }
