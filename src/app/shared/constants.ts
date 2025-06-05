@@ -61,7 +61,7 @@ export const MOVIE_EMBED_LINKS: Record<VideoSource, string> = {
 };
 
 export const TV_EMBED_LINKS: Record<VideoSource, string> = {
-  flix: 'https://flix.1ani.me/embed/tmdb-tv-{id}',
+  flix: 'https://flix.1ani.me/embed/tmdb-tv-{id}/{season}/{episode}',
   vidora: 'https://vidora.su/tv/{id}/{season}/{episode}',
   embedsu: 'https://embed.su/embed/tv/{id}/{season_number}/{episode_number}',
   autoembed: 'https://player.autoembed.cc/embed/tv/{id}/{season}/{episode}',
