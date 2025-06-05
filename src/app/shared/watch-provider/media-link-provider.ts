@@ -31,109 +31,109 @@ export abstract class TvMediaLinkProvider implements MediaLinkProvider {
   }
 }
 
-export class FlixProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class FlixMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.flix);
   }
 }
 
-export class VidoraProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class VidoraMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.vidora);
   }
 }
 
-export class EmbedsuProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class EmbedsuMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.embedsu);
   }
 }
 
-export class AutoembedProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class AutoembedMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.autoembed);
   }
 }
 
-export class VidsrcProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class VidsrcMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.vidsrc);
   }
 }
 
-export class VidlinkProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class VidlinkMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.vidlink);
   }
 }
 
-export class VideasyProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class VideasyMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.videasy);
   }
 }
 
-export class OnemoviesProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class OnemoviesMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.onemovies);
   }
 }
 
-export class VidzeeProviderTypeProviderMediaLinkProvider extends MovieMediaLinkProvider {
+export class VidzeeMovieMediaLinkProvider extends MovieMediaLinkProvider {
   constructor() {
     super(MOVIE_EMBED_LINKS.vidzee);
   }
 }
 
-export class TvFlixProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class FlixTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.flix)
   }
 }
 
-export class TvVidoraProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class VidoraTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.vidora)
   }
 }
 
-export class TvEmbedsuProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class EmbedsuTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.embedsu)
   }
 }
 
-export class TvAutoembedProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class AutoembedTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.autoembed)
   }
 }
 
-export class TvVidsrcProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class VidsrcTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.vidsrc)
   }
 }
 
-export class TvVidlinkProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class VidlinkTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.vidlink)
   }
 }
 
-export class TvVideasyProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class VideasyTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.videasy)
   }
 }
 
-export class TvOnemoviesProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class OneMoviesTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.onemovies)
   }
 }
 
-export class TvVidzeeProviderTypeProviderMediaLinkProvider extends TvMediaLinkProvider {
+export class VidzeeTvMediaLinkProvider extends TvMediaLinkProvider {
   constructor() {
     super(TV_EMBED_LINKS.vidzee)
   }
