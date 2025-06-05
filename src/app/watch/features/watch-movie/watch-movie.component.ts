@@ -1,7 +1,11 @@
-import {Component, computed, inject, Signal, signal, WritableSignal} from '@angular/core';
-import {ActivatedRoute, ParamMap} from '@angular/router';
-import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
-import {MovieVidoraWatchProvider, MovieWatchProvider} from '../../../shared/watch-provider/watch-prover';
+import {Component, inject, signal, Signal, WritableSignal} from '@angular/core';
+import {
+  MovieMediaLinkProvider,
+  VidoraMovieMediaLinkProvider,
+} from '../../../shared/watch-provider/media-link-provider';
+import {MovieDetails} from 'tmdb-ts';
+import {MovieGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
+import {ActivatedRoute} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 
@@ -11,22 +15,15 @@ import {map} from 'rxjs';
   templateUrl: './watch-movie.component.html',
   styleUrl: './watch-movie.component.scss'
 })
-export class WatchMovieComponent {
+export class WatchMovieComponent extends WatchPage<MovieMediaLinkProvider, MovieGenericMediaInfo, MovieDetails> {
   protected readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  protected readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
-  protected readonly movieWatchProvider: WritableSignal<MovieWatchProvider> = signal(new MovieVidoraWatchProvider())
-  protected readonly movieCurrentMediaInformation: Signal<{ id: string }> = toSignal(
-    this.activatedRoute.paramMap.pipe(
-      map((params: ParamMap) => {
-        return {
-          id: params.get('id') ?? '',
-        }
-      }),
-    ),
-    {initialValue: {} as { id: string }}
-  );
-  protected readonly movieMediaWatchLink: Signal<SafeResourceUrl> = computed(() => {
-    const mediaInformation = this.movieCurrentMediaInformation();
-    return this.domSanitizer.bypassSecurityTrustResourceUrl(this.movieWatchProvider().provideLink(mediaInformation.id));
-  })
+  protected override readonly mediaLinkProvider: WritableSignal<MovieMediaLinkProvider> = signal(new VidoraMovieMediaLinkProvider());
+  protected override readonly genericMediaInfo: Signal<MovieGenericMediaInfo> = toSignal(
+    this.activatedRoute.paramMap.pipe(map((params): MovieGenericMediaInfo => ({id: Number(params.get('id')) ?? 0}))),
+    {initialValue: {} as MovieGenericMediaInfo}
+  )
+
+  protected override loader(id: number): Promise<MovieDetails> {
+    return this.tmdb.movies.details(id);
+  }
 }
