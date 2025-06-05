@@ -24,9 +24,9 @@ export class NavigatorService {
     this.navigate(['tv-shows'], undefined, onNavigate);
   }
 
-  navigateToWatch(media: MediaLike, extras?: NavigationExtras, onNavigate?: () => void): void {
+  navigateToWatch(media: MediaLike, season: number = 1, episode: number = 1, extras?: NavigationExtras, onNavigate?: () => void): void {
     if ('first_air_date' in media) {
-      this.navigateToWatchSeries(media.id, extras, onNavigate);
+      this.navigateToWatchSeries(media.id, season, episode, extras, onNavigate);
       return;
     }
     this.navigateToWatchMovie(media.id, extras, onNavigate);
@@ -36,8 +36,8 @@ export class NavigatorService {
     this.navigate(['watch', 'movie', id], extras, onNavigate);
   }
 
-  navigateToWatchSeries(id: number, extras?: NavigationExtras, onNavigate?: () => void): void {
-    this.navigate(['watch', 'tv', id], extras, onNavigate);
+  navigateToWatchSeries(id: number, season: number = 1, episode: number = 1, extras?: NavigationExtras, onNavigate?: () => void): void {
+    this.navigate(['watch', 'tv', id, season, episode], extras, onNavigate);
   }
 
   navigateToSettingsPlayer(extras?: NavigationExtras, onNavigate?: () => void): void {
@@ -60,7 +60,7 @@ export class NavigatorService {
 export abstract class WatchNavigationHandler {
   protected readonly navigator: NavigatorService = inject(NavigatorService);
 
-  handleNavigation(media: MediaLike, extras?: NavigationExtras, onNavigate?: () => void): void {
-    this.navigator.navigateToWatch(media, extras, onNavigate);
+  handleNavigation(media: MediaLike, season: number = 1, episode: number = 1, extras?: NavigationExtras, onNavigate?: () => void): void {
+    this.navigator.navigateToWatch(media, season, episode, extras, onNavigate);
   }
 }

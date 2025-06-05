@@ -16,7 +16,7 @@ export const WatchRoutes: Routes = [
         loadChildren: () => MovieWatchRoutes
       },
       {
-        path: 'tv/:id',
+        path: 'tv/:id/:season/:episode',
         loadChildren: () => TvWatchRoutes
       }
     ]
