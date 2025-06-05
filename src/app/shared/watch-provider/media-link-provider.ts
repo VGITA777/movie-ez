@@ -1,9 +1,9 @@
 import {MOVIE_EMBED_LINKS, TV_EMBED_LINKS} from '../constants';
 
 export interface MediaLinkProvider {
-  provideLink(id: string): string;
+  provideLink(id: number): string;
 
-  provideLink(id: string, season: number, episode: number): string;
+  provideLink(id: number, season: number, episode: number): string;
 }
 
 export abstract class MovieMediaLinkProvider implements MediaLinkProvider {
@@ -11,8 +11,8 @@ export abstract class MovieMediaLinkProvider implements MediaLinkProvider {
   constructor(private readonly baseLink: string) {
   }
 
-  provideLink(id: string): string {
-    return this.baseLink.replace('{id}', id);
+  provideLink(id: number): string {
+    return this.baseLink.replace('{id}', id.toString());
   }
 }
 
@@ -21,11 +21,11 @@ export abstract class TvMediaLinkProvider implements MediaLinkProvider {
   constructor(private readonly baseLink: string) {
   }
 
-  provideLink(id: string, season?: number, episode?: number): string {
+  provideLink(id: number, season?: number, episode?: number): string {
     if (season === undefined || episode === undefined) {
-      return this.baseLink.replace('{id}', id);
+      return this.baseLink.replace('{id}', id.toString());
     }
-    return this.baseLink.replace('{id}', id)
+    return this.baseLink.replace('{id}', id.toString())
       .replace('{season}', season.toString())
       .replace('{episode}', episode.toString());
   }
