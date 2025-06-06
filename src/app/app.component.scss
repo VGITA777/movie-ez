@@ -27,7 +27,12 @@
   }
 }
 
-p-progress-bar {
+//p-progress-bar {
+//  @include mixins.absolute($top: 0, $left: 0);
+//  width: 100%;
+//}
+
+app-indeterminate-progress-bar {
   @include mixins.absolute($top: 0, $left: 0);
   width: 100%;
 }
