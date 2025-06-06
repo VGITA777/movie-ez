@@ -2,7 +2,7 @@
 @use "../../../../foundations/constants";
 
 select {
-  background-color: constants.$dark-surface-800;
+  background-color: var(--background-color, constants.$dark-surface-600);
   padding: constants.$spacing-md constants.$spacing-xxl;
   border-radius: constants.$border-radius-sm;
   overflow: hidden;

@@ -10,6 +10,12 @@ import {NgTemplateOutlet} from '@angular/common';
   styleUrl: './drop-down-select.component.scss'
 })
 export class DropDownSelectComponent {
-  readonly options: InputSignal<{ value: any, label: string }[]> = input.required();
+  readonly options: InputSignal<Option[]> = input.required();
   readonly optionTemplate: InputSignal<TemplateRef<unknown> | undefined> = input();
+  readonly backgroundColor: InputSignal<string> = input('unset');
+}
+
+export interface Option {
+  value: any,
+  label: string
 }
