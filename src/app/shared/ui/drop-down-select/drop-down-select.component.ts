@@ -12,6 +12,7 @@ import {NgTemplateOutlet} from '@angular/common';
 export class DropDownSelectComponent {
   readonly options: InputSignal<Option[]> = input.required();
   readonly optionTemplate: InputSignal<TemplateRef<unknown> | undefined> = input();
+  readonly selectedOption: InputSignal<Option> = input(this.options()[0]);
   readonly backgroundColor: InputSignal<string> = input('unset');
 }
 
