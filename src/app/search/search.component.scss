@@ -7,6 +7,8 @@
   @include mixins.grid($grid-template-rows: auto 1fr, $gap: constants.$spacing-md);
 
   .message-container {
+    @include mixins.flex($direction: row, $justify-content: center, $align-items: center, $gap: unset);
+    @include mixins.width-height();
     text-align: center;
 
     span {
@@ -24,8 +26,9 @@
 
   .search-results {
     @include mixins.border-radius(constants.$border-radius-lg);
-    @include mixins.flex($justify-content: center, $align-items: center);
+    @include mixins.flex($justify-content: center, $align-items: start);
     @include mixins.hidden-scrollbar();
+    @include mixins.width-height();
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
     overflow: auto;
@@ -40,6 +43,7 @@
       @include mixins.width-height();
       @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)), $gap: constants.$spacing-md);
       position: relative;
+      height: auto;
 
       app-shine-card {
         @include mixins.width-height($height: fit-content);
