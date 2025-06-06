@@ -1,0 +1,10 @@
+@use "../../../../foundations/mixins";
+@use "../../../../foundations/constants";
+
+select {
+  background-color: constants.$dark-surface-800;
+  padding: constants.$spacing-md constants.$spacing-xxl;
+  border-radius: constants.$border-radius-sm;
+  overflow: hidden;
+  border: none;
+}

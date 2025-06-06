@@ -1,0 +1,12 @@
+<select>
+  @for (option of options(); track option; let i = $index) {
+    <option [value]="option.value"><span>
+      <ng-container [ngTemplateOutlet]="optionTemplate() ?? defaultStyle"
+                    [ngTemplateOutletContext]="{ $implicit: option, index: i}"/>
+    </span></option>
+  }
+</select>
+
+<ng-template #defaultStyle let-option>
+  {{ option.label }}
+</ng-template>
