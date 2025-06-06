@@ -1,0 +1,13 @@
+@use '../../foundations/mixins';
+@use '../../foundations/constants';
+
+.container {
+  @include mixins.grid($grid-template-columns: 1fr minmax(150px, 250px), $gap: constants.$spacing-lg);
+  @include mixins.width-height();
+
+  section {
+    border-radius: constants.$border-radius-md;
+    background-color: constants.$dark-surface-800;
+    overflow: hidden;
+  }
+}
