@@ -1,12 +1,12 @@
 import {Component, computed, input, InputSignal, Signal} from '@angular/core';
-import {Skeleton} from 'primeng/skeleton';
 import {MediaSliderComponent} from '../media-slider/media-slider.component';
+import {SkeletonComponent} from '../skeleton/skeleton.component';
 
 @Component({
   selector: 'app-media-slider-skeleton',
   imports: [
-    Skeleton,
-    MediaSliderComponent
+    MediaSliderComponent,
+    SkeletonComponent
   ],
   templateUrl: './media-slider-skeleton.component.html',
   styleUrl: './media-slider-skeleton.component.scss'
