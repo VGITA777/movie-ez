@@ -1,1 +1,6 @@
-<p>watch-tv works!</p>
+<div class="container">
+  <section class="media-settings">
+    <app-drop-down-select [(selectedIndex)]="selectedSeasonIndex" [options]="seasonsOptions()"/>
+    <app-drop-down-select [(selectedIndex)]="selectedEpisodeIndex" [options]="episodes()"/>
+  </section>
+</div>
