@@ -14,8 +14,13 @@ import {FormsModule} from '@angular/forms';
 export class DropDownSelectComponent {
   readonly options: InputSignal<Option[]> = input.required();
   readonly optionTemplate: InputSignal<TemplateRef<unknown> | undefined> = input();
-  readonly selected: ModelSignal<any> = model();
+  readonly selected: ModelSignal<Option | undefined> = model();
   readonly backgroundColor: InputSignal<string> = input('unset');
+
+  protected handleSelectionChange(event: any): void {
+    const selectedOption: Option = this.options().find(option => option.value == event)!;
+    this.selected.set(selectedOption);
+  }
 }
 
 export interface Option {
