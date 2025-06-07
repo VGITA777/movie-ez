@@ -3,7 +3,9 @@
     <router-outlet name="mediaWatch"></router-outlet>
   </section>
 
-  <section class="description">
-    <router-outlet name="mediaDescription"></router-outlet>
-  </section>
+  @if (isDesktop()) {
+    <section class="description">
+      <router-outlet name="mediaDescription"></router-outlet>
+    </section>
+  }
 </div>

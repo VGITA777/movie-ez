@@ -1,5 +1,6 @@
 @use '../../foundations/mixins';
 @use '../../foundations/constants';
+@use '../../foundations/responsive';
 
 .container {
   @include mixins.grid($grid-template-columns: 1fr minmax(150px, 250px), $gap: constants.$spacing-lg);
@@ -9,5 +10,11 @@
     border-radius: constants.$border-radius-md;
     background-color: constants.$dark-surface-800;
     overflow: hidden;
+  }
+}
+
+@include responsive.laptop-below {
+  .container {
+    @include mixins.grid($grid-template-columns: 1fr, $gap: constants.$spacing-lg);
   }
 }
