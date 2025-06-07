@@ -1,7 +1,17 @@
 <div class="container">
-  <section class="media-settings">
-    <app-drop-down-select [(selected)]="selectedSeason" [options]="seasonsOptions()"/>
-    <app-drop-down-select [(selected)]="selectedEpisode" [options]="episodes()"/>
-    <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"/>
-  </section>
+  <main class="watching-area">
+    <section class="player-container">
+      <iframe [src]="mediaResourceUrl()" allowfullscreen></iframe>
+    </section>
+    <section class="media-settings-container">
+      @if (seasons().length > 0) {
+        <app-drop-down-select width="100%" [(selected)]="selectedSeason" [options]="seasonsOptions()"/>
+      }
+      @if (episodes().length > 0) {
+        <app-drop-down-select width="100%" [(selected)]="selectedEpisode" [options]="episodes()"/>
+      }
+      <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"
+                            width="100%"/>
+    </section>
+  </main>
 </div>
