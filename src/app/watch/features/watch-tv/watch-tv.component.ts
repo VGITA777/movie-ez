@@ -7,11 +7,13 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {Season, TvShowDetails} from 'tmdb-ts';
 import {VideoSource} from '../../../shared/constants';
+import {ShineCardComponent} from '../../../shared/ui/shine-card/shine-card.component';
 
 @Component({
   selector: 'app-watch-tv',
   imports: [
-    DropDownSelectComponent
+    DropDownSelectComponent,
+    ShineCardComponent
   ],
   templateUrl: './watch-tv.component.html',
   styleUrl: './watch-tv.component.scss'
