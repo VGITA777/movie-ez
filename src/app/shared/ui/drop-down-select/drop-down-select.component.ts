@@ -16,6 +16,8 @@ export class DropDownSelectComponent {
   readonly optionTemplate: InputSignal<TemplateRef<unknown> | undefined> = input();
   readonly selected: ModelSignal<Option | undefined> = model();
   readonly backgroundColor: InputSignal<string> = input('unset');
+  readonly width: InputSignal<string> = input('unset');
+  readonly height: InputSignal<string> = input('unset');
 
   protected handleSelectionChange(event: any): void {
     const selectedOption: Option = this.options().find(option => option.value == event)!;

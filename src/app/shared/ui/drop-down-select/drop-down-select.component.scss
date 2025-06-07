@@ -7,4 +7,20 @@ select {
   border-radius: constants.$border-radius-sm;
   overflow: hidden;
   border: none;
+  width: var(--width);
+  height: var(--height);
+
+  &::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: constants.$dark-surface-200;
+    border-radius: constants.$border-radius-sm;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
 }
