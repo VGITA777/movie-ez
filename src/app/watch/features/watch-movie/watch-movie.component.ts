@@ -1,13 +1,11 @@
-import {Component, inject, signal, Signal, WritableSignal} from '@angular/core';
-import {
-  MovieMediaLinkProvider,
-  VidoraMovieMediaLinkProvider,
-} from '../../../shared/watch-provider/media-link-provider';
+import {Component, inject, signal, Signal} from '@angular/core';
+import {MOVIE_EMBED_OBJS, MovieMediaLinkProvider,} from '../../../shared/watch-provider/media-link-provider';
 import {MovieDetails} from 'tmdb-ts';
 import {MovieGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
 import {ActivatedRoute} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
+import {VideoSource} from '../../../shared/constants';
 
 @Component({
   selector: 'app-watch-movie',
@@ -17,7 +15,7 @@ import {map} from 'rxjs';
 })
 export class WatchMovieComponent extends WatchPage<MovieMediaLinkProvider, MovieGenericMediaInfo, MovieDetails> {
   protected readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  protected override readonly mediaLinkProvider: WritableSignal<MovieMediaLinkProvider> = signal(new VidoraMovieMediaLinkProvider());
+  protected override mediaLinkProviders: Signal<Record<VideoSource, MovieMediaLinkProvider>> = signal(MOVIE_EMBED_OBJS);
   protected override readonly genericMediaInfo: Signal<MovieGenericMediaInfo> = toSignal(
     this.activatedRoute.paramMap.pipe(map((params): MovieGenericMediaInfo => ({id: Number(params.get('id')) ?? 0}))),
     {initialValue: {} as MovieGenericMediaInfo}
