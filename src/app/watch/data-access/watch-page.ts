@@ -20,7 +20,7 @@ export type GenericMediaInfo = MovieGenericMediaInfo | TvShowGenericMediaInfo;
 export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMediaInfo, D extends MovieDetails | TvShowDetails> {
   protected readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
   protected readonly tmdb: TmdbService = inject(TmdbService);
-  protected readonly defaultVideoSource: VideoSource = 'videasy';
+  protected readonly defaultVideoSource: VideoSource = 'vidora';
 
   // Abstract properties to be implemented by subclasses
   protected abstract readonly mediaLinkProviders: Signal<Record<VideoSource, P>>
