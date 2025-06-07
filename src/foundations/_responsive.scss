@@ -43,7 +43,7 @@
 }
 
 @mixin laptop {
-  @media screen and (min-width: constants.$media-desktop-min) and (max-width: constants.$media-laptop-max) {
+  @media screen and (min-width: constants.$media-laptop-min) and (max-width: constants.$media-laptop-max) {
     @content;
   }
 }
@@ -56,12 +56,6 @@
 
 @mixin desktop {
   @media screen and (min-width: constants.$media-desktop-min) {
-    @content;
-  }
-}
-
-@mixin desktop-below {
-  @media screen and (max-width: constants.$media-desktop-min) {
     @content;
   }
 }
