@@ -9,9 +9,11 @@
 }
 
 <div class="container">
-  <aside class="content-container">
-    <app-navigation-rail/>
-  </aside>
+  @if (!isMobile()) {
+    <aside class="content-container">
+      <app-navigation-rail/>
+    </aside>
+  }
   <main class="content-container">
     <router-outlet></router-outlet>
   </main>

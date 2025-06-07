@@ -6,6 +6,7 @@ import {ProgressShowerService, ProgressType} from './shared/utils/progress-showe
 import {
   IndeterminateProgressBarComponent
 } from './shared/ui/indeterminate-progress-bar/indeterminate-progress-bar.component';
+import {DeviceSizeService} from './shared/utils/device-size.service';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,8 @@ export class AppComponent implements OnInit, OnDestroy {
   /*  readonly messageService: MessageService = inject(MessageService);
     readonly toast: ToastService = inject(ToastService);*/
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
+  readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
+  readonly isMobile: Signal<boolean> = this.deviceSizeService.isMobile;
   readonly progress: Signal<number> = this.progressShower.progress;
   readonly progressType: Signal<ProgressType> = this.progressShower.progressType;
 
