@@ -23,7 +23,9 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
   protected readonly mediaLinkProviders: Signal<Record<VideoSource, TvMediaLinkProvider>> = signal(TV_EMBED_OBJS);
   protected readonly mediaId: Signal<number> = toSignal(this.activatedRoute.paramMap.pipe(map((params) => Number(params.get('id')) ?? 0)), {initialValue: 0});
   // Season Options
-  protected readonly seasons: Signal<Season[]> = computed(() => this.mediaDetails.value().seasons ?? []);
+  protected readonly seasons: Signal<Season[]> = computed(() => this.mediaDetails
+    .value().seasons
+    .filter(s => s.season_number !== 0) ?? []);
   // Selections
   protected readonly selectedSeasonOption: WritableSignal<Option> = signal({label: '1', value: 1});
   protected readonly seasonsOptions: Signal<Option[]> = computed((): Option[] =>
