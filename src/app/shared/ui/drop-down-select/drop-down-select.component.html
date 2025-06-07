@@ -1,4 +1,4 @@
-<select [(ngModel)]="selectedIndex" [style.--background-color]="backgroundColor()">
+<select [(ngModel)]="selected" [style.--background-color]="backgroundColor()">
   @for (option of options(); track option; let i = $index) {
     <option [value]="option.value"><span>
       <ng-container [ngTemplateOutlet]="optionTemplate() ?? defaultStyle"
