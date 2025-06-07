@@ -6,12 +6,12 @@
     <section class="media-settings-container">
       @if (seasons().length > 0) {
         <app-shine-card>
-          <app-drop-down-select width="100%" [(selected)]="selectedSeason" [options]="seasonsOptions()"/>
+          <app-drop-down-select width="100%" [(selected)]="selectedSeasonOption" [options]="seasonsOptions()"/>
         </app-shine-card>
       }
       @if (episodes().length > 0) {
         <app-shine-card>
-          <app-drop-down-select width="100%" [(selected)]="selectedEpisode" [options]="episodes()"/>
+          <app-drop-down-select width="100%" [(selected)]="selectedEpisodeOption" [options]="episodes()"/>
         </app-shine-card>
       }
       <app-shine-card>

@@ -25,7 +25,7 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
   // Season Options
   protected readonly seasons: Signal<Season[]> = computed(() => this.mediaDetails.value().seasons ?? []);
   // Selections
-  protected readonly selectedSeason: WritableSignal<Option> = signal({label: '1', value: 1});
+  protected readonly selectedSeasonOption: WritableSignal<Option> = signal({label: '1', value: 1});
   protected readonly seasonsOptions: Signal<Option[]> = computed((): Option[] =>
     this.seasons()
       ?.filter(s => s.episode_count > 0)
@@ -36,17 +36,17 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
   );
   // Episode options
   protected readonly episodes: Signal<Option[]> = computed(() => {
-    const count = this.seasons()?.[this.selectedSeason().value]?.episode_count ?? 0;
+    const count = this.seasons()?.find(s => s.season_number === this.selectedSeasonOption().value)?.episode_count ?? 0;
     return Array.from({length: count}, (_, i) => i + 1).map(n => ({label: `Ep ${n.toString()}`, value: n}));
   })
-  protected readonly selectedEpisode: WritableSignal<Option> = linkedSignal({
-    source: this.selectedSeason,
+  protected readonly selectedEpisodeOption: WritableSignal<Option> = linkedSignal({
+    source: this.selectedSeasonOption,
     computation: (): Option => ({label: '1', value: 1}),
   })
   protected override readonly genericMediaInfo: Signal<TvShowGenericMediaInfo> = computed(() => ({
     id: this.mediaId(),
-    season: Number(this.selectedSeason().value) ?? 1,
-    episode: Number(this.selectedEpisode().value) ?? 1
+    season: Number(this.selectedSeasonOption().value) ?? 1,
+    episode: Number(this.selectedEpisodeOption().value) ?? 1
   }));
 
   protected override loader(id: number): Promise<TvShowDetails> {
