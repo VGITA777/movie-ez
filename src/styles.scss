@@ -4,12 +4,5 @@
 
 
 body {
-  @include mixins.width-height(100vw, 100vh);
   background-color: constants.$dark-surface-950;
-  overflow: hidden;
-
-  app-root {
-    @include mixins.width-height();
-    display: inline-block;
-  }
 }
