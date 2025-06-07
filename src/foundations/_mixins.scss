@@ -50,6 +50,18 @@
   background-color: rgba($color, $opacity);
 }
 
+@mixin box-shadow(
+  $x: 0px,
+  $y: 0px,
+  $blur: 33px,
+  $spread: 4px,
+  $color: rgba(102, 51, 153, 0.2)
+) {
+  box-shadow: $x $y $blur $spread $color;
+  -webkit-box-shadow: $x $y $blur $spread $color;
+  -moz-box-shadow: $x $y $blur $spread $color;
+}
+
 // Layout mixins
 
 @mixin flex(
