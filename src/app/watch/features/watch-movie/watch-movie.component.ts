@@ -6,10 +6,13 @@ import {ActivatedRoute} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {VideoSource} from '../../../shared/constants';
+import {DropDownSelectComponent} from '../../../shared/ui/drop-down-select/drop-down-select.component';
 
 @Component({
   selector: 'app-watch-movie',
-  imports: [],
+  imports: [
+    DropDownSelectComponent
+  ],
   templateUrl: './watch-movie.component.html',
   styleUrl: './watch-movie.component.scss'
 })
