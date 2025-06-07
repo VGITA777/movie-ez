@@ -1,4 +1,4 @@
-import {MOVIE_EMBED_LINKS, TV_EMBED_LINKS} from '../constants';
+import {MOVIE_EMBED_LINKS, TV_EMBED_LINKS, VideoSource} from '../constants';
 
 export interface MediaLinkProvider {
   provideLink(id: number): string;
@@ -138,3 +138,27 @@ export class VidzeeTvMediaLinkProvider extends TvMediaLinkProvider {
     super(TV_EMBED_LINKS.vidzee)
   }
 }
+
+export const MOVIE_EMBED_OBJS: Record<VideoSource, MovieMediaLinkProvider> = {
+  flix: new FlixMovieMediaLinkProvider(),
+  vidora: new VidoraMovieMediaLinkProvider(),
+  embedsu: new EmbedsuMovieMediaLinkProvider(),
+  autoembed: new AutoembedMovieMediaLinkProvider(),
+  vidsrc: new VidsrcMovieMediaLinkProvider(),
+  vidlink: new VidlinkMovieMediaLinkProvider(),
+  videasy: new VideasyMovieMediaLinkProvider(),
+  onemovies: new OnemoviesMovieMediaLinkProvider(),
+  vidzee: new VidzeeMovieMediaLinkProvider(),
+};
+
+export const TV_EMBED_OBJS: Record<VideoSource, TvMediaLinkProvider> = {
+  flix: new FlixTvMediaLinkProvider(),
+  vidora: new VidoraTvMediaLinkProvider(),
+  embedsu: new EmbedsuTvMediaLinkProvider(),
+  autoembed: new AutoembedTvMediaLinkProvider(),
+  vidsrc: new VidsrcTvMediaLinkProvider(),
+  vidlink: new VidlinkTvMediaLinkProvider(),
+  videasy: new VideasyTvMediaLinkProvider(),
+  onemovies: new OneMoviesTvMediaLinkProvider(),
+  vidzee: new VidzeeTvMediaLinkProvider(),
+};
