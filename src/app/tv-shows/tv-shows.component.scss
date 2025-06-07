@@ -1,5 +1,6 @@
 @use '../../foundations/mixins';
 @use '../../foundations/constants';
+@use '../../foundations/responsive';
 
 .container {
   @include mixins.width-height();
@@ -8,4 +9,10 @@
   background-color: constants.$dark-surface-800;
   padding: constants.$spacing-md;
   overflow: auto;
+}
+
+@include responsive.mobile-large {
+  .container {
+    background-color: transparent;
+  }
 }
