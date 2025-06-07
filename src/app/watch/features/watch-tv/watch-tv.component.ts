@@ -1,21 +1,12 @@
-import {
-  Component,
-  computed,
-  inject,
-  linkedSignal,
-  model,
-  ModelSignal,
-  signal,
-  Signal,
-  WritableSignal
-} from '@angular/core';
-import {TvShowGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
-import {TvMediaLinkProvider, VideasyTvMediaLinkProvider} from '../../../shared/watch-provider/media-link-provider';
-import {Season, TvShowDetails} from 'tmdb-ts';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {ActivatedRoute} from '@angular/router';
-import {map} from 'rxjs';
+import {Component, computed, inject, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {DropDownSelectComponent, Option} from '../../../shared/ui/drop-down-select/drop-down-select.component';
+import {TvShowGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
+import {ActivatedRoute} from '@angular/router';
+import {TV_EMBED_OBJS, TvMediaLinkProvider} from '../../../shared/watch-provider/media-link-provider';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {map} from 'rxjs';
+import {Season, TvShowDetails} from 'tmdb-ts';
+import {VideoSource} from '../../../shared/constants';
 
 @Component({
   selector: 'app-watch-tv',
@@ -27,19 +18,12 @@ import {DropDownSelectComponent, Option} from '../../../shared/ui/drop-down-sele
 })
 export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGenericMediaInfo, TvShowDetails> {
   protected readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  protected override mediaLinkProvider: WritableSignal<TvMediaLinkProvider> = signal(new VideasyTvMediaLinkProvider());
-  protected override genericMediaInfo: Signal<TvShowGenericMediaInfo> = toSignal(
-    this.activatedRoute.paramMap.pipe(map((params): TvShowGenericMediaInfo => ({
-        id: Number(params.get('id')) ?? 0,
-      season: 0,
-      episode: 0
-      }))
-    ),
-    {initialValue: {id: 0, season: 1, episode: 0} as TvShowGenericMediaInfo}
-  );
-
-  // Season selection handlers
-  protected readonly seasons: Signal<Season[] | undefined> = computed(() => this.mediaDetails.value().seasons);
+  protected readonly mediaLinkProviders: Signal<Record<VideoSource, TvMediaLinkProvider>> = signal(TV_EMBED_OBJS);
+  protected readonly mediaId: Signal<number> = toSignal(this.activatedRoute.paramMap.pipe(map((params) => Number(params.get('id')) ?? 0)), {initialValue: 0});
+  // Season Options
+  protected readonly seasons: Signal<Season[]> = computed(() => this.mediaDetails.value().seasons ?? []);
+  // Selections
+  protected readonly selectedSeason: WritableSignal<Option> = signal({label: '1', value: 1});
   protected readonly seasonsOptions: Signal<Option[]> = computed((): Option[] =>
     this.seasons()
       ?.filter(s => s.episode_count > 0)
@@ -48,17 +32,20 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
         value: s.season_number
       })) ?? []
   );
-  protected readonly selectedSeasonIndex: ModelSignal<number> = model(1);
-
-  // Episode selection handlers
+  // Episode options
   protected readonly episodes: Signal<Option[]> = computed(() => {
-    const count = this.seasons()?.[this.selectedSeasonIndex()]?.episode_count ?? 0;
-    return Array.from({length: count}, (_, i) => i + 1).map(n => ({label: n.toString(), value: n}));
+    const count = this.seasons()?.[this.selectedSeason().value]?.episode_count ?? 0;
+    return Array.from({length: count}, (_, i) => i + 1).map(n => ({label: `Ep ${n.toString()}`, value: n}));
   })
-  protected readonly selectedEpisodeIndex: WritableSignal<number> = linkedSignal({
-    source: this.selectedSeasonIndex,
-    computation: _ => 1
-  });
+  protected readonly selectedEpisode: WritableSignal<Option> = linkedSignal({
+    source: this.selectedSeason,
+    computation: (): Option => ({label: '1', value: 1}),
+  })
+  protected override readonly genericMediaInfo: Signal<TvShowGenericMediaInfo> = computed(() => ({
+    id: this.mediaId(),
+    season: Number(this.selectedSeason().value) ?? 1,
+    episode: Number(this.selectedEpisode().value) ?? 1
+  }));
 
   protected override loader(id: number): Promise<TvShowDetails> {
     return this.tmdb.tvShows.details(id);

@@ -1,6 +1,7 @@
 <div class="container">
   <section class="media-settings">
-    <app-drop-down-select [(selectedIndex)]="selectedSeasonIndex" [options]="seasonsOptions()"/>
-    <app-drop-down-select [(selectedIndex)]="selectedEpisodeIndex" [options]="episodes()"/>
+    <app-drop-down-select [(selected)]="selectedSeason" [options]="seasonsOptions()"/>
+    <app-drop-down-select [(selected)]="selectedEpisode" [options]="episodes()"/>
+    <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"/>
   </section>
 </div>
