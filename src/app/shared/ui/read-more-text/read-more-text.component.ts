@@ -12,6 +12,7 @@ import {NgClass} from '@angular/common';
 export class ReadMoreTextComponent {
   readonly width: InputSignal<string> = input('unset');
   readonly headerText: InputSignal<string> = input('');
+  readonly headerTextSize: InputSignal<string> = input('1.2rem');
   readonly buttonText: InputSignal<string> = input("Read more");
   readonly buttonTextExpanded: InputSignal<string> = input("Read less");
   readonly contentLines: InputSignal<number> = input(3);
