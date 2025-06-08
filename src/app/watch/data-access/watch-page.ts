@@ -1,8 +1,11 @@
 import {MediaLinkProvider, TvMediaLinkProvider} from '../../shared/watch-provider/media-link-provider';
-import {MovieDetails, TvShowDetails} from 'tmdb-ts';
+import {MovieDetails, Recommendation, Recommendations, TvShowDetails} from 'tmdb-ts';
 import {computed, inject, linkedSignal, resource, ResourceRef, Signal, WritableSignal} from '@angular/core';
-import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
+import {ActivatedRoute} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {map} from 'rxjs';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {VideoSource} from '../../shared/constants';
 import {Option} from '../../shared/ui/drop-down-select/drop-down-select.component';
 
@@ -17,14 +20,40 @@ export interface TvShowGenericMediaInfo extends MovieGenericMediaInfo {
 
 export type GenericMediaInfo = MovieGenericMediaInfo | TvShowGenericMediaInfo;
 
-export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMediaInfo, D extends MovieDetails | TvShowDetails> {
-  protected readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
+export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends MovieDetails | TvShowDetails> {
   protected readonly tmdb: TmdbService = inject(TmdbService);
+  protected readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+
+  protected readonly mediaId: Signal<number> = toSignal(this.activatedRoute.paramMap.pipe(map((params) => Number(params.get('id')) ?? 0)), {initialValue: 0});
+
+  protected abstract readonly genericMediaInfo: Signal<I>;
+
+  // Search Media Information about the current media based on the ID
+  protected readonly mediaDetails: ResourceRef<D> = resource({
+    defaultValue: {} as D,
+    params: () => ({id: this.genericMediaInfo().id}),
+    loader: (data) => this.mediaDetailsLoader(data.params.id)
+  });
+
+  // Media Recommendations
+  protected readonly mediaRecommendationsRequest: ResourceRef<Recommendations> = resource({
+    defaultValue: {} as Recommendations,
+    params: () => ({id: this.mediaId()}),
+    loader: (data) => this.mediaRecommendationsLoader(data.params.id)
+  });
+  protected readonly mediaRecommendations: Signal<Recommendation[]> = computed(() => this.mediaRecommendationsRequest.value().results)
+
+  protected abstract mediaDetailsLoader(id: number): Promise<D>;
+
+  protected abstract mediaRecommendationsLoader(id: number): Promise<Recommendations>
+}
+
+export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMediaInfo, D extends MovieDetails | TvShowDetails> extends MediaDetailsPage<I, D> {
+  protected readonly domSanitizer = inject(DomSanitizer);
   protected readonly defaultVideoSource: VideoSource = 'vidora';
 
   // Abstract properties to be implemented by subclasses
   protected abstract readonly mediaLinkProviders: Signal<Record<VideoSource, P>>
-  protected abstract readonly genericMediaInfo: Signal<I>;
 
   // Media Link Provider Options
   protected readonly mediaLinkProviderOptions: Signal<Option[]> = computed((): Option[] =>
@@ -45,13 +74,6 @@ export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMe
     return this.mediaLinkProviders()[videoSource];
   })
 
-  // Search Media Information about the current media based on the ID
-  protected readonly mediaDetails: ResourceRef<D> = resource({
-    defaultValue: {} as D,
-    params: () => ({id: this.genericMediaInfo().id}),
-    loader: (data) => this.loader(data.params.id)
-  });
-
   // Convert the media information into a safe resource URL
   protected readonly mediaResourceUrl: Signal<SafeResourceUrl> = computed(() => {
     const mediaInformation = this.genericMediaInfo();
@@ -62,6 +84,4 @@ export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMe
     }
     return this.domSanitizer.bypassSecurityTrustResourceUrl(this.mediaLinkProvider().provideLink(mediaInformation.id));
   });
-
-  protected abstract loader(id: number): Promise<D>;
 }
