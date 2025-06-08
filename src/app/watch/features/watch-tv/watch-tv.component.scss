@@ -6,13 +6,16 @@
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);
   @include mixins.hidden-scrollbar();
   padding: constants.$spacing-md;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: auto;
+
+  main {
+    width: 100%;
+  }
 
   .watching-area {
     @include mixins.flex($direction: column, $justify-content: start, $align-items: start, $gap: constants.$spacing-md);
     margin-top: constants.$spacing-xxl;
-    width: 95%;
+    width: 97%;
 
     .player-container {
       @include mixins.box-shadow();
