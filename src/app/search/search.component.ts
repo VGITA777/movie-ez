@@ -36,9 +36,8 @@ export class SearchComponent extends WatchNavigationHandler {
   readonly searchText: ModelSignal<string> = model('');
   readonly debouncedSearchText: WritableSignal<string> = signal('');
   readonly hasSearched: Signal<boolean> = computed(() => this.debouncedSearchText() !== '');
-  readonly isLoading: Signal<boolean> = computed(() => this.searchResults.isLoading());
-  readonly hasResults: Signal<boolean> = computed(() => this.searchResults.value().total_results > 0 && !this.isLoading() && this.hasSearched());
   protected readonly environment = environment;
+  readonly isLoading: Signal<boolean> = computed(() => this.searchResults.isLoading());
   readonly searchResults: ResourceRef<Search<MultiSearchResult>> = resource({
     defaultValue: {} as Search<MultiSearchResult>,
     params: () => {
@@ -50,6 +49,7 @@ export class SearchComponent extends WatchNavigationHandler {
       query: resource.params.query
     })
   })
+  readonly hasResults: Signal<boolean> = computed(() => this.searchResults.value().total_results > 0 && !this.isLoading() && this.hasSearched());
   private readonly tmdb: TmdbService = inject(TmdbService);
 
   search(event: string) {

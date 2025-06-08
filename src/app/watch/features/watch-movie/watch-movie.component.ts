@@ -20,12 +20,16 @@ import {NavigatorService} from '../../../shared/utils/navigator.service';
 })
 export class WatchMovieComponent extends WatchPage<MovieMediaLinkProvider, MovieGenericMediaInfo, MovieDetails> {
 
-  private readonly navigatorService: NavigatorService = inject(NavigatorService);
   protected override mediaLinkProviders: Signal<Record<VideoSource, MovieMediaLinkProvider>> = signal(MOVIE_EMBED_OBJS);
   protected override readonly genericMediaInfo: Signal<MovieGenericMediaInfo> = toSignal(
     this.activatedRoute.paramMap.pipe(map((params): MovieGenericMediaInfo => ({id: Number(params.get('id')) ?? 0}))),
     {initialValue: {} as MovieGenericMediaInfo}
   )
+  private readonly navigatorService: NavigatorService = inject(NavigatorService);
+
+  handleOnCardClick($event: MediaLike) {
+    this.navigatorService.navigateToWatch($event);
+  }
 
   protected override mediaDetailsLoader(id: number): Promise<MovieDetails> {
     return this.tmdb.movies.details(id);
@@ -33,9 +37,5 @@ export class WatchMovieComponent extends WatchPage<MovieMediaLinkProvider, Movie
 
   protected override mediaRecommendationsLoader(id: number): Promise<Recommendations> {
     return this.tmdb.movies.recommendations(id);
-  }
-
-  handleOnCardClick($event: MediaLike) {
-    this.navigatorService.navigateToWatch($event);
   }
 }
