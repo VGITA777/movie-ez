@@ -3,8 +3,17 @@
     <section class="player-container">
       <iframe [src]="mediaResourceUrl()" allowfullscreen></iframe>
     </section>
-    <div class="media-settings-container">
+    <section class="media-settings-container">
       <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"/>
-    </div>
+    </section>
+  </main>
+  <main class="other-contents">
+    <section class="media-details-container">
+    </section>
+    <section class="sliders">
+      <app-media-slider (onCardClick)="handleOnCardClick($event)" [data]="mediaRecommendations()" mediaType="tv"
+                        subHeader="Recommendations for you"
+                        title="Recommendations"/>
+    </section>
   </main>
 </div>
