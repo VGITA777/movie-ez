@@ -1,5 +1,10 @@
 <div class="container">
-  <div class="media-settings">
-    <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"/>
-  </div>
+  <main class="watching-area">
+    <section class="player-container">
+      <iframe [src]="mediaResourceUrl()" allowfullscreen></iframe>
+    </section>
+    <div class="media-settings-container">
+      <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"/>
+    </div>
+  </main>
 </div>

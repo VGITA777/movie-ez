@@ -1,0 +1,35 @@
+@use "../../../../foundations/mixins";
+@use "../../../../foundations/constants";
+
+.container {
+  @include mixins.width-height();
+  @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);
+  @include mixins.hidden-scrollbar();
+  padding: constants.$spacing-md;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  .watching-area {
+    @include mixins.flex($direction: column, $justify-content: start, $align-items: start, $gap: constants.$spacing-md);
+    margin-top: constants.$spacing-xxl;
+    width: 95%;
+
+    .player-container {
+      @include mixins.box-shadow();
+      border-radius: constants.$border-radius-lg;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+
+      iframe {
+        @include mixins.width-height();
+        border: none;
+      }
+    }
+
+    .media-settings-container {
+      @include mixins.flex($direction: row, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
+      width: 100%;
+    }
+  }
+}
