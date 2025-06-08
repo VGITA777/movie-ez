@@ -1,0 +1,16 @@
+<div [style.--text-align]="contentTextAlign()"
+     [style.--text-lines]="contentLines()" [style.--text-size]="contentTextSize()"
+     [style.--text-spacing]="contentLetterSpacing()" [style.--text-weight]="contentFontWeight()"
+     [style.--width]="width()" class="container">
+  @if (headerText().trim().length > 0) {
+    <h2 class="header-text">
+      {{ headerText() }}
+    </h2>
+  }
+  <div class="contents">
+    <div [ngClass]="{'expanded': isExpanded()}" class="text-wrapper">
+      <ng-content></ng-content>
+    </div>
+    <button (click)="toggleExpand()">{{ (isExpanded()) ? buttonTextExpanded() : buttonText() }}</button>
+  </div>
+</div>
