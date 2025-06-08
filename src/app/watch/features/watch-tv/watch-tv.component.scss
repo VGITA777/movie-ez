@@ -1,11 +1,12 @@
 @use "../../../../foundations/mixins";
 @use "../../../../foundations/constants";
+@use "../../../../foundations/responsive";
 
 .container {
   @include mixins.width-height();
-  @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);
+  @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: 3em);
   @include mixins.hidden-scrollbar();
-  padding: constants.$spacing-md;
+  padding: constants.$spacing-xxl;
   overflow: auto;
 
   main {
@@ -14,8 +15,6 @@
 
   .watching-area {
     @include mixins.flex($direction: column, $justify-content: start, $align-items: start, $gap: constants.$spacing-md);
-    margin-top: constants.$spacing-xxl;
-    width: 97%;
 
     .player-container {
       @include mixins.box-shadow();
@@ -34,5 +33,11 @@
       @include mixins.flex($direction: row, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
       width: 100%;
     }
+  }
+}
+
+@include responsive.mobile-large {
+  .container {
+    padding: constants.$spacing-md;
   }
 }
