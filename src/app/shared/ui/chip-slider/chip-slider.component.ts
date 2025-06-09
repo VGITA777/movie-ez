@@ -20,4 +20,5 @@ export class ChipSliderComponent {
   readonly chipTextColor: InputSignal<string> = input('unset');
   readonly width: InputSignal<string> = input('100%');
   readonly withShine: InputSignal<boolean> = input(true);
+  readonly gap: InputSignal<string> = input('4px');
 }
