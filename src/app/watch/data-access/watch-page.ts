@@ -52,6 +52,7 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
   private readonly environment = environment;
   protected readonly backdropImageUrl: Signal<string> = computed(() => this.environment.fullImageUrl(this.mediaDetails.value().backdrop_path ?? '', this.defaultImageSize));
   protected readonly posterImageUrl: Signal<string> = computed(() => this.environment.fullImageUrl(this.mediaDetails.value().poster_path ?? '', this.defaultImageSize));
+  protected readonly overview: Signal<string> = computed(() => this.mediaDetails.value().overview ?? '');
 
   // Media Recommendations
   protected readonly mediaRecommendationsRequest: ResourceRef<Recommendations> = resource({
