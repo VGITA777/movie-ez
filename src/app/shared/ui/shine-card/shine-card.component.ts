@@ -18,6 +18,7 @@ export class ShineCardComponent implements AfterViewInit {
   readonly padding: InputSignal<string> = input('0px');
   readonly borderOpacity: InputSignal<number> = input(0);
   readonly borderOpacityHover: InputSignal<number> = input(1);
+  readonly borderRadius: InputSignal<string> = input('unset');
   readonly cardRef: Signal<ElementRef<HTMLDivElement>> = viewChild.required('cardRef');
 
   ngAfterViewInit(): void {

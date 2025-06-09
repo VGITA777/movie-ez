@@ -8,7 +8,7 @@
 
 .card {
   @include mixins.width-height();
-  @include mixins.border-radius(constants.$border-radius-md);
+  @include mixins.border-radius(var(--border-radius, constants.$border-radius-md));
   background-color: rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), 0);
   position: relative;
   overflow: hidden;
