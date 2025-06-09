@@ -1,0 +1,21 @@
+@use "../../../../foundations/mixins";
+@use "../../../../foundations/constants";
+@use "../../../../foundations/responsive";
+
+.container {
+  @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);
+  padding: constants.$spacing-lg;
+
+  section {
+    width: 100%;
+
+    app-chip-slider {
+      border-radius: constants.$border-radius-full;
+      overflow: hidden;
+    }
+  }
+
+  .main-contents {
+    @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
+  }
+}

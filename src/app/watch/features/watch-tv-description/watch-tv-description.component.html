@@ -1,1 +1,12 @@
-<p>watch-tv-description works!</p>
+<div class="container">
+  <section class="main-contents">
+    <app-image-title [src]="posterImageUrl()" title="" width="100%"/>
+    <app-chip-slider [data]="genresName()"/>
+  </section>
+  <section class="text-contents">
+    <app-read-more-text contentTextAlign="justify" contentTextSize=".8rem" headerText="Overview" headerTextSize="1rem"
+                        headerTextWeight="500">
+      {{ overview() }}
+    </app-read-more-text>
+  </section>
+</div>
