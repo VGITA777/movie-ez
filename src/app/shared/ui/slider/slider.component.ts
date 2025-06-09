@@ -33,6 +33,7 @@ export class SliderComponent implements OnInit {
   readonly swiperOptions: InputSignal<SwiperOptions | undefined> = input()
   readonly swiperContainer: Signal<ElementRef<SwiperContainer>> = viewChild.required('swiper')
   readonly init: InputSignal<boolean> = input(true);
+  readonly withProgress: InputSignal<boolean> = input(true);
   protected readonly swiperPagination: Signal<ElementRef<HTMLDivElement>> = viewChild.required('swiperPagination');
 
   ngOnInit() {
@@ -42,7 +43,7 @@ export class SliderComponent implements OnInit {
       direction: 'horizontal',
       spaceBetween: 12,
       pagination: {
-        enabled: true,
+        enabled: this.withProgress(),
         el: this.swiperPagination().nativeElement,
         type: 'bullets',
         bulletElement: 'span',
