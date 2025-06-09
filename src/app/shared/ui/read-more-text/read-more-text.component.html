@@ -1,7 +1,14 @@
-<div [style.--header-text-size]="headerTextSize()" [style.--text-align]="contentTextAlign()"
-     [style.--text-lines]="contentLines()" [style.--text-size]="contentTextSize()"
-     [style.--text-spacing]="contentLetterSpacing()" [style.--text-weight]="contentFontWeight()"
-     [style.--width]="width()" class="container">
+<div [ngStyle]="{
+       '--header-text-size': headerTextSize(),
+       '--text-align': contentTextAlign(),
+       '--text-lines': contentLines(),
+       '--text-size': contentTextSize(),
+       '--text-spacing': contentLetterSpacing(),
+       '--text-weight': contentFontWeight(),
+       '--width': width(),
+       '--header-text-weight': headerTextWeight()
+     }"
+     class="container">
   @if (headerText().trim().length > 0) {
     <h2 class="header-text">
       {{ headerText() }}

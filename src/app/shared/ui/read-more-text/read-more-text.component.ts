@@ -1,10 +1,11 @@
 import {Component, input, InputSignal, signal, WritableSignal} from '@angular/core';
-import {NgClass} from '@angular/common';
+import {NgClass, NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-read-more-text',
   imports: [
-    NgClass
+    NgClass,
+    NgStyle
   ],
   templateUrl: './read-more-text.component.html',
   styleUrl: './read-more-text.component.scss'
@@ -13,6 +14,7 @@ export class ReadMoreTextComponent {
   readonly width: InputSignal<string> = input('unset');
   readonly headerText: InputSignal<string> = input('');
   readonly headerTextSize: InputSignal<string> = input('1.2rem');
+  readonly headerTextWeight: InputSignal<string> = input('600');
   readonly buttonText: InputSignal<string> = input("Read more");
   readonly buttonTextExpanded: InputSignal<string> = input("Read less");
   readonly contentLines: InputSignal<number> = input(3);

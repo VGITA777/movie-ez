@@ -8,6 +8,7 @@
   .header-text {
     @include mixins.max-lines(1);
     font-size: var(--header-text-size);
+    font-weight: var(--header-text-weight);
   }
 
   .contents {
