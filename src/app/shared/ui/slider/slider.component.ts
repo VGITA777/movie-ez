@@ -29,7 +29,7 @@ export class SliderComponent implements OnInit {
 
   readonly design: InputSignal<TemplateRef<unknown>> = input.required();
   readonly data: InputSignal<unknown[]> = input.required();
-  readonly gap: InputSignal<string> = input('unset');
+  readonly gap: InputSignal<string> = input("12px");
   readonly swiperOptions: InputSignal<SwiperOptions | undefined> = input()
   readonly swiperContainer: Signal<ElementRef<SwiperContainer>> = viewChild.required('swiper')
   readonly init: InputSignal<boolean> = input(true);
@@ -41,7 +41,7 @@ export class SliderComponent implements OnInit {
       modules: [Pagination, FreeMode],
       slidesPerView: 'auto',
       direction: 'horizontal',
-      spaceBetween: 12,
+      spaceBetween: this.gap(),
       pagination: {
         enabled: this.withProgress(),
         el: this.swiperPagination().nativeElement,
