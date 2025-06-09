@@ -1,0 +1,29 @@
+@use "../../../../foundations/mixins";
+@use "../../../../foundations/constants";
+@use "../../../../foundations/responsive";
+
+.container {
+  @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
+  @include mixins.width-height(var(--width), var(--height));
+
+  .image-container {
+    border-radius: var(--border-radius);
+    aspect-ratio: var(--aspect-ratio);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+
+    img {
+      object-fit: cover;
+    }
+
+  }
+
+  .title-container {
+    h2 {
+      @include mixins.max-lines(var(--title-max-lines));
+      font-size: 1.2rem;
+      text-align: center;
+    }
+  }
+}
