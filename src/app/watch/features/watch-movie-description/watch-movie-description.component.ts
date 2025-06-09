@@ -1,4 +1,4 @@
-import {Component, signal, Signal} from '@angular/core';
+import {Component, computed, Signal} from '@angular/core';
 import {MediaDetailsPage, MovieGenericMediaInfo} from '../../data-access/watch-page';
 import {MovieDetails, Recommendations} from 'tmdb-ts';
 
@@ -9,7 +9,7 @@ import {MovieDetails, Recommendations} from 'tmdb-ts';
   styleUrl: './watch-movie-description.component.scss'
 })
 export class WatchMovieDescriptionComponent extends MediaDetailsPage<MovieGenericMediaInfo, MovieDetails> {
-  protected override genericMediaInfo: Signal<MovieGenericMediaInfo> = signal({id: this.mediaId()});
+  protected override genericMediaInfo: Signal<MovieGenericMediaInfo> = computed(() => ({id: this.mediaId()}));
 
   protected override mediaDetailsLoader(id: number): Promise<MovieDetails> {
     return this.tmdb.movies.details(id);
