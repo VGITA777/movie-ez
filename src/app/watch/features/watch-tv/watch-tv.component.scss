@@ -30,7 +30,7 @@
     }
 
     .media-settings-container {
-      @include mixins.flex($direction: row, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
+      @include mixins.flex($direction: row, $justify-content: start, $align-items: center, $wrap: wrap, $gap: constants.$spacing-md);
       width: 100%;
     }
   }
