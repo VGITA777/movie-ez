@@ -4,7 +4,10 @@
 
 .container {
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);
+  @include mixins.width-height();
+  @include mixins.hidden-scrollbar();
   padding: constants.$spacing-lg;
+  overflow: auto;
 
   section {
     width: 100%;
