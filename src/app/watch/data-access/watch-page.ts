@@ -1,5 +1,5 @@
 import {MediaLinkProvider, TvMediaLinkProvider} from '../../shared/watch-provider/media-link-provider';
-import {MovieDetails, Recommendation, Recommendations, TvShowDetails} from 'tmdb-ts';
+import {Genre, MovieDetails, Recommendation, Recommendations, TvShowDetails} from 'tmdb-ts';
 import {computed, inject, linkedSignal, resource, ResourceRef, Signal, WritableSignal} from '@angular/core';
 import {TmdbService} from '../../shared/data-access/tmdb.service';
 import {ActivatedRoute} from '@angular/router';
@@ -8,6 +8,7 @@ import {map} from 'rxjs';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {VideoSource} from '../../shared/constants';
 import {Option} from '../../shared/ui/drop-down-select/drop-down-select.component';
+import {environment} from '../../../environments/environment';
 
 export interface MovieGenericMediaInfo {
   id: number
@@ -21,6 +22,19 @@ export interface TvShowGenericMediaInfo extends MovieGenericMediaInfo {
 export type GenericMediaInfo = MovieGenericMediaInfo | TvShowGenericMediaInfo;
 
 export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends MovieDetails | TvShowDetails> {
+  protected readonly defaultImageSize: string = 'original';
+  protected readonly title: Signal<string> = computed(() => {
+    const data: D = this.mediaDetails.value()
+    if ('title' in data) {
+      return data.title ?? 'Untitled Movie';
+    }
+
+    if ('name' in data) {
+      return data.name ?? 'Untitled TV Show';
+    }
+
+    return '';
+  });
   protected readonly tmdb: TmdbService = inject(TmdbService);
   protected readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
@@ -34,6 +48,10 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
     params: () => ({id: this.genericMediaInfo().id}),
     loader: (data) => this.mediaDetailsLoader(data.params.id)
   });
+  protected readonly genres: Signal<Genre[]> = computed(() => this.mediaDetails.value().genres ?? []);
+  private readonly environment = environment;
+  protected readonly backdropImageUrl: Signal<string> = computed(() => this.environment.fullImageUrl(this.mediaDetails.value().backdrop_path ?? '', this.defaultImageSize));
+  protected readonly posterImageUrl: Signal<string> = computed(() => this.environment.fullImageUrl(this.mediaDetails.value().poster_path ?? '', this.defaultImageSize));
 
   // Media Recommendations
   protected readonly mediaRecommendationsRequest: ResourceRef<Recommendations> = resource({
