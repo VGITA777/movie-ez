@@ -3,7 +3,7 @@
 @use '../../foundations/responsive';
 
 .container {
-  @include mixins.grid($grid-template-columns: 1fr minmax(150px, 280px), $gap: constants.$spacing-lg);
+  @include mixins.grid($grid-template-columns: 1fr min(280px, 30%), $gap: constants.$spacing-lg);
   @include mixins.width-height();
 
   section {
