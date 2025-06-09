@@ -2,6 +2,10 @@
 @use "../../../../foundations/constants";
 @use "../../../../foundations/responsive";
 
+:host {
+  width: 100%
+}
+
 .container {
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
   @include mixins.width-height(var(--width), var(--height));
