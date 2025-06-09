@@ -2,6 +2,16 @@
 
 
 <ng-template #chipDesign let-model>
+  @if (withShine()) {
+    <app-shine-card borderRadius="100px">
+      <ng-container [ngTemplateOutlet]="chip" [ngTemplateOutletContext]="{ $implicit: model }"></ng-container>
+    </app-shine-card>
+  } @else {
+    <ng-container [ngTemplateOutlet]="chip" [ngTemplateOutletContext]="{ $implicit: model }"></ng-container>
+  }
+</ng-template>
+
+<ng-template #chip let-model>
   <div [style.--chip-background-color]="chipBackgroundColor()"
        [style.--font-size]="fontSize()"
        [style.--text-color]="chipTextColor()"
