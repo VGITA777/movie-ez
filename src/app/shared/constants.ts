@@ -50,7 +50,7 @@ export type VideoSource =
 
 export const MOVIE_EMBED_LINKS: Record<VideoSource, string> = {
   flix: 'https://flix.1ani.me/embed/tmdb-movie-{id}',
-  vidora: 'https://vidora.su/movie/{id}',
+  vidora: 'https://vidora.su/movie/{id}?colour=663399&autoplay=false&autonextepisode=false&pausescreen=true',
   embedsu: 'https://embed.su/embed/movie/{id}',
   autoembed: 'https://player.autoembed.cc/embed/movie/{id}',
   vidsrc: 'https://vidsrc.in/embed/movie/{id}',
@@ -62,7 +62,7 @@ export const MOVIE_EMBED_LINKS: Record<VideoSource, string> = {
 
 export const TV_EMBED_LINKS: Record<VideoSource, string> = {
   flix: 'https://flix.1ani.me/embed/tmdb-tv-{id}/{season}/{episode}',
-  vidora: 'https://vidora.su/tv/{id}/{season}/{episode}',
+  vidora: 'https://vidora.su/tv/{id}/{season}/{episode}?colour=663399&autoplay=false&autonextepisode=false&pausescreen=true',
   embedsu: 'https://embed.su/embed/tv/{id}/{season_number}/{episode_number}',
   autoembed: 'https://player.autoembed.cc/embed/tv/{id}/{season}/{episode}',
   vidsrc: 'https://vidsrc.xyz/embed/tv/{id}/{season}/{episode}',
