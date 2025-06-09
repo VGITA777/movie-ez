@@ -1,0 +1,11 @@
+<app-slider [data]="data()" [design]="chipDesign" [style.--width]="width()" [withProgress]="false"></app-slider>
+
+
+<ng-template #chipDesign let-model>
+  <div [style.--chip-background-color]="chipBackgroundColor()"
+       [style.--font-size]="fontSize()"
+       [style.--text-color]="chipTextColor()"
+       class="chip">
+    <span class="name">{{ model }}</span>
+  </div>
+</ng-template>
