@@ -21,4 +21,56 @@
   .main-contents {
     @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
   }
+
+  .text-contents {
+    @include mixins.flex($direction: column, $justify-content: start, $align-items: start, $gap: constants.$spacing-xxl);
+
+    .generic-data {
+      @include mixins.flex($direction: column, $wrap: wrap, $justify-content: space-around, $align-items: start, $gap: constants.$spacing-xxl);
+      width: 100%;
+
+      .long-texts {
+        @include mixins.flex($direction: row, $wrap: wrap, $align-items: center, $justify-content: center, $gap: constants.$spacing-md);
+        width: 100%;
+
+        .long-text-entry {
+          @include mixins.flex($direction: row, $justify-content: space-between, $gap: 0);
+          width: 100%;
+
+          .title {
+            letter-spacing: 1.3px;
+            font-size: .8rem;
+            font-weight: 200;
+          }
+
+          .subtitle {
+            letter-spacing: 1px;
+            font-size: .8rem;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .short-texts {
+        @include mixins.flex($direction: row, $wrap: wrap, $align-items: center, $justify-content: space-between, $gap: constants.$spacing-xxl);
+        width: 100%;
+
+        .short-text-entry {
+          @include mixins.flex($direction: column, $align-items: center, $gap: constants.$spacing-xs);
+
+          .title {
+            letter-spacing: 1.5px;
+            font-size: .8rem;
+            font-weight: 200;
+          }
+
+          .subtitle {
+            letter-spacing: 1.3px;
+            font-size: .9rem;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
 }
