@@ -44,8 +44,11 @@
           }
 
           .subtitle {
+            @include mixins.max-lines();
+            text-align: end;
             letter-spacing: 1px;
             font-size: .8rem;
+            max-width: 60%;
             font-weight: 500;
           }
         }
