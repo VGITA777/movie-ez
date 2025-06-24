@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, ElementRef, input, InputSignal, Signal, viewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  InputSignal,
+  Renderer2,
+  Signal,
+  viewChild
+} from '@angular/core';
 import {NgStyle} from '@angular/common';
 
 @Component({
@@ -11,6 +21,7 @@ import {NgStyle} from '@angular/common';
   host: {'style.background-color': 'red'},
 })
 export class ShineCardComponent implements AfterViewInit {
+  private readonly renderer: Renderer2 = inject(Renderer2);
   readonly initShine: InputSignal<boolean> = input(true);
   readonly shineColor: InputSignal<Color> = input({red: 255, blue: 255, green: 255});
   readonly backgroundColor: InputSignal<Color> = input({red: 15, blue: 15, green: 15});
@@ -23,13 +34,14 @@ export class ShineCardComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.initShine()) {
-      this.cardRef().nativeElement.onmousemove = ev => this.addShineEffect(ev);
+      this.renderer.listen(this.cardRef().nativeElement, 'mousemove', (ev: MouseEvent) => this.addShineEffect(ev));
     }
   }
 
   public setShineProperties(x: number, y: number): void {
-    this.cardRef().nativeElement.style.setProperty('--shine-pos-x', `${x}px`);
-    this.cardRef().nativeElement.style.setProperty('--shine-pos-y', `${y}px`);
+    const element: HTMLDivElement = this.cardRef().nativeElement;
+    element.style.setProperty('--shine-pos-x', `${x}px`);
+    element.style.setProperty('--shine-pos-y', `${y}px`);
   }
 
   private addShineEffect(ev: MouseEvent): void {
