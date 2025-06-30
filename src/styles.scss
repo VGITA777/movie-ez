@@ -6,3 +6,30 @@
 body {
   background-color: constants.$dark-surface-950;
 }
+
+.loading-container {
+  @include mixins.absolute($top: 0, $left: 0, $z-index: 9999);
+  @include mixins.flex(column, nowrap, center, center);
+  @include mixins.transition(opacity, 0.5s, ease-out);
+  @include mixins.width-height();
+  background-color: constants.$dark-surface-950;
+  color: constants.$light-surface-50;
+
+  .loading-content {
+    h1 {
+      color: inherit;
+      font-weight: 400;
+      font-size: 1.5rem;
+      letter-spacing: 0.3em;
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
