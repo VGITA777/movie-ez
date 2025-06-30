@@ -16,20 +16,27 @@ body {
   color: constants.$light-surface-50;
 
   .loading-content {
-    h1 {
+    @starting-style {
+      opacity: 0;
+    }
+    @include mixins.flex($gap: 1rem);
+    opacity: 1;
+
+    span {
       color: inherit;
-      font-weight: 400;
       font-size: 1.5rem;
-      letter-spacing: 0.3em;
+      font-weight: 400;
+      animation: movement .6s ease-in-out infinite alternate;
+      animation-delay: calc(.1s * var(--delay));
     }
   }
 }
 
-@keyframes spin {
+@keyframes movement {
   0% {
-    transform: rotate(0deg);
+    transform: translateY(0);
   }
   100% {
-    transform: rotate(360deg);
+    transform: translateY(-10px);
   }
 }
