@@ -2,6 +2,16 @@
 @use '../foundations/mixins';
 @use '../foundations/responsive';
 
+app-loading {
+  @include mixins.transition($property: opacity, $duration: 0.5s, $timing-function: ease-out);
+  @include mixins.absolute($top: 0, $left: 0, $z-index: 9999);
+  @include mixins.width-height();
+
+  &.fade-out {
+    opacity: 0;
+  }
+}
+
 .container {
   @include mixins.width-height(100vw, 100vh);
   @include mixins.grid($grid-template-columns: min(225px, 100%) 1fr, $gap: constants.$spacing-lg);

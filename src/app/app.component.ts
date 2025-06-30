@@ -1,16 +1,29 @@
-import {Component, inject, OnDestroy, OnInit, Signal} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  Signal,
+  signal,
+  viewChild,
+  WritableSignal
+} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NavigationRailComponent} from './navigation-rail/navigation-rail.component';
-import {Subscription} from 'rxjs';
+import {Subscription, timer} from 'rxjs';
 import {ProgressShowerService, ProgressType} from './shared/utils/progress-shower.service';
 import {
   IndeterminateProgressBarComponent
 } from './shared/ui/indeterminate-progress-bar/indeterminate-progress-bar.component';
 import {DeviceSizeService} from './shared/utils/device-size.service';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {NgClass} from '@angular/common';
+import {LoadingComponent} from './loading/loading.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent],
+  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent, NgClass, LoadingComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: []
@@ -18,24 +31,38 @@ import {DeviceSizeService} from './shared/utils/device-size.service';
 export class AppComponent implements OnInit, OnDestroy {
 
   toastSubscription!: Subscription;
-  /*  readonly messageService: MessageService = inject(MessageService);
-    readonly toast: ToastService = inject(ToastService);*/
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
   readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
   readonly isMobile: Signal<boolean> = this.deviceSizeService.isMobile;
   readonly progress: Signal<number> = this.progressShower.progress;
   readonly progressType: Signal<ProgressType> = this.progressShower.progressType;
 
+  // Loading screen properties
+  readonly minimumLoadTimeMillis: number = 1500;
+  readonly isDeletingLoadingScreen: WritableSignal<boolean> = signal(false);
+  readonly showLoadingScreen: WritableSignal<boolean> = signal(true);
+  readonly loadingScreen: Signal<ElementRef<HTMLDivElement>> = viewChild.required('loadingContainer');
+
   ngOnInit() {
-    /*    this.toastSubscription = this.toast.message.subscribe((e) => {
-          if (!e) {
-            return;
-          }
-          this.messageService.add(e);
-        })*/
+    this.startProcessingLoadingScreen();
   }
 
   ngOnDestroy() {
-    this.toastSubscription.unsubscribe();
+    this.toastSubscription?.unsubscribe();
+  }
+
+  private startProcessingLoadingScreen() {
+    timer(this.minimumLoadTimeMillis).subscribe(() => {
+      const target: HTMLDivElement = this.loadingScreen().nativeElement;
+      this.isDeletingLoadingScreen.set(true);
+      target.addEventListener('transitionend', () => {
+        this.hideLoadingScreen()
+      }, {once: true})
+    });
+  }
+
+  private hideLoadingScreen() {
+    this.showLoadingScreen.set(false);
+    this.isDeletingLoadingScreen.set(false);
   }
 }

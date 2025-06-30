@@ -8,6 +8,13 @@
   <app-indeterminate-progress-bar/>
 }
 
+<!-- Loading Screen Overlay -->
+@if (showLoadingScreen()) {
+  <div #loadingContainer class="loading-container">
+    <app-loading [ngClass]="{'fade-out': isDeletingLoadingScreen()}"/>
+  </div>
+}
+
 <div class="container">
   @if (!isMobile()) {
     <aside class="content-container">
