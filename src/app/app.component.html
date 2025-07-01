@@ -1,3 +1,7 @@
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
 <!--@if (progressType() !== 'hidden') {-->
 <!--  <p-progress-bar [mode]="(progressType() === 'indeterminate') ? 'indeterminate' : ''"-->
 <!--                  [style]="{ 'height': '3px', 'background-color': 'transparent' }"/>-->
@@ -10,8 +14,8 @@
 
 <!-- Loading Screen Overlay -->
 @if (showLoadingScreen()) {
-  <div #loadingContainer class="loading-container">
-    <app-loading [ngClass]="{'fade-out': isDeletingLoadingScreen()}"/>
+  <div #loadingContainer class="loading-container" [ngClass]="{'fade-out': isDeletingLoadingScreen()}">
+    <app-loading/>
   </div>
 }
 

@@ -1,3 +1,7 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 @use "../../foundations/mixins";
 @use "../../foundations/constants";
 
@@ -18,10 +22,10 @@
     }
 
     span {
-      text-shadow: 0 0 10px rgba(255, 255, 255, 1);
       color: inherit;
       font-size: 1.5rem;
       font-weight: 400;
+      text-shadow: 0 0 4px rgba(255, 255, 255, .7);
       animation: movement .6s ease-in-out infinite alternate;
       animation-delay: calc(.1s * var(--delay));
     }
@@ -30,9 +34,9 @@
 
 @keyframes movement {
   0% {
-    transform: translateY(0);
+    opacity: 1;
   }
   100% {
-    transform: translateY(-10px);
+    opacity: 0.5;
   }
 }

@@ -1,9 +1,13 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 @use '../foundations/constants';
 @use '../foundations/mixins';
 @use '../foundations/responsive';
 
-app-loading {
-  @include mixins.transition($property: opacity, $duration: 0.5s, $timing-function: ease-out);
+.loading-container {
+  @include mixins.transition($property: opacity, $duration: 1.5s, $timing-function: ease);
   @include mixins.absolute($top: 0, $left: 0, $z-index: 9999);
   @include mixins.width-height();
 
