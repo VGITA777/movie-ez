@@ -24,14 +24,14 @@
     fill: constants.$dark-surface-200;
   }
 
-  .search-results {
+  .search-results-container {
     @include mixins.border-radius(constants.$border-radius-lg);
     @include mixins.flex($justify-content: center, $align-items: start);
     @include mixins.hidden-scrollbar();
     @include mixins.width-height();
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
-    overflow: auto;
+    overflow: hidden;
 
     span {
       letter-spacing: .2em;
@@ -41,9 +41,10 @@
 
     .result-cards {
       @include mixins.width-height();
+      @include mixins.hidden-scrollbar();
       @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)), $gap: constants.$spacing-md);
       position: relative;
-      height: auto;
+      overflow: auto;
 
       app-shine-card {
         @include mixins.width-height($height: fit-content);
@@ -69,7 +70,7 @@
 
 @include responsive.laptop {
   .container {
-    .search-results {
+    .search-results-container {
       .result-cards {
         @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)), $gap: constants.$spacing-md);
       }
@@ -79,7 +80,7 @@
 
 @include responsive.tablet {
   .container {
-    .search-results {
+    .search-results-container {
       .result-cards {
         @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)), $gap: constants.$spacing-s);
       }
@@ -89,7 +90,7 @@
 
 @include responsive.mobile-large {
   .container {
-    .search-results {
+    .search-results-container {
       .result-cards {
         @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)), $gap: constants.$spacing-s);
       }
