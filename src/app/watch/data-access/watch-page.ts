@@ -69,7 +69,7 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
 
 export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMediaInfo, D extends MovieDetails | TvShowDetails> extends MediaDetailsPage<I, D> {
   protected readonly domSanitizer = inject(DomSanitizer);
-  protected readonly defaultVideoSource: VideoSource = 'vidora';
+  protected readonly defaultVideoSource: VideoSource = 'vidsrc';
 
   // Abstract properties to be implemented by subclasses
   protected abstract readonly mediaLinkProviders: Signal<Record<VideoSource, P>>
