@@ -9,7 +9,7 @@
   @include mixins.absolute($top: 0, $left: 0, $z-index: 9999);
   @include mixins.flex(column, nowrap, center, center);
   @include mixins.transition(opacity, 0.5s, ease-out);
-  @include mixins.width-height();
+  @include mixins.width-height(100vw, 100vh);
   background-color: constants.$dark-surface-950;
   color: constants.$light-surface-50;
 
