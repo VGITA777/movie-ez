@@ -22,7 +22,7 @@ export interface TvShowGenericMediaInfo extends MovieGenericMediaInfo {
 export type GenericMediaInfo = MovieGenericMediaInfo | TvShowGenericMediaInfo;
 
 export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends MovieDetails | TvShowDetails> {
-  protected readonly defaultImageSize: string = 'original';
+  protected readonly defaultImageSize: string = environment.defaultWatchImageSize;
   protected readonly title: Signal<string> = computed(() => {
     const data: D = this.mediaDetails.value()
     if ('title' in data) {
