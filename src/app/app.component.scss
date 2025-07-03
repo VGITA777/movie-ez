@@ -45,9 +45,24 @@ app-indeterminate-progress-bar {
   width: 100%;
 }
 
-@include responsive.tablet-below {
+@include responsive.tablet {
   .container {
-    @include mixins.grid(auto 3fr, $gap: constants.$spacing-lg);
+    @include mixins.grid(auto 1fr, $gap: constants.$spacing-lg);
+  }
+}
+
+@include responsive.tablet-half {
+  .container {
+    @include mixins.grid(1fr, $gap: constants.$spacing-lg);
+    padding: 0;
+
+    aside {
+      display: none;
+    }
+
+    main {
+      background-color: transparent;
+    }
   }
 }
 

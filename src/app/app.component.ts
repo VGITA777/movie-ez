@@ -17,7 +17,6 @@ import {
   IndeterminateProgressBarComponent
 } from './shared/ui/indeterminate-progress-bar/indeterminate-progress-bar.component';
 import {DeviceSizeService} from './shared/utils/device-size.service';
-import {bootstrapApplication} from '@angular/platform-browser';
 import {NgClass} from '@angular/common';
 import {LoadingComponent} from './loading/loading.component';
 
@@ -33,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
   toastSubscription!: Subscription;
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
   readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
-  readonly isMobile: Signal<boolean> = this.deviceSizeService.isMobile;
+  readonly isTabletMedium: Signal<boolean> = this.deviceSizeService.isTabletMedium;
   readonly progress: Signal<number> = this.progressShower.progress;
   readonly progressType: Signal<ProgressType> = this.progressShower.progressType;
 

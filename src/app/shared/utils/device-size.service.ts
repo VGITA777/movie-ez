@@ -84,7 +84,7 @@ export const DeviceSizeMap: Record<DeviceSize, string> = {
   'mobile-medium': '(max-width: 375px)',
   'mobile-large': '(max-width: 425px)',
   'tablet-medium': '(min-width: 426px) and (max-width: 597px)',
-  'tablet-large': '(min-width: 426px) and (max-width: 768px)',
+  'tablet-large': '(min-width: 598px) and (max-width: 768px)',
   'laptop': '(min-width: 769px) and (max-width: 1024px)',
   'desktop': '(min-width: 1025px)',
 };
