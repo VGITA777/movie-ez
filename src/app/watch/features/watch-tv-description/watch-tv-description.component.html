@@ -1,41 +1,55 @@
 <div class="container">
   <section class="main-contents">
-    <app-image-title [src]="posterImageUrl()" title="" width="100%"/>
-    <app-chip-slider [data]="genresName()"/>
+    @if (!mediaDetails.isLoading()) {
+      <app-image-title [src]="posterImageUrl()" title="" width="100%"/>
+      <app-chip-slider [data]="genresName()"/>
+    } @else {
+      <app-skeleton borderRadius="8px" aspectRatio="2 / 3" height="auto" width="100%"/>
+      <app-skeleton borderRadius="8px" aspectRatio="13 / 2" height="auto" width="100%"/>
+    }
   </section>
   <section class="text-contents">
     <div class="generic-data">
 
-      <div class="long-texts">
-        <div class="long-text-entry">
-          <span class="title">Title</span>
-          <span class="subtitle">{{ mediaDetails.value().name }}</span>
+      @if (!mediaDetails.isLoading()) {
+        <div class="long-texts">
+          <div class="long-text-entry">
+            <span class="title">Title</span>
+            <span class="subtitle">{{ mediaDetails.value().name }}</span>
+          </div>
+          <div class="long-text-entry">
+            <span class="title">Aired on</span>
+            <span class="subtitle">{{ mediaDetails.value().first_air_date }}</span>
+          </div>
         </div>
-        <div class="long-text-entry">
-          <span class="title">Aired on</span>
-          <span class="subtitle">{{ mediaDetails.value().first_air_date }}</span>
-        </div>
-      </div>
 
-      <div class="short-texts">
-        <div class="short-text-entry">
-          <span class="title">Seasons</span>
-          <span class="subtitle">{{ totalSeasons() }}</span>
+        <div class="short-texts">
+          <div class="short-text-entry">
+            <span class="title">Seasons</span>
+            <span class="subtitle">{{ totalSeasons() }}</span>
+          </div>
+          <div class="short-text-entry">
+            <span class="title">Episodes</span>
+            <span class="subtitle">{{ totalEpisodes() }}</span>
+          </div>
+          <div class="short-text-entry">
+            <span class="title">Rating</span>
+            <span class="subtitle">{{ mediaDetails.value().vote_average.toFixed(2) }}</span>
+          </div>
         </div>
-        <div class="short-text-entry">
-          <span class="title">Episodes</span>
-          <span class="subtitle">{{ totalEpisodes() }}</span>
-        </div>
-        <div class="short-text-entry">
-          <span class="title">Rating</span>
-          <span class="subtitle">{{ mediaDetails.value().vote_average.toFixed(2) }}</span>
-        </div>
-      </div>
+      } @else {
+        <app-skeleton borderRadius="8px" aspectRatio="12 / 2" height="auto" width="100%"/>
+        <app-skeleton borderRadius="8px" aspectRatio="5 / 2" height="auto" width="100%"/>
+      }
     </div>
 
-    <app-read-more-text contentTextAlign="justify" contentTextSize=".8rem" headerText="Overview" headerTextSize="1rem"
-                        headerTextWeight="500">
-      {{ overview() }}
-    </app-read-more-text>
+    @if (!mediaDetails.isLoading()) {
+      <app-read-more-text contentTextAlign="justify" contentTextSize=".8rem" headerText="Overview" headerTextSize="1rem"
+                          headerTextWeight="500">
+        {{ overview() }}
+      </app-read-more-text>
+    } @else {
+      <app-skeleton borderRadius="8px" aspectRatio="8 / 2.2" height="auto" width="100%"/>
+    }
   </section>
 </div>

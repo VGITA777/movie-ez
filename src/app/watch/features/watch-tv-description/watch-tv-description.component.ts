@@ -4,13 +4,15 @@ import {Recommendations, TvShowDetails} from 'tmdb-ts';
 import {ImageTitleComponent} from '../../ui/image-title/image-title.component';
 import {ChipSliderComponent} from '../../../shared/ui/chip-slider/chip-slider.component';
 import {ReadMoreTextComponent} from '../../../shared/ui/read-more-text/read-more-text.component';
+import {SkeletonComponent} from '../../../shared/ui/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-watch-tv-description',
   imports: [
     ImageTitleComponent,
     ChipSliderComponent,
-    ReadMoreTextComponent
+    ReadMoreTextComponent,
+    SkeletonComponent
   ],
   templateUrl: './watch-tv-description.component.html',
   styleUrl: './watch-tv-description.component.scss'
