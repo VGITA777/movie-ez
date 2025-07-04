@@ -1,8 +1,11 @@
 import {Component, input, InputSignal} from '@angular/core';
+import {NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-indeterminate-progress-bar',
-  imports: [],
+  imports: [
+    NgStyle
+  ],
   templateUrl: './indeterminate-progress-bar.component.html',
   styleUrl: './indeterminate-progress-bar.component.scss'
 })

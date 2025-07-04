@@ -19,8 +19,8 @@
       <div class="message-container">
         @let noSearchText = "Start searching for anything!";
         @for (char of noSearchText; track char; let i = $index) {
-          <span [style.width]="(char === ' ') ? '.4rem' : 'auto'" [style.--delay]="i"
-                [style.--text-size]="noSearchText.length">{{ char }}</span>
+          <span
+            [ngStyle]="{ width: (char === ' ') ? '.4rem' : 'auto', '--delay': i, '--text-size': noSearchText.length }">{{ char }}</span>
         }
       </div>
     } @else if (!isLoading() && !hasResults()) {
@@ -28,8 +28,8 @@
         <!-- FOR NO RESULTS MESSAGE -->
         @let noResultText = "No Results.";
         @for (char of noResultText; track char; let i = $index) {
-          <span [style.width]="(char === ' ') ? '.4rem' : 'auto'" [style.--delay]="i"
-                [style.--text-size]="noResultText.length">{{ char }}</span>
+          <span
+            [ngStyle]="{ width: (char === ' ') ? '.4rem' : 'auto', '--delay': i, '--text-size': noResultText.length }">{{ char }}</span>
         }
       </div>
     } @else {

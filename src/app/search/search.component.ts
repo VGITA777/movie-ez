@@ -19,6 +19,7 @@ import {environment} from '../../environments/environment';
 import {ShineCardGroupDirective} from '../shared/directives/shine-card-group.directive';
 import {WatchNavigationHandler} from '../shared/utils/navigator.service';
 import {SkeletonComponent} from '../shared/ui/skeleton/skeleton.component';
+import {NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-search',
@@ -27,7 +28,8 @@ import {SkeletonComponent} from '../shared/ui/skeleton/skeleton.component';
     ShineCardComponent,
     MediaCardComponent,
     ShineCardGroupDirective,
-    SkeletonComponent
+    SkeletonComponent,
+    NgStyle
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'

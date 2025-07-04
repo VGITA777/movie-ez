@@ -1,4 +1,4 @@
-<app-slider [data]="data()" [design]="chipDesign" [gap]="gap()" [style.--width]="width()"
+<app-slider [data]="data()" [design]="chipDesign" [gap]="gap()" [ngStyle]="{ '--width': width() }"
             [withProgress]="false"></app-slider>
 
 
@@ -13,9 +13,11 @@
 </ng-template>
 
 <ng-template #chip let-model>
-  <div [style.--chip-background-color]="chipBackgroundColor()"
-       [style.--font-size]="fontSize()"
-       [style.--text-color]="chipTextColor()"
+  <div [ngStyle]="{
+      '--chip-background-color': chipBackgroundColor(),
+      '--font-size': fontSize(),
+      '--text-color': chipTextColor()
+    }"
        class="chip">
     <span class="name">{{ model }}</span>
   </div>

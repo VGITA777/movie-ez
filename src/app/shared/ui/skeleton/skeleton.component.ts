@@ -1,8 +1,11 @@
 import {Component, input, InputSignal} from '@angular/core';
+import {NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-skeleton',
-  imports: [],
+  imports: [
+    NgStyle
+  ],
   templateUrl: './skeleton.component.html',
   styleUrl: './skeleton.component.scss'
 })

@@ -1,4 +1,8 @@
-<div [style.--aspect-ratio]="aspectRatio()" [style.--border-radius]="borderRadius()" [style.--height]="height()"
-     [style.--width]="width()" class="skeleton">
+<div [ngStyle]="{
+  '--aspect-ratio': aspectRatio(),
+  '--border-radius': borderRadius(),
+  '--height': height(),
+  '--width': width()
+}" class="skeleton">
 
 </div>

@@ -1,14 +1,15 @@
 import {Component, input, InputSignal} from '@angular/core';
 import {SliderComponent} from '../slider/slider.component';
 import {ShineCardComponent} from '../shine-card/shine-card.component';
-import {NgTemplateOutlet} from '@angular/common';
+import {NgStyle, NgTemplateOutlet} from '@angular/common';
 
 @Component({
   selector: 'app-chip-slider',
   imports: [
     SliderComponent,
     ShineCardComponent,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    NgStyle
   ],
   templateUrl: './chip-slider.component.html',
   styleUrl: './chip-slider.component.scss'
