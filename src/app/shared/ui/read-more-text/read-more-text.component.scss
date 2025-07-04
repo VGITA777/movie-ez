@@ -15,7 +15,6 @@
     @include mixins.flex($direction: column, $align-items: end, $gap: constants.$spacing-md);
 
     .text-wrapper {
-      @include mixins.transition();
       @include mixins.max-lines(var(--text-lines));
       text-align: var(--text-align);
       font-weight: var(--text-weight);
