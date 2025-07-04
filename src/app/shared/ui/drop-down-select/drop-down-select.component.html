@@ -1,6 +1,6 @@
 <select (ngModelChange)="handleSelectionChange($event)" [ngModel]="selected()?.value"
-        [style.--background-color]="backgroundColor()" [style.--height]="height()"
-        [style.--width]="width()">
+        [ngStyle]="{ '--background-color': backgroundColor(), '--height': height(),
+        '--width': width(), '--max-width': maxWidth() }">
   @for (option of options(); track option; let i = $index) {
     <option [value]="option.value"><span>
       <ng-container [ngTemplateOutlet]="optionTemplate() ?? defaultStyle"

@@ -1,12 +1,13 @@
 import {Component, input, InputSignal, model, ModelSignal, TemplateRef} from '@angular/core';
-import {NgTemplateOutlet} from '@angular/common';
+import {NgStyle, NgTemplateOutlet} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-drop-down-select',
   imports: [
     NgTemplateOutlet,
-    FormsModule
+    FormsModule,
+    NgStyle
   ],
   templateUrl: './drop-down-select.component.html',
   styleUrl: './drop-down-select.component.scss'
@@ -18,6 +19,7 @@ export class DropDownSelectComponent {
   readonly backgroundColor: InputSignal<string> = input('unset');
   readonly width: InputSignal<string> = input('unset');
   readonly height: InputSignal<string> = input('unset');
+  readonly maxWidth: InputSignal<string> = input('unset');
 
   protected handleSelectionChange(event: any): void {
     const selectedOption: Option = this.options().find(option => option.value == event)!;

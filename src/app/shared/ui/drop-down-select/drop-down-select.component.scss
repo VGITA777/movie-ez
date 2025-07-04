@@ -9,6 +9,7 @@ select {
   border: none;
   width: var(--width);
   height: var(--height);
+  max-width: var(--max-width);
 
   &::-webkit-scrollbar {
     background-color: transparent;
