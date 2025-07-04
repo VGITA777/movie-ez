@@ -7,7 +7,11 @@ import {NgStyle} from '@angular/common';
     NgStyle
   ],
   templateUrl: './skeleton.component.html',
-  styleUrl: './skeleton.component.scss'
+  styleUrl: './skeleton.component.scss',
+  host: {
+    "[style.width]": "width()",
+    "[style.height]": "height()"
+  }
 })
 export class SkeletonComponent {
   readonly width: InputSignal<string> = input('unset');
