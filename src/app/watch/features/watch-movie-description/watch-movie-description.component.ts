@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {Component, computed, effect, Signal} from '@angular/core';
 import {MediaDetailsPage, MovieGenericMediaInfo} from '../../data-access/watch-page';
 import {MovieDetails, Recommendations} from 'tmdb-ts';
@@ -21,10 +25,10 @@ export class WatchMovieDescriptionComponent extends MediaDetailsPage<MovieGeneri
   protected override genericMediaInfo: Signal<MovieGenericMediaInfo> = computed(() => ({id: this.mediaId()}));
   protected readonly genresName: Signal<string[]> = computed(() => this.genres().map(g => g.name));
   protected readonly duration: Signal<string> = computed(() => {
-    if (this.mediaDetails.isLoading()) {
+    if (this.mediaDetailsRequest.isLoading()) {
       return 'loading...';
     }
-    const duration: number = this.mediaDetails.value().runtime ?? 0;
+    const duration: number = this.mediaDetailsRequest.value().runtime ?? 0;
     if (duration === 0) {
       return '0';
     }
@@ -39,7 +43,7 @@ export class WatchMovieDescriptionComponent extends MediaDetailsPage<MovieGeneri
   constructor() {
     super();
     effect(() => {
-      console.log(`Is loading: ${this.mediaDetails.isLoading()}`);
+      console.log(`Is loading: ${this.mediaDetailsRequest.isLoading()}`);
     })
   }
 

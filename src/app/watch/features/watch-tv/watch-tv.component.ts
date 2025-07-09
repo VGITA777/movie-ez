@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {Component, computed, inject, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {DropDownSelectComponent, Option} from '../../../shared/ui/drop-down-select/drop-down-select.component';
 import {TvShowGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
@@ -23,7 +27,7 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
   protected readonly navigatorService: NavigatorService = inject(NavigatorService);
   protected readonly mediaLinkProviders: Signal<Record<VideoSource, TvMediaLinkProvider>> = signal(TV_EMBED_OBJS);
   // Season Options
-  protected readonly seasons: Signal<Season[]> = computed(() => this.mediaDetails
+  protected readonly seasons: Signal<Season[]> = computed(() => this.mediaDetailsRequest
     .value()?.seasons
     ?.filter(s => s.season_number !== 0) ?? []);
   // Selections

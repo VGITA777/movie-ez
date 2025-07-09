@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {Component, computed, Signal} from '@angular/core';
 import {MediaDetailsPage, TvShowGenericMediaInfo} from '../../data-access/watch-page';
 import {Recommendations, TvShowDetails} from 'tmdb-ts';
@@ -25,8 +29,8 @@ export class WatchTvDescriptionComponent extends MediaDetailsPage<TvShowGenericM
   }));
 
   protected readonly genresName: Signal<string[]> = computed(() => this.genres().map(g => g.name));
-  protected readonly totalEpisodes: Signal<number> = computed(() => this.mediaDetails.value().number_of_episodes ?? 0);
-  protected readonly totalSeasons: Signal<number> = computed(() => this.mediaDetails.value().number_of_seasons ?? 0);
+  protected readonly totalEpisodes: Signal<number> = computed(() => this.mediaDetailsRequest.value().number_of_episodes ?? 0);
+  protected readonly totalSeasons: Signal<number> = computed(() => this.mediaDetailsRequest.value().number_of_seasons ?? 0);
 
   protected override mediaDetailsLoader(id: number): Promise<TvShowDetails> {
     return this.tmdb.tvShows.details(id);

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {Page} from '../../navigation-rail/utils/page';
 import {Location} from '@angular/common';

@@ -1,6 +1,10 @@
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
 <div class="container">
   <section class="main-contents">
-    @if (!mediaDetails.isLoading()) {
+    @if (!mediaDetailsRequest.isLoading()) {
       <app-image-title [src]="posterImageUrl()" title="" width="100%"/>
       <app-chip-slider [data]="genresName()"/>
     } @else {
@@ -11,15 +15,15 @@
   <section class="text-contents">
     <div class="generic-data">
 
-      @if (!mediaDetails.isLoading()) {
+      @if (!mediaDetailsRequest.isLoading()) {
         <div class="long-texts">
           <div class="long-text-entry">
             <span class="title">Title</span>
-            <span class="subtitle">{{ mediaDetails.value().name }}</span>
+            <span class="subtitle">{{ mediaDetailsResult().name }}</span>
           </div>
           <div class="long-text-entry">
             <span class="title">Aired on</span>
-            <span class="subtitle">{{ mediaDetails.value().first_air_date }}</span>
+            <span class="subtitle">{{ mediaDetailsResult().first_air_date }}</span>
           </div>
         </div>
 
@@ -34,7 +38,7 @@
           </div>
           <div class="short-text-entry">
             <span class="title">Rating</span>
-            <span class="subtitle">{{ mediaDetails.value().vote_average.toFixed(2) }}</span>
+            <span class="subtitle">{{ mediaDetailsResult().vote_average.toFixed(2) }}</span>
           </div>
         </div>
       } @else {
@@ -43,7 +47,7 @@
       }
     </div>
 
-    @if (!mediaDetails.isLoading()) {
+    @if (!mediaDetailsRequest.isLoading()) {
       <app-read-more-text contentTextAlign="justify" contentTextSize=".8rem" headerText="Overview" headerTextSize="1rem"
                           headerTextWeight="500">
         {{ overview() }}
