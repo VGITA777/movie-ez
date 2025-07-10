@@ -8,5 +8,3 @@ register();
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));
-
-// This file is the entry point for the Angular application.
