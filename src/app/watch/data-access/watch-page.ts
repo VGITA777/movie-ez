@@ -58,7 +58,8 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
   protected readonly mediaDetailsRequest: ResourceRef<D> = resource({
     defaultValue: {} as D,
     params: () => ({id: this.genericMediaInfo().id}),
-    loader: (data) => this.mediaDetailsLoader(data.params.id)
+    loader: (data) => this.mediaDetailsLoader(data.params.id),
+    equal: (prev, next) => prev.id === next.id
   });
   /**
    * Results from the media details request.
