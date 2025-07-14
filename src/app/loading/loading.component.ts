@@ -1,4 +1,8 @@
-import {Component, signal, WritableSignal} from '@angular/core';
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+import {Component} from '@angular/core';
 import {NgStyle} from '@angular/common';
 
 @Component({
