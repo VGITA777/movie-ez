@@ -2,8 +2,8 @@
  * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
  */
 
-@use "../../foundations/mixins";
-@use "../../foundations/constants";
+@use "mixins";
+@use "constants";
 
 .container {
   @include mixins.absolute($top: 0, $left: 0, $z-index: 9999);

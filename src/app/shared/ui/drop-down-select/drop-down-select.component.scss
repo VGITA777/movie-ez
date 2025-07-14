@@ -1,5 +1,9 @@
-@use "../../../../foundations/mixins";
-@use "../../../../foundations/constants";
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use "mixins";
+@use "constants";
 
 select {
   background-color: var(--background-color, constants.$dark-surface-600);

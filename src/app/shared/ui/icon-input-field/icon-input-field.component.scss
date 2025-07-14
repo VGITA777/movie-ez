@@ -1,5 +1,9 @@
-@use '../../../../foundations/constants';
-@use '../../../../foundations/mixins';
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use 'constants';
+@use 'mixins';
 
 .input-container {
   @include mixins.flex($gap: constants.$spacing-md);

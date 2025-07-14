@@ -1,6 +1,10 @@
-@use "../../../../foundations/mixins";
-@use "../../../../foundations/constants";
-@use "../../../../foundations/responsive";
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use "mixins";
+@use "constants";
+@use "responsive";
 
 .container {
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);

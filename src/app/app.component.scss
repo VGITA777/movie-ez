@@ -2,9 +2,9 @@
  * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
  */
 
-@use '../foundations/constants';
-@use '../foundations/mixins';
-@use '../foundations/responsive';
+@use 'constants';
+@use 'mixins';
+@use 'responsive';
 
 .loading-container {
   @include mixins.transition($property: opacity, $duration: 1.5s, $timing-function: ease);

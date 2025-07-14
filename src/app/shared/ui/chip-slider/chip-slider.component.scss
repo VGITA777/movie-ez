@@ -1,4 +1,8 @@
-@use "../../../../foundations/constants";
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use "constants";
 
 :host {
   width: var(--width, 100%);

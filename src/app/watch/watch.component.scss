@@ -1,6 +1,10 @@
-@use '../../foundations/mixins';
-@use '../../foundations/constants';
-@use '../../foundations/responsive';
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use "mixins";
+@use "constants";
+@use "responsive";
 
 .container {
   @include mixins.grid($grid-template-columns: 1fr min(280px, 30%), $gap: constants.$spacing-lg);
@@ -18,4 +22,3 @@
     @include mixins.grid($grid-template-columns: 1fr, $gap: constants.$spacing-lg);
   }
 }
-

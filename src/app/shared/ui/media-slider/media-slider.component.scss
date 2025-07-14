@@ -1,6 +1,10 @@
-@use '../../../../foundations/mixins';
-@use '../../../../foundations/responsive';
-@use '../../../../foundations/constants';
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use 'mixins';
+@use 'responsive';
+@use 'constants';
 
 app-slider {
   .navigation {

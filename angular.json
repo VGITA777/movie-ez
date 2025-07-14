@@ -52,6 +52,11 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/foundations"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
