@@ -32,7 +32,7 @@ export interface TvShowGenericMediaInfo extends MovieGenericMediaInfo {
 export type GenericMediaInfo = MovieGenericMediaInfo | TvShowGenericMediaInfo;
 
 /**
- * Base class for abstracting common functionality for fetching media details based on {@link GenericMediaInfo}.
+ * Abstracts common functionality for fetching media details based on {@link GenericMediaInfo}.
  * Includes, {@link MovieDetails} or {@link TvShowDetails}, {@link Recommendations} and other related data.
  *
  * @template I - can be {@link MovieGenericMediaInfo} or {@link TvShowGenericMediaInfo}.
@@ -110,7 +110,7 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
 }
 
 /**
- * Base class for abstracting common functionality for watch pages
+ * Abstracts common functionality for watch pages
  * that deals with media links and media details.
  *
  * @template P - can be {@link MovieMediaLinkProvider} or {@link TvMediaLinkProvider}.
