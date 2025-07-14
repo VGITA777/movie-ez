@@ -15,7 +15,7 @@ import {ShineCardComponent} from '../shared/ui/shine-card/shine-card.component';
 import {TmdbService} from '../shared/data-access/tmdb.service';
 import {MultiSearchResult, Search} from 'tmdb-ts';
 import {MediaCardComponent} from '../shared/ui/media-card/media-card.component';
-import {environment} from '../../environments/environment';
+import {environment} from '@env/environment';
 import {ShineCardGroupDirective} from '../shared/directives/shine-card-group.directive';
 import {WatchNavigationHandler} from '../shared/utils/navigator.service';
 import {SkeletonComponent} from '../shared/ui/skeleton/skeleton.component';

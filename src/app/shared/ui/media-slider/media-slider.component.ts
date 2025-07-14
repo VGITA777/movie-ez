@@ -11,7 +11,7 @@ import {
   viewChild
 } from '@angular/core';
 import {MediaCardComponent} from "../media-card/media-card.component";
-import {environment} from '../../../../environments/environment';
+import {environment} from '@env/environment';
 import {SliderComponent} from '../slider/slider.component';
 import {SwiperModule, SwiperOptions} from 'swiper/types';
 import {Navigation} from 'swiper/modules';

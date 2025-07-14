@@ -3,8 +3,8 @@ import {ActivatedRoute} from '@angular/router';
 import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult} from 'tmdb-ts';
 import {take} from 'rxjs';
 import {ProgressShowerService} from '../shared/utils/progress-shower.service';
-import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
-import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
+import {MediaSliderComponent} from '@ui/media-slider/media-slider.component';
+import {ScrollTopComponent} from '@ui/scroll-top/scroll-top.component';
 import {WatchNavigationHandler} from '../shared/utils/navigator.service';
 
 @Component({
