@@ -2,7 +2,7 @@
  * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
  */
 
-import {Component, computed, inject, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
+import {Component, computed, effect, inject, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {DropDownSelectComponent, Option} from '../../../shared/ui/drop-down-select/drop-down-select.component';
 import {TvShowGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
 import {TV_EMBED_OBJS, TvMediaLinkProvider} from '../../../shared/watch-provider/media-link-provider';
@@ -11,13 +11,15 @@ import {VideoSource} from '../../../shared/constants';
 import {ShineCardComponent} from '../../../shared/ui/shine-card/shine-card.component';
 import {MediaLike, MediaSliderComponent} from '../../../shared/ui/media-slider/media-slider.component';
 import {NavigatorService} from '../../../shared/utils/navigator.service';
+import {SkeletonComponent} from '../../../shared/ui/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-watch-tv',
   imports: [
     DropDownSelectComponent,
     ShineCardComponent,
-    MediaSliderComponent
+    MediaSliderComponent,
+    SkeletonComponent
   ],
   templateUrl: './watch-tv.component.html',
   styleUrl: './watch-tv.component.scss'
@@ -67,5 +69,13 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
 
   protected handleOnCardClick(media: MediaLike): void {
     this.navigatorService.navigateToWatch(media);
+  }
+
+  constructor() {
+    super();
+
+    effect(() => {
+      console.log(`Is loading: ${this.mediaDetailsRequest.isLoading()}`);
+    })
   }
 }

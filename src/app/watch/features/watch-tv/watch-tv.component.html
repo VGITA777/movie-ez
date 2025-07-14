@@ -4,16 +4,22 @@
       <iframe [src]="mediaResourceUrl()" allowfullscreen></iframe>
     </section>
     <section class="media-settings-container">
-      @if (seasons().length > 0) {
-        <app-shine-card>
-          <app-drop-down-select width="100%" [(selected)]="selectedSeasonOption" [options]="seasonsOptions()"/>
-        </app-shine-card>
+      @if (!mediaDetailsRequest.isLoading()) {
+        @if (seasons().length > 0) {
+          <app-shine-card>
+            <app-drop-down-select width="100%" [(selected)]="selectedSeasonOption" [options]="seasonsOptions()"/>
+          </app-shine-card>
+        }
+        @if (episodes().length > 0) {
+          <app-shine-card>
+            <app-drop-down-select width="100%" [(selected)]="selectedEpisodeOption" [options]="episodes()"/>
+          </app-shine-card>
+        }
+      } @else {
+        <app-skeleton borderRadius="8px" width="125px" height="100%"/>
+        <app-skeleton borderRadius="8px" width="125px" height="100%"/>
       }
-      @if (episodes().length > 0) {
-        <app-shine-card>
-          <app-drop-down-select width="100%" [(selected)]="selectedEpisodeOption" [options]="episodes()"/>
-        </app-shine-card>
-      }
+
       <app-shine-card>
         <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"
                               width="100%"/>
