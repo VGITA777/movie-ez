@@ -42,6 +42,9 @@
             "polyfills": [
               "zone.js"
             ],
+            "allowedCommonJsDependencies": [
+              "tmdb-ts"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
