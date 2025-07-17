@@ -52,12 +52,12 @@
 
     </div>
 
-    @if (!mediaDetailsRequest.isLoading()) {
+    @if (!mediaDetailsRequest.isLoading() && overview() !== '' && overview() !== null) {
       <app-read-more-text contentTextAlign="justify" contentTextSize=".8rem" headerText="Overview" headerTextSize="1rem"
                           headerTextWeight="500">
         {{ overview() }}
       </app-read-more-text>
-    } @else {
+    } @else if (mediaDetailsRequest.isLoading()) {
       <app-skeleton borderRadius="8px" aspectRatio="8 / 2.2" height="auto" width="100%"/>
       <app-skeleton borderRadius="8px" height="100%" width="100%"/>
     }
