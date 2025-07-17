@@ -1,8 +1,12 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {Component, inject, Signal} from '@angular/core';
-import {Page} from './utils/page';
-import {LocationListenerService} from '../shared/utils/location-listener.service';
-import {NavigatorService} from '../shared/utils/navigator.service';
-import {NavigationRailEntryComponent} from './ui/navigation-rail-entry/navigation-rail-entry.component';
+import {Page} from '@navigation/utils/page';
+import {LocationListenerService} from '@utils/location-listener.service';
+import {NavigatorService} from '@utils/navigator.service';
+import {NavigationRailEntryComponent} from '@navigation/ui/navigation-rail-entry/navigation-rail-entry.component';
 
 @Component({
   selector: 'app-navigation-rail',

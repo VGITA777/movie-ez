@@ -1,12 +1,16 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {inject, Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, RouterStateSnapshot} from '@angular/router';
-import {TmdbService} from '../../shared/data-access/tmdb.service';
+import {TmdbService} from '@shared/data-access/tmdb.service';
 import {MovieDiscoverResult} from 'tmdb-ts';
-import {ProgressShowerService} from '../../shared/utils/progress-shower.service';
-import {DISCOVER_MOVIES_CACHE_KEY, DISCOVER_MOVIES_NAMESPACE} from '../../shared/constants';
-import {ExpirableSimpleCache} from '../../shared/caching/simple-cache';
-import {LocalStorageCacheManager} from '../../shared/caching/cache-manager';
-import {CachedResolve} from '../../shared/caching/cached-resolve';
+import {ProgressShowerService} from '@utils/progress-shower.service';
+import {DISCOVER_MOVIES_CACHE_KEY, DISCOVER_MOVIES_NAMESPACE} from '@constants';
+import {ExpirableSimpleCache} from '@shared/caching/simple-cache';
+import {LocalStorageCacheManager} from '@shared/caching/cache-manager';
+import {CachedResolve} from '@shared/caching/cached-resolve';
 
 @Injectable({
   providedIn: 'root'

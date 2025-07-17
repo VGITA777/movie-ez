@@ -9,6 +9,54 @@
       ],
       "@env/*": [
         "environments/*"
+      ],
+      "@app/*": [
+        "app/*"
+      ],
+      "@features/*": [
+        "app/features/*"
+      ],
+      "@shared/*": [
+        "app/shared/*"
+      ],
+      "@utils/*": [
+        "app/shared/utils/*"
+      ],
+      "@services/*": [
+        "app/shared/services/*"
+      ],
+      "@models/*": [
+        "app/shared/models/*"
+      ],
+      "@constants": [
+        "app/shared/constants"
+      ],
+      "@home/*": [
+        "app/home/*"
+      ],
+      "@movies/*": [
+        "app/movies/*"
+      ],
+      "@tv-shows/*": [
+        "app/tv-shows/*"
+      ],
+      "@watch/*": [
+        "app/watch/*"
+      ],
+      "@search/*": [
+        "app/search/*"
+      ],
+      "@settings/*": [
+        "app/settings/*"
+      ],
+      "@navigation/*": [
+        "app/navigation-rail/*"
+      ],
+      "@error/*": [
+        "app/error/*"
+      ],
+      "@foundations/*": [
+        "foundations/*"
       ]
     },
     "outDir": "./dist/out-tsc",

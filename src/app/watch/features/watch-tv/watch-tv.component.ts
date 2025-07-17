@@ -4,13 +4,13 @@
 
 import {Component, computed, effect, inject, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {DropDownSelectComponent, Option} from '@ui/drop-down-select/drop-down-select.component';
-import {TvShowGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
-import {TV_EMBED_OBJS, TvMediaLinkProvider} from '../../../shared/watch-provider/media-link-provider';
+import {TvShowGenericMediaInfo, WatchPage} from '@watch/data-access/watch-page';
+import {TV_EMBED_OBJS, TvMediaLinkProvider} from '@shared/watch-provider/media-link-provider';
 import {Recommendations, Season, TvShowDetails} from 'tmdb-ts';
-import {VideoSource} from '../../../shared/constants';
+import {VideoSource} from '@constants';
 import {ShineCardComponent} from '@ui/shine-card/shine-card.component';
 import {MediaLike, MediaSliderComponent} from '@ui/media-slider/media-slider.component';
-import {NavigatorService} from '../../../shared/utils/navigator.service';
+import {NavigatorService} from '@utils/navigator.service';
 import {SkeletonComponent} from '@ui/skeleton/skeleton.component';
 
 @Component({
