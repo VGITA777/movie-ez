@@ -45,7 +45,7 @@
           }
         } @else if (hasResults()) {
           <!-- FOR RESULTS -->
-          @for (card of searchResults.value().results; track card.id) {
+          @for (card of searchResults(); track card.id) {
           <app-shine-card (click)="handleCardClick(card)" [initShine]="false" [padding]="'8px'"
                             [backgroundColor]="{red: 15, green: 15, blue: 15, opacity: 1}" [borderOpacity]="1">
             @if (card.media_type === "movie") {
