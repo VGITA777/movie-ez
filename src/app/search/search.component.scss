@@ -29,13 +29,13 @@
   }
 
   .search-results-container {
+    overflow: hidden;
+    background-color: constants.$dark-surface-800;
+    padding: constants.$spacing-md;
     @include mixins.border-radius(constants.$border-radius-lg);
     @include mixins.flex($justify-content: center, $align-items: start);
     @include mixins.hidden-scrollbar();
     @include mixins.width-height();
-    background-color: constants.$dark-surface-800;
-    padding: constants.$spacing-md;
-    overflow: hidden;
 
     span {
       letter-spacing: .2em;
@@ -44,11 +44,11 @@
     }
 
     .result-cards {
+      position: relative;
+      overflow: auto;
       @include mixins.width-height();
       @include mixins.hidden-scrollbar();
       @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)), $gap: constants.$spacing-md);
-      position: relative;
-      overflow: auto;
 
       app-shine-card {
         @include mixins.width-height($height: fit-content);

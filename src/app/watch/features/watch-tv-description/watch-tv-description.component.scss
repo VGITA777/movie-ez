@@ -7,18 +7,18 @@
 @use "responsive";
 
 .container {
+  overflow: auto;
+  padding: constants.$spacing-lg;
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);
   @include mixins.width-height();
   @include mixins.hidden-scrollbar();
-  padding: constants.$spacing-lg;
-  overflow: auto;
 
   section {
     width: 100%;
 
     app-chip-slider {
-      border-radius: constants.$border-radius-full;
       overflow: hidden;
+      border-radius: constants.$border-radius-full;
     }
   }
 
@@ -48,12 +48,12 @@
           }
 
           .subtitle {
-            @include mixins.max-lines();
             text-align: end;
             letter-spacing: 1px;
             font-size: .8rem;
             max-width: 60%;
             font-weight: 500;
+            @include mixins.max-lines();
           }
         }
       }

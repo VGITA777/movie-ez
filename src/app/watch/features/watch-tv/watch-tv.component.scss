@@ -7,11 +7,11 @@
 @use "responsive";
 
 .container {
+  overflow: auto;
+  padding: constants.$spacing-xxl;
   @include mixins.width-height();
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: 3em);
   @include mixins.hidden-scrollbar();
-  padding: constants.$spacing-xxl;
-  overflow: auto;
 
   main {
     width: 100%;

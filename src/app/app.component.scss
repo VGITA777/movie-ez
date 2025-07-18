@@ -23,11 +23,11 @@
   overflow: hidden;
 
   .content-container {
-    @include mixins.width-height();
-    @include mixins.hidden-scrollbar();
     overflow: auto;
     position: relative;
     border-radius: constants.$border-radius-lg;
+    @include mixins.width-height();
+    @include mixins.hidden-scrollbar();
   }
 
   main {

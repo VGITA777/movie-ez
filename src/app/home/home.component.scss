@@ -7,12 +7,12 @@
 @use 'responsive';
 
 .container {
+  overflow: auto;
+  background-color: constants.$dark-surface-800;
+  padding: constants.$spacing-md;
   @include mixins.width-height();
   @include mixins.hidden-scrollbar();
   @include mixins.flex($direction: column, $gap: 3em);
-  background-color: constants.$dark-surface-800;
-  padding: constants.$spacing-md;
-  overflow: auto;
 }
 
 @include responsive.mobile-large {
