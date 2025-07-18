@@ -2,10 +2,12 @@
   <div class="container">
     <div class="image-wrapper">
       <img
+        #cardImage
         [alt]="title()"
         [loading]="imageLoadType()"
-        [ngSrc]="poster()"
+        (error)="onImageErrorHandler()"
         [title]="title()"
+        [ngSrc]="currentImage()"
         fill
       />
     </div>
