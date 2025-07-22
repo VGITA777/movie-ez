@@ -46,7 +46,7 @@
     .result-cards {
       position: relative;
       overflow: auto;
-      @include mixins.width-height();
+      @include mixins.width-height(100%, auto);
       @include mixins.hidden-scrollbar();
       @include mixins.grid($grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)), $gap: constants.$spacing-md);
 
