@@ -55,7 +55,7 @@ export class SearchComponent extends WatchNavigationHandler {
     })
   })
   readonly isLoading: Signal<boolean> = computed(() => this.searchRequest.isLoading());
-  readonly hasResults: Signal<boolean> = computed(() => this.searchRequest.value().total_results > 0 && !this.isLoading() && this.hasSearched());
+  readonly hasResults: Signal<boolean> = computed(() => this.searchResults().length > 0 && !this.isLoading() && this.hasSearched());
   readonly searchResults: Signal<MultiSearchResult[]> = computed(() => this.searchRequest.value().results.filter(r => {
 
     if (r.id === null || r.media_type === null) {
