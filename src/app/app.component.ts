@@ -21,6 +21,8 @@ import {LoadingComponent} from './loading/loading.component';
 import {environment} from '@env/environment';
 import {BottomNavBarComponent} from '@ui/bottom-nav-bar/bottom-nav-bar.component';
 import {BottomNavItemComponent} from '@ui/bottom-nav-bar/ui/bottom-nav-item/bottom-nav-item.component';
+import {NavigatorService} from '@utils/navigator.service';
+import {LocationListenerService} from '@utils/location-listener.service';
 
 @Component({
   selector: 'app-root',
@@ -32,6 +34,8 @@ import {BottomNavItemComponent} from '@ui/bottom-nav-bar/ui/bottom-nav-item/bott
 export class AppComponent implements OnInit, OnDestroy {
 
   toastSubscription!: Subscription;
+  readonly navigator: NavigatorService = inject(NavigatorService);
+  readonly locationListener: LocationListenerService = inject(LocationListenerService);
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
   readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
   readonly isTabletMedium: Signal<boolean> = this.deviceSizeService.isTabletMedium;
@@ -71,4 +75,5 @@ export class AppComponent implements OnInit, OnDestroy {
     this.showLoadingScreen.set(false);
     this.isDeletingLoadingScreen.set(false);
   }
+
 }

@@ -1,4 +1,4 @@
-<div (click)="onClickHandler()" class="nav-item">
+<div (click)="onClickHandler()" [ngClass]="{'active': isActive()}" class="nav-item">
   @if (navIcon() !== undefined) {
     <div class="icon-container">
       <ng-content select="[slot=icon]"></ng-content>

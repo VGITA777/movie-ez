@@ -6,9 +6,16 @@
 }
 
 .nav-item {
+  padding: constants.$spacing-lg 0;
+  @include mixins.transition(background-color, .5s, ease);
   @include mixins.flex($direction: column, $justify-content: center, $align-items: center, $gap: 0);
+  @include mixins.width-height();
 
   .icon-container {
     @include mixins.flex();
   }
+}
+
+.active {
+  background-color: constants.$dark-surface-600;
 }
