@@ -8,6 +8,7 @@ import {VideoSource} from '../../../shared/constants';
 import {DropDownSelectComponent} from '../../../shared/ui/drop-down-select/drop-down-select.component';
 import {MediaLike, MediaSliderComponent} from '../../../shared/ui/media-slider/media-slider.component';
 import {NavigatorService} from '../../../shared/utils/navigator.service';
+import {DeviceSizeService} from '@utils/device-size.service';
 
 @Component({
   selector: 'app-watch-movie',
@@ -20,6 +21,7 @@ import {NavigatorService} from '../../../shared/utils/navigator.service';
 })
 export class WatchMovieComponent extends WatchPage<MovieMediaLinkProvider, MovieGenericMediaInfo, MovieDetails> {
 
+  protected readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
   protected override mediaLinkProviders: Signal<Record<VideoSource, MovieMediaLinkProvider>> = signal(MOVIE_EMBED_OBJS);
   protected override readonly genericMediaInfo: Signal<MovieGenericMediaInfo> = toSignal(
     this.activatedRoute.paramMap.pipe(map((params): MovieGenericMediaInfo => ({id: Number(params.get('id')) ?? 0}))),

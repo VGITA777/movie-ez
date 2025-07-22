@@ -8,8 +8,10 @@
     </section>
   </main>
   <main class="other-contents">
-    <section class="media-details-container">
-    </section>
+    @if (deviceSizeService.isTablet()) {
+      <section class="media-details-container">
+      </section>
+    }
     <section class="sliders">
       <app-media-slider (onCardClick)="handleOnCardClick($event)" [data]="mediaRecommendations()" mediaType="tv"
                         subHeader="Recommendations for you"
