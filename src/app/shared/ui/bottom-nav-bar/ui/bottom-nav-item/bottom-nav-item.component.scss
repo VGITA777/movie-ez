@@ -1,0 +1,14 @@
+@use "mixins";
+@use "constants";
+
+:host {
+  @include mixins.width-height();
+}
+
+.nav-item {
+  @include mixins.flex($direction: column, $justify-content: center, $align-items: center, $gap: 0);
+
+  .icon-container {
+    @include mixins.flex();
+  }
+}

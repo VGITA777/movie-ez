@@ -1,0 +1,8 @@
+@use "mixins";
+@use "constants";
+
+.container {
+  padding: constants.$spacing-lg 0;
+  background-color: constants.$dark-surface-700;
+  @include mixins.flex($justify-content: center, $align-items: center, $gap: 0);
+}
