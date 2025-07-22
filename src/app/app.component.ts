@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   ElementRef,
   inject,
   OnDestroy,
@@ -18,10 +19,12 @@ import {DeviceSizeService} from '@utils/device-size.service';
 import {NgClass} from '@angular/common';
 import {LoadingComponent} from './loading/loading.component';
 import {environment} from '@env/environment';
+import {BottomNavBarComponent} from '@ui/bottom-nav-bar/bottom-nav-bar.component';
+import {BottomNavItemComponent} from '@ui/bottom-nav-bar/ui/bottom-nav-item/bottom-nav-item.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent, NgClass, LoadingComponent],
+  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent, NgClass, LoadingComponent, BottomNavBarComponent, BottomNavItemComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: []
@@ -32,6 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
   readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
   readonly isTabletMedium: Signal<boolean> = this.deviceSizeService.isTabletMedium;
+  readonly isMobile: Signal<boolean> = this.deviceSizeService.isMobile;
   readonly progress: Signal<number> = this.progressShower.progress;
   readonly progressType: Signal<ProgressType> = this.progressShower.progressType;
 
@@ -40,6 +44,10 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly isDeletingLoadingScreen: WritableSignal<boolean> = signal(false);
   readonly showLoadingScreen: WritableSignal<boolean> = signal(true);
   readonly loadingScreen: Signal<ElementRef<HTMLDivElement>> = viewChild.required('loadingContainer');
+
+  // TODO: Find a way to add padding to the bottom nav bar
+  readonly bottomNavBar: Signal<ElementRef<HTMLElement> | undefined> = viewChild('bottomNavBar');
+  readonly bottomNavBarHeight: Signal<number> = computed(() => this.bottomNavBar()?.nativeElement?.offsetHeight ?? 0)
 
   ngOnInit() {
     this.startProcessingLoadingScreen();

@@ -22,6 +22,10 @@
   padding: constants.$spacing-lg;
   overflow: hidden;
 
+  main {
+    overflow: hidden;
+  }
+
   .content-container {
     overflow: auto;
     position: relative;
@@ -30,10 +34,26 @@
     @include mixins.hidden-scrollbar();
   }
 
-  main {
+  .mobile-navigation-container {
     overflow: hidden;
+    position: fixed;
+    border-radius: constants.$border-radius-full;
+    bottom: constants.$spacing-md;
+    transform: translateX(-50%);
+    z-index: 1000;
+    left: 50%;
+    @include mixins.width-height(95%, auto);
+
+    app-bottom-nav-bar {
+      app-bottom-nav-item {
+        svg {
+          @include mixins.width-height(1.5rem, 1.5rem);
+        }
+      }
+    }
   }
 }
+
 
 //p-progress-bar {
 //  @include mixins.absolute($top: 0, $left: 0);
@@ -56,10 +76,6 @@ app-indeterminate-progress-bar {
     @include mixins.grid(1fr, $gap: constants.$spacing-lg);
     padding: 0;
 
-    aside {
-      display: none;
-    }
-
     main {
       background-color: transparent;
     }
@@ -70,10 +86,6 @@ app-indeterminate-progress-bar {
   .container {
     @include mixins.grid(1fr, $gap: constants.$spacing-lg);
     padding: 0;
-
-    aside {
-      display: none;
-    }
 
     main {
       background-color: transparent;
