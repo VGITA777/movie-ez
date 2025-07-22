@@ -29,7 +29,7 @@
   }
 
   .search-results-container {
-    overflow: hidden;
+    overflow: auto;
     background-color: constants.$dark-surface-800;
     padding: constants.$spacing-md;
     @include mixins.border-radius(constants.$border-radius-lg);
