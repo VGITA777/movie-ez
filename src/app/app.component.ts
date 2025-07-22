@@ -1,5 +1,6 @@
 import {
   Component,
+  effect,
   ElementRef,
   inject,
   OnDestroy,
@@ -22,6 +23,7 @@ import {BottomNavBarComponent} from '@ui/bottom-nav-bar/bottom-nav-bar.component
 import {BottomNavItemComponent} from '@ui/bottom-nav-bar/ui/bottom-nav-item/bottom-nav-item.component';
 import {NavigatorService} from '@utils/navigator.service';
 import {LocationListenerService} from '@utils/location-listener.service';
+import {GlobalsService} from '@utils/globals.service';
 
 @Component({
   selector: 'app-root',
@@ -37,6 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly locationListener: LocationListenerService = inject(LocationListenerService);
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
   readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
+  readonly globalsService: GlobalsService = inject(GlobalsService);
   readonly isTabletMedium: Signal<boolean> = this.deviceSizeService.isTabletMedium;
   readonly isMobile: Signal<boolean> = this.deviceSizeService.isMobile;
   readonly progress: Signal<number> = this.progressShower.progress;
@@ -50,6 +53,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // TODO: Find a way to add padding to the bottom nav bar
   readonly bottomNavBar: Signal<ElementRef<HTMLElement> | undefined> = viewChild('bottomNavBar');
+
+  constructor() {
+    effect(() => {
+      this.globalsService.bottomNavBarHeight.set(this.bottomNavBar()?.nativeElement?.offsetHeight ?? 0);
+    });
+  }
 
   ngOnInit() {
     this.startProcessingLoadingScreen();

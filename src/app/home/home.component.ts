@@ -10,6 +10,7 @@ import {ProgressShowerService} from '@utils/progress-shower.service';
 import {MediaSliderComponent} from '@ui/media-slider/media-slider.component';
 import {ScrollTopComponent} from '@ui/scroll-top/scroll-top.component';
 import {WatchNavigationHandler} from '@utils/navigator.service';
+import {GlobalsService} from '@utils/globals.service';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +29,7 @@ export class HomeComponent extends WatchNavigationHandler implements OnInit {
 
   readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
+  readonly globalsService: GlobalsService = inject(GlobalsService);
 
   ngOnInit() {
     this.activatedRoute.data.pipe(take(1)).subscribe((data) => {

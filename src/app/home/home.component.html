@@ -15,4 +15,5 @@
   <app-media-slider (onCardClick)="handleNavigation($event)" [data]="this.discoverTvShows().results" mediaType="tv"
                     subHeader="Explore new and exciting TV shows"
                     title="Discover TV Shows"/>
+  <div [style.height]="`${this.globalsService.bottomNavBarHeightWithPadding()}px`" class="mobile-nav-filler"></div>
 </div>
