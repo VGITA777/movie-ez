@@ -17,10 +17,11 @@
 }
 
 .container {
-  @include mixins.width-height(100vw, 100vh);
-  @include mixins.grid($grid-template-columns: min(225px, 100%) 1fr, $gap: constants.$spacing-lg);
-  padding: constants.$spacing-lg;
   overflow: hidden;
+  position: relative;
+  padding: constants.$spacing-lg;
+  @include mixins.width-height(100dvw, 100dvh);
+  @include mixins.grid($grid-template-columns: min(225px, 100%) 1fr, $gap: constants.$spacing-lg);
 
   main {
     overflow: hidden;
@@ -51,6 +52,10 @@
         }
       }
     }
+  }
+
+  .mobile-nav-filler {
+    width: 100%;
   }
 }
 

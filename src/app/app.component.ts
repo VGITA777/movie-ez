@@ -1,6 +1,5 @@
 import {
   Component,
-  computed,
   ElementRef,
   inject,
   OnDestroy,
@@ -51,7 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // TODO: Find a way to add padding to the bottom nav bar
   readonly bottomNavBar: Signal<ElementRef<HTMLElement> | undefined> = viewChild('bottomNavBar');
-  readonly bottomNavBarHeight: Signal<number> = computed(() => this.bottomNavBar()?.nativeElement?.offsetHeight ?? 0)
 
   ngOnInit() {
     this.startProcessingLoadingScreen();
