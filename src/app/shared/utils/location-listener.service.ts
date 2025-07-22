@@ -3,7 +3,7 @@
  */
 
 import {inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
-import {Page} from '../../navigation-rail/utils/page';
+import {Page} from '@navigation/utils/page';
 import {Location} from '@angular/common';
 
 @Injectable({
