@@ -10,15 +10,14 @@ import {
   WritableSignal
 } from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {NavigationRailComponent} from './navigation-rail/navigation-rail.component';
+import {NavigationRailComponent} from '@navigation/navigation-rail.component';
 import {Subscription, timer} from 'rxjs';
-import {ProgressShowerService, ProgressType} from './shared/utils/progress-shower.service';
-import {
-  IndeterminateProgressBarComponent
-} from './shared/ui/indeterminate-progress-bar/indeterminate-progress-bar.component';
-import {DeviceSizeService} from './shared/utils/device-size.service';
+import {ProgressShowerService, ProgressType} from '@utils/progress-shower.service';
+import {IndeterminateProgressBarComponent} from '@ui/indeterminate-progress-bar/indeterminate-progress-bar.component';
+import {DeviceSizeService} from '@utils/device-size.service';
 import {NgClass} from '@angular/common';
 import {LoadingComponent} from './loading/loading.component';
+import {environment} from '@env/environment';
 
 @Component({
   selector: 'app-root',
@@ -37,7 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly progressType: Signal<ProgressType> = this.progressShower.progressType;
 
   // Loading screen properties
-  readonly minimumLoadTimeMillis: number = 1500;
+  readonly minimumLoadTimeMillis: number = (environment.isDebug) ? 0 : 1500;
   readonly isDeletingLoadingScreen: WritableSignal<boolean> = signal(false);
   readonly showLoadingScreen: WritableSignal<boolean> = signal(true);
   readonly loadingScreen: Signal<ElementRef<HTMLDivElement>> = viewChild.required('loadingContainer');

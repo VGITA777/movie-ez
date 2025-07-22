@@ -1,4 +1,5 @@
 export const environment = {
+  isDebug: false,
   isLoggingEnabled: false,
   apiKey: '',
   imageBaseUrl: "https://image.tmdb.org/t/p/",
