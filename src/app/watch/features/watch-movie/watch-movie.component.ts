@@ -1,22 +1,20 @@
 import {Component, inject, signal, Signal} from '@angular/core';
-import {MOVIE_EMBED_OBJS, MovieMediaLinkProvider,} from '../../../shared/watch-provider/media-link-provider';
+import {MOVIE_EMBED_OBJS, MovieMediaLinkProvider,} from '@shared/watch-provider/media-link-provider';
 import {MovieDetails, Recommendations} from 'tmdb-ts';
 import {MovieGenericMediaInfo, WatchPage} from '../../data-access/watch-page';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
-import {VideoSource} from '../../../shared/constants';
-import {DropDownSelectComponent} from '../../../shared/ui/drop-down-select/drop-down-select.component';
-import {MediaLike, MediaSliderComponent} from '../../../shared/ui/media-slider/media-slider.component';
-import {NavigatorService} from '../../../shared/utils/navigator.service';
+import {VideoSource} from '@constants';
+import {DropDownSelectComponent} from '@ui/drop-down-select/drop-down-select.component';
+import {MediaLike, MediaSliderComponent} from '@ui/media-slider/media-slider.component';
+import {NavigatorService} from '@utils/navigator.service';
 import {DeviceSizeService} from '@utils/device-size.service';
-import {BottomNavBarSpacerDirective} from '@shared/directives/bottom-nav-bar-spacer.directive';
 
 @Component({
   selector: 'app-watch-movie',
   imports: [
     DropDownSelectComponent,
-    MediaSliderComponent,
-    BottomNavBarSpacerDirective
+    MediaSliderComponent
   ],
   templateUrl: './watch-movie.component.html',
   styleUrl: './watch-movie.component.scss'
