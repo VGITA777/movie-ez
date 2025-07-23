@@ -2,6 +2,6 @@
 @use "constants";
 
 .container {
-  background-color: constants.$dark-surface-700;
+  background-color: constants.$dark-surface-600;
   @include mixins.flex($justify-content: center, $align-items: center, $gap: 0);
 }

@@ -51,7 +51,6 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly showLoadingScreen: WritableSignal<boolean> = signal(true);
   readonly loadingScreen: Signal<ElementRef<HTMLDivElement>> = viewChild.required('loadingContainer');
 
-  // TODO: Find a way to add padding to the bottom nav bar
   readonly bottomNavBar: Signal<ElementRef<HTMLElement> | undefined> = viewChild('bottomNavBar');
 
   constructor() {
