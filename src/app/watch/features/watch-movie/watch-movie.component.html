@@ -7,7 +7,7 @@
       <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"/>
     </section>
   </main>
-  <main class="other-contents">
+  <main appBottomNavBarSpacer class="other-contents">
     @if (deviceSizeService.isTablet()) {
       <section class="media-details-container">
       </section>

@@ -1,4 +1,4 @@
-<div #scrollToTarget class="container">
+<div appBottomNavBarSpacer #scrollToTarget class="container">
   <app-scroll-top [target]="scrollToTarget"/>
   <app-media-slider (onCardClick)="handleNavigation($event)" [data]="this.popularMovies().results" mediaType="movie"
                     subHeader="Check out the latest popular movies"

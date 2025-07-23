@@ -6,12 +6,14 @@ import {ProgressShowerService} from '../shared/utils/progress-shower.service';
 import {MediaSliderComponent} from '../shared/ui/media-slider/media-slider.component';
 import {ScrollTopComponent} from '../shared/ui/scroll-top/scroll-top.component';
 import {WatchNavigationHandler} from '../shared/utils/navigator.service';
+import {BottomNavBarSpacerDirective} from '@shared/directives/bottom-nav-bar-spacer.directive';
 
 @Component({
   selector: 'app-movies',
   imports: [
     MediaSliderComponent,
-    ScrollTopComponent
+    ScrollTopComponent,
+    BottomNavBarSpacerDirective
   ],
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.scss'

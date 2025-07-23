@@ -11,12 +11,14 @@ import {MediaSliderComponent} from '@ui/media-slider/media-slider.component';
 import {ScrollTopComponent} from '@ui/scroll-top/scroll-top.component';
 import {WatchNavigationHandler} from '@utils/navigator.service';
 import {GlobalsService} from '@utils/globals.service';
+import {BottomNavBarSpacerDirective} from '@shared/directives/bottom-nav-bar-spacer.directive';
 
 @Component({
   selector: 'app-home',
   imports: [
     MediaSliderComponent,
-    ScrollTopComponent
+    ScrollTopComponent,
+    BottomNavBarSpacerDirective
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'

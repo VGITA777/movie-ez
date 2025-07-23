@@ -24,6 +24,7 @@ import {ShineCardGroupDirective} from '@shared/directives/shine-card-group.direc
 import {WatchNavigationHandler} from '@utils/navigator.service';
 import {SkeletonComponent} from '@ui/skeleton/skeleton.component';
 import {NgStyle} from '@angular/common';
+import {BottomNavBarSpacerDirective} from '@shared/directives/bottom-nav-bar-spacer.directive';
 
 @Component({
   selector: 'app-search',
@@ -33,7 +34,8 @@ import {NgStyle} from '@angular/common';
     MediaCardComponent,
     ShineCardGroupDirective,
     SkeletonComponent,
-    NgStyle
+    NgStyle,
+    BottomNavBarSpacerDirective
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'

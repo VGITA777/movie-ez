@@ -1,4 +1,4 @@
-<div #scrollToTarget class="container">
+<div #scrollToTarget appBottomNavBarSpacer class="container">
   <app-scroll-top [target]="scrollToTarget"/>
   <app-media-slider (onCardClick)="handleNavigation($event)" [data]="this.airingTodayTvSeries().results" mediaType="tv"
                     subHeader="New episodes airing today"

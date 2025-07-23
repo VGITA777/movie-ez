@@ -1,4 +1,4 @@
-<div #scrollToTarget class="container">
+<div #scrollToTarget appBottomNavBarSpacer class="container">
   <app-scroll-top [target]="scrollToTarget"/>
   <app-media-slider (onCardClick)="handleNavigation($event)" [data]="this.popularMovies().results" mediaType="movie"
                     subHeader="Check out the latest popular movies"
@@ -15,5 +15,4 @@
   <app-media-slider (onCardClick)="handleNavigation($event)" [data]="this.discoverTvShows().results" mediaType="tv"
                     subHeader="Explore new and exciting TV shows"
                     title="Discover TV Shows"/>
-  <div [style.height]="`${this.globalsService.bottomNavBarHeightWithPadding()}px`" class="mobile-nav-filler"></div>
 </div>

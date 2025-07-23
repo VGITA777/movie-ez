@@ -12,6 +12,7 @@ import {ShineCardComponent} from '@ui/shine-card/shine-card.component';
 import {MediaLike, MediaSliderComponent} from '@ui/media-slider/media-slider.component';
 import {NavigatorService} from '@utils/navigator.service';
 import {SkeletonComponent} from '@ui/skeleton/skeleton.component';
+import {BottomNavBarSpacerDirective} from '@shared/directives/bottom-nav-bar-spacer.directive';
 
 @Component({
   selector: 'app-watch-tv',
@@ -19,7 +20,8 @@ import {SkeletonComponent} from '@ui/skeleton/skeleton.component';
     DropDownSelectComponent,
     ShineCardComponent,
     MediaSliderComponent,
-    SkeletonComponent
+    SkeletonComponent,
+    BottomNavBarSpacerDirective
   ],
   templateUrl: './watch-tv.component.html',
   styleUrl: './watch-tv.component.scss'

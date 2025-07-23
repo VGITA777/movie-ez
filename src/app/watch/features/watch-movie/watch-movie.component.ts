@@ -9,12 +9,14 @@ import {DropDownSelectComponent} from '../../../shared/ui/drop-down-select/drop-
 import {MediaLike, MediaSliderComponent} from '../../../shared/ui/media-slider/media-slider.component';
 import {NavigatorService} from '../../../shared/utils/navigator.service';
 import {DeviceSizeService} from '@utils/device-size.service';
+import {BottomNavBarSpacerDirective} from '@shared/directives/bottom-nav-bar-spacer.directive';
 
 @Component({
   selector: 'app-watch-movie',
   imports: [
     DropDownSelectComponent,
-    MediaSliderComponent
+    MediaSliderComponent,
+    BottomNavBarSpacerDirective
   ],
   templateUrl: './watch-movie.component.html',
   styleUrl: './watch-movie.component.scss'

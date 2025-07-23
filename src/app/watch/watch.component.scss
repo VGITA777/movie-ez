@@ -11,9 +11,10 @@
   @include mixins.width-height();
 
   section {
+    overflow: auto;
     border-radius: constants.$border-radius-md;
     background-color: constants.$dark-surface-800;
-    overflow: hidden;
+    @include mixins.hidden-scrollbar();
   }
 }
 
