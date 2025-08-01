@@ -2,7 +2,7 @@
  * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
  */
 
-import {Component, computed, effect, inject, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
+import {Component, computed, inject, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {DropDownSelectComponent, Option} from '@ui/drop-down-select/drop-down-select.component';
 import {TvShowGenericMediaInfo, WatchPage} from '@watch/data-access/watch-page';
 import {TV_EMBED_OBJS, TvMediaLinkProvider} from '@shared/watch-provider/media-link-provider';
@@ -69,13 +69,5 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
 
   protected handleOnCardClick(media: MediaLike): void {
     this.navigatorService.navigateToWatch(media);
-  }
-
-  constructor() {
-    super();
-
-    effect(() => {
-      console.log(`Is loading: ${this.mediaDetailsRequest.isLoading()}`);
-    })
   }
 }

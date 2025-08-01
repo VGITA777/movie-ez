@@ -4,7 +4,7 @@
 
 <div class="container">
   <div class="content">
-    @for (char of "movie ez"; track char; let i = $index) {
+    @for (char of "movie ez"; track i; let i = $index) {
       <span class="char" [ngStyle]="{ '--delay': i, 'width': (char == ' ') ? '.4rem' : 'auto' }">{{ char }}</span>
     }
   </div>

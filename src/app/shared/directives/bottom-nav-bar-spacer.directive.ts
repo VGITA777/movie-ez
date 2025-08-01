@@ -1,4 +1,4 @@
-import {Directive, ElementRef, inject, input, InputSignal, OnInit} from '@angular/core';
+import {Directive, ElementRef, inject, input, OnInit} from '@angular/core';
 import {GlobalsService} from '@utils/globals.service';
 import {DeviceSizeService} from '@utils/device-size.service';
 import {environment} from '@env/environment';
@@ -18,7 +18,9 @@ export class BottomNavBarSpacerDirective implements OnInit {
 
   ngOnInit(): void {
     if (!this.deviceSizeService.isMobile() && !this.deviceSizeService.isTabletMedium()) {
-      console.log('NOT ADDING BOTTOM NAV BAR SPACER')
+      if (environment.isLoggingEnabled) {
+        console.log('Not adding bottom nav bar spacer')
+      }
       return;
     }
     if (environment.isLoggingEnabled) {
