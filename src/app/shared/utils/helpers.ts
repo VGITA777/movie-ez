@@ -1,6 +1,7 @@
 import {from, mergeMap, of, take, tap} from 'rxjs';
 import {CacheManager} from '../caching/cache-manager';
 import {SimpleCache} from '../caching/simple-cache';
+import {environment} from '@env/environment';
 
 export function getOrFetchAndCache<T, C extends SimpleCache<T>>(
   cacheManager: CacheManager<C>,
@@ -13,18 +14,23 @@ export function getOrFetchAndCache<T, C extends SimpleCache<T>>(
       const value = typeof cached.value === 'string' ? JSON.parse(cached.value) : cached.value;
       // No expiration means the cache is always valid
       if (cached.expiration === undefined) {
-        console.log(`Returning value from cache: ${cacheKey}`)
+        if (environment.isLoggingEnabled) {
+          console.log(`Returning value from cache: ${cacheKey}`)
+        }
         return of(value as T);
       }
       // Check if the cached value is still valid
       if (cached?.expiration > Date.now()) {
         try {
-          console.log(`Returning value from cache: ${cacheKey}`)
+          if (environment.isLoggingEnabled) {
+            console.log(`Returning value from cache: ${cacheKey}`)
+          }
           return of(value as T);
         } catch (e) {
           cacheManager.clear()
-          console.log(`Error parsing cached value for key ${cacheKey}:`, e);
-          console.log(`Cached value:`, cached.value);
+          if (environment.isLoggingEnabled) {
+            console.error(`Error parsing cached value for key ${cacheKey}:`, e);
+          }
         }
       }
     }
