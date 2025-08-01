@@ -2,7 +2,7 @@
  * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
  */
 
-import {Component, computed, effect, Signal} from '@angular/core';
+import {Component, computed, Signal} from '@angular/core';
 import {MediaDetailsPage, MovieGenericMediaInfo} from '../../data-access/watch-page';
 import {MovieDetails, Recommendations} from 'tmdb-ts';
 import {ChipSliderComponent} from "../../../shared/ui/chip-slider/chip-slider.component";
@@ -39,13 +39,6 @@ export class WatchMovieDescriptionComponent extends MediaDetailsPage<MovieGeneri
     const minutes: number = duration % 60;
     return `${hours}h ${minutes}m`;
   });
-
-  constructor() {
-    super();
-    effect(() => {
-      console.log(`Is loading: ${this.mediaDetailsRequest.isLoading()}`);
-    })
-  }
 
   protected override mediaDetailsLoader(id: number): Promise<MovieDetails> {
     return this.tmdb.movies.details(id);
