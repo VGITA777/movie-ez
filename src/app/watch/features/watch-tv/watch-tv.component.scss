@@ -10,6 +10,7 @@
   overflow: auto;
   height: 100%;
   padding: constants.$spacing-xxl;
+  @include mixins.hidden-scrollbar();
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: 3em);
 
   main {
