@@ -9,6 +9,7 @@
 .container {
   overflow: auto;
   padding: constants.$spacing-lg;
+  @include mixins.hidden-scrollbar();
   @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: constants.$spacing-xxl);
   @include mixins.width-height();
   @include mixins.hidden-scrollbar();
