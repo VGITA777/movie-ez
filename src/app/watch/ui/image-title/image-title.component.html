@@ -8,9 +8,11 @@
      class="container"
 >
   <div class="image-container">
-    <img [alt]="title()" [ngSrc]="src()" fill>
+    <img [alt]="alt()" [ngSrc]="src()" fill>
   </div>
-  <div class="title-container">
-    <h2 class="title">{{ title() }}</h2>
-  </div>
+  @if (title() !== '') {
+    <div class="title-container">
+      <h2 class="title">{{ title() }}</h2>
+    </div>
+  }
 </div>

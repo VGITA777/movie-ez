@@ -12,7 +12,8 @@ import {NgOptimizedImage, NgStyle} from '@angular/common';
 })
 export class ImageTitleComponent {
   readonly src: InputSignal<string> = input.required();
-  readonly title: InputSignal<string> = input.required();
+  readonly alt: InputSignal<string> = input.required();
+  readonly title: InputSignal<string> = input("");
   readonly aspectRatio: InputSignal<string> = input("2/3");
   readonly width: InputSignal<string> = input("100%");
   readonly height: InputSignal<string> = input("auto");

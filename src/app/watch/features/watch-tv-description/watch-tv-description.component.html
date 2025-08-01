@@ -5,7 +5,7 @@
 <div class="container">
   <section class="main-contents">
     @if (!mediaDetailsRequest.isLoading()) {
-      <app-image-title [src]="posterImageUrl()" title="" width="100%"/>
+      <app-image-title [src]="posterImageUrl()" [alt]="title()" width="100%"/>
       <app-chip-slider [data]="genresName()"/>
     } @else {
       <app-skeleton borderRadius="8px" aspectRatio="2 / 3" height="auto" width="100%"/>
