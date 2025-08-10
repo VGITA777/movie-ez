@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {Routes} from '@angular/router';
 
 export const WatchRoutes: Routes = [
@@ -16,7 +20,7 @@ export const WatchRoutes: Routes = [
         loadChildren: () => MovieWatchRoutes
       },
       {
-        path: 'tv/:id',
+        path: 'tv/:id/:season/:episode',
         loadChildren: () => TvWatchRoutes
       }
     ]

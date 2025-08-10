@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {inject, Injectable} from '@angular/core';
 import {NavigationExtras, Router} from '@angular/router';
 import {MediaLike} from '../ui/media-slider/media-slider.component';
@@ -24,9 +28,9 @@ export class NavigatorService {
     this.navigate(['tv-shows'], undefined, onNavigate);
   }
 
-  navigateToWatch(media: MediaLike, extras?: NavigationExtras, onNavigate?: () => void): void {
+  navigateToWatch(media: MediaLike, season?: number, episode?: number, extras?: NavigationExtras, onNavigate?: () => void): void {
     if ('first_air_date' in media) {
-      this.navigateToWatchSeries(media.id, extras, onNavigate);
+      this.navigateToWatchSeries(media.id, season!, episode!, extras, onNavigate);
       return;
     }
     this.navigateToWatchMovie(media.id, extras, onNavigate);
@@ -36,8 +40,8 @@ export class NavigatorService {
     this.navigate(['watch', 'movie', id], extras, onNavigate);
   }
 
-  navigateToWatchSeries(id: number, extras?: NavigationExtras, onNavigate?: () => void): void {
-    this.navigate(['watch', 'tv', id], extras, onNavigate);
+  navigateToWatchSeries(id: number, season: number, episode: number, extras?: NavigationExtras, onNavigate?: () => void): void {
+    this.navigate(['watch', 'tv', id, season, episode], extras, onNavigate);
   }
 
   navigateToSettingsPlayer(extras?: NavigationExtras, onNavigate?: () => void): void {
@@ -61,6 +65,6 @@ export abstract class WatchNavigationHandler {
   protected readonly navigator: NavigatorService = inject(NavigatorService);
 
   handleNavigation(media: MediaLike, extras?: NavigationExtras, onNavigate?: () => void): void {
-    this.navigator.navigateToWatch(media, extras, onNavigate);
+    this.navigator.navigateToWatch(media, 1, 1, extras, onNavigate);
   }
 }
