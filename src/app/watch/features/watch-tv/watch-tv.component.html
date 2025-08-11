@@ -11,12 +11,14 @@
       @if (!mediaDetailsRequest.isLoading()) {
         @if (seasons().length > 0) {
           <app-shine-card>
-            <app-drop-down-select width="100%" [(selected)]="selectedSeasonOption" [options]="seasonOptions()"/>
+            <app-drop-down-select width="100%" [selected]="selectedSeasonOption()"
+                                  (selectedChange)="handleOnSeasonChange($event!)" [options]="seasonOptions()"/>
           </app-shine-card>
         }
         @if (episodeOptions().length > 0) {
           <app-shine-card>
-            <app-drop-down-select width="100%" [(selected)]="selectedEpisodeOption" [options]="episodeOptions()"/>
+            <app-drop-down-select width="100%" [selected]="selectedEpisodeOption()"
+                                  (selectedChange)="handleOnEpisodeChange($event!)" [options]="episodeOptions()"/>
           </app-shine-card>
         }
       } @else {

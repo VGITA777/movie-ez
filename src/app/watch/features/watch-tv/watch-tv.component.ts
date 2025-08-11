@@ -15,7 +15,6 @@ import {SkeletonComponent} from '@ui/skeleton/skeleton.component';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {Router} from '@angular/router';
-import {environment} from '@env/environment';
 import {MediaSliderSkeletonComponent} from '@ui/media-slider-skeleton/media-slider-skeleton.component';
 
 @Component({
@@ -75,8 +74,8 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
   // Used for the generic media info (ID, Season, Episode)
   protected override readonly genericMediaInfo: Signal<TvShowGenericMediaInfo> = computed(() => ({
     id: this.mediaId(),
-    season: this.selectedSeasonOption().value ?? 1,
-    episode: this.selectedEpisodeOption().value ?? 1
+    season: this.selectedSeasonFromUrl() ?? 1,
+    episode: this.selectedEpisodeFromUrl() ?? 1
   }));
 
   protected override mediaDetailsLoader(id: number): Promise<TvShowDetails> {
@@ -89,5 +88,15 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
 
   protected handleOnCardClick(media: MediaLike): void {
     this.navigatorService.navigateToWatch(media);
+  }
+
+  protected handleOnSeasonChange(option: Option): void {
+    this.selectedSeasonOption.set(option);
+    this.navigatorService.navigateToWatchSeries(this.mediaId(), option.value, 1);
+  }
+
+  protected handleOnEpisodeChange(option: Option): void {
+    this.selectedEpisodeOption.set(option);
+    this.navigatorService.navigateToWatchSeries(this.mediaId(), this.selectedSeasonFromUrl() ?? 1, option.value);
   }
 }
