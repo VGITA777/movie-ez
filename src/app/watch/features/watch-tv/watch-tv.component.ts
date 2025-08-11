@@ -16,6 +16,7 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {Router} from '@angular/router';
 import {MediaSliderSkeletonComponent} from '@ui/media-slider-skeleton/media-slider-skeleton.component';
+import {environment} from '@env/environment';
 
 @Component({
   selector: 'app-watch-tv',
@@ -91,11 +92,17 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
   }
 
   protected handleOnSeasonChange(option: Option): void {
+    if (environment.isLoggingEnabled) {
+      console.log(`Selected season: ${option.value}`);
+    }
     this.selectedSeasonOption.set(option);
     this.navigatorService.navigateToWatchSeries(this.mediaId(), option.value, 1);
   }
 
   protected handleOnEpisodeChange(option: Option): void {
+    if (environment.isLoggingEnabled) {
+      console.log(`Selected episode: ${option.value}`)
+    }
     this.selectedEpisodeOption.set(option);
     this.navigatorService.navigateToWatchSeries(this.mediaId(), this.selectedSeasonFromUrl() ?? 1, option.value);
   }
