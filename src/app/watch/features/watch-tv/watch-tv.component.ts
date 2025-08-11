@@ -12,6 +12,10 @@ import {ShineCardComponent} from '@ui/shine-card/shine-card.component';
 import {MediaLike, MediaSliderComponent} from '@ui/media-slider/media-slider.component';
 import {NavigatorService} from '@utils/navigator.service';
 import {SkeletonComponent} from '@ui/skeleton/skeleton.component';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {map} from 'rxjs';
+import {Router} from '@angular/router';
+import {environment} from '@env/environment';
 
 @Component({
   selector: 'app-watch-tv',
@@ -27,14 +31,16 @@ import {SkeletonComponent} from '@ui/skeleton/skeleton.component';
 export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGenericMediaInfo, TvShowDetails> {
 
   protected readonly navigatorService: NavigatorService = inject(NavigatorService);
+  protected readonly router: Router = inject(Router);
   protected readonly mediaLinkProviders: Signal<Record<VideoSource, TvMediaLinkProvider>> = signal(TV_EMBED_OBJS);
   // Season Options
   protected readonly seasons: Signal<Season[]> = computed(() => this.mediaDetailsRequest
     .value()?.seasons
     ?.filter(s => s.season_number !== 0) ?? []);
-  // Selections
-  protected readonly selectedSeasonOption: WritableSignal<Option> = signal({label: '1', value: 1});
-  protected readonly seasonsOptions: Signal<Option[]> = computed((): Option[] =>
+  protected readonly selectedSeasonFromUrl: Signal<number | undefined> = toSignal(
+    this.activatedRoute.paramMap.pipe(map(p => Number(p.get('season')) ?? 1)),
+  );
+  protected readonly seasonOptions: Signal<Option[]> = computed((): Option[] =>
     this.seasons()
       ?.filter(s => s.episode_count > 0)
       ?.map(s => ({
@@ -42,22 +48,38 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
         value: s.season_number
       })) ?? []
   );
+  protected readonly selectedSeasonOption: WritableSignal<Option> = linkedSignal({
+    source: this.selectedSeasonFromUrl,
+    computation: (source): Option => {
+      return {label: source?.toString() ?? '1', value: source ?? 1}
+    }
+  });
   // Episode options
-  protected readonly episodes: Signal<Option[]> = computed(() => {
-    const count = this.seasons()?.find(s => s.season_number === this.selectedSeasonOption().value)?.episode_count ?? 0;
+  protected readonly selectedEpisodeFromUrl: Signal<number | undefined> = toSignal(
+    this.activatedRoute.paramMap.pipe(map(p => Number(p.get('episode')) ?? 1)),
+  );
+  protected readonly episodeOptions: Signal<Option[]> = computed(() => {
+    const count: number = this.seasons()?.find(s => s.season_number === this.selectedSeasonOption().value)?.episode_count ?? 0;
     return Array.from({length: count}, (_, i) => i + 1).map(n => ({label: `Ep ${n.toString()}`, value: n}));
   })
   protected readonly selectedEpisodeOption: WritableSignal<Option> = linkedSignal({
     source: this.selectedSeasonOption,
-    computation: (): Option => ({label: '1', value: 1}),
+    computation: (): Option => {
+      const selectedEp: number = this.selectedEpisodeFromUrl() ?? 1;
+      return {label: selectedEp.toString(), value: selectedEp}
+    }
   })
 
   // Used for the generic media info (ID, Season, Episode)
   protected override readonly genericMediaInfo: Signal<TvShowGenericMediaInfo> = computed(() => ({
     id: this.mediaId(),
-    season: Number(this.selectedSeasonOption().value) ?? 1,
-    episode: Number(this.selectedEpisodeOption().value) ?? 1
+    season: this.selectedSeasonOption().value ?? 1,
+    episode: this.selectedEpisodeOption().value ?? 1
   }));
+
+  constructor() {
+    super();
+  }
 
   protected override mediaDetailsLoader(id: number): Promise<TvShowDetails> {
     return this.tmdb.tvShows.details(id);

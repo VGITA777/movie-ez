@@ -1,3 +1,7 @@
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
 <div class="container">
   <main class="watching-area">
     <section class="player-container">
@@ -7,12 +11,12 @@
       @if (!mediaDetailsRequest.isLoading()) {
         @if (seasons().length > 0) {
           <app-shine-card>
-            <app-drop-down-select width="100%" [(selected)]="selectedSeasonOption" [options]="seasonsOptions()"/>
+            <app-drop-down-select width="100%" [(selected)]="selectedSeasonOption" [options]="seasonOptions()"/>
           </app-shine-card>
         }
-        @if (episodes().length > 0) {
+        @if (episodeOptions().length > 0) {
           <app-shine-card>
-            <app-drop-down-select width="100%" [(selected)]="selectedEpisodeOption" [options]="episodes()"/>
+            <app-drop-down-select width="100%" [(selected)]="selectedEpisodeOption" [options]="episodeOptions()"/>
           </app-shine-card>
         }
       } @else {
