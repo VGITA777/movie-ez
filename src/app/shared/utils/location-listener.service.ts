@@ -2,40 +2,61 @@
  * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
  */
 
-import {inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
+import {inject, Injectable, Signal} from '@angular/core';
 import {Page} from '@navigation/utils/page';
-import {Location} from '@angular/common';
+import {ActivatedRouteSnapshot, NavigationEnd, Router} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {filter, map, startWith} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocationListenerService {
+  private readonly router = inject(Router);
 
-  readonly location: Location = inject(Location);
-  private readonly _currentLocation: WritableSignal<Page> = signal(Page.HOME);
-  readonly currentLocation: Signal<Page> = this._currentLocation.asReadonly();
+  // Single source-of-truth signal derived from the Router
+  readonly currentLocation: Signal<Page> = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map(() => this.resolveCurrentPage()),
+      startWith(this.resolveCurrentPage())
+    ),
+    {initialValue: Page.HOME}
+  );
 
-  constructor() {
-    this.location.onUrlChange(this.onUrlChangeHandler.bind(this))
+  private resolveCurrentPage(): Page {
+    // Prefer explicit route data if configured on routes: data: { page: Page.MOVIES }
+    const deepest = this.getDeepestSnapshot(this.router.routerState.snapshot.root);
+    const pageFromData = deepest?.data?.['page'] as Page | undefined;
+    if (pageFromData !== undefined) {
+      return pageFromData;
+    }
+    // Fallback: infer from URL
+    return this.mapUrlToPage(this.router.url ?? '/');
   }
 
-  private onUrlChangeHandler(url: string): void {
-    if (url === '/') {
-      this._currentLocation.set(Page.HOME);
-    } else if (url === '/movies') {
-      this._currentLocation.set(Page.MOVIES);
-    } else if (url === '/tv-shows') {
-      this._currentLocation.set(Page.TV_SHOWS);
-    } else if (url === '/search') {
-      this._currentLocation.set(Page.SEARCH);
-    } else if (url.startsWith('/watch/movie')) {
-      this._currentLocation.set(Page.WATCH_MOVIE);
-    } else if (url.startsWith('/watch/tv')) {
-      this._currentLocation.set(Page.WATCH_TV_SHOW);
-    } else if (url.startsWith('/settings')) {
-      this._currentLocation.set(Page.SETTINGS);
-    } else {
-      this._currentLocation.set(Page.HOME);
+  private getDeepestSnapshot(route: ActivatedRouteSnapshot | null): ActivatedRouteSnapshot | null {
+    let node = route;
+    while (node?.firstChild) {
+      node = node.firstChild;
     }
+    return node ?? null;
+  }
+
+  private mapUrlToPage(url: string): Page {
+    const patterns: Array<[RegExp, Page]> = [
+      [/^\/$/, Page.HOME],
+      [/^\/movies(?:\/|$)/, Page.MOVIES],
+      [/^\/tv-shows(?:\/|$)/, Page.TV_SHOWS],
+      [/^\/search(?:\/|$)/, Page.SEARCH],
+      [/^\/watch\/movie(?:\/|$)/, Page.WATCH_MOVIE],
+      [/^\/watch\/tv(?:\/|$)/, Page.WATCH_TV_SHOW],
+      [/^\/settings(?:\/|$)/, Page.SETTINGS]
+    ];
+
+    for (const [re, page] of patterns) {
+      if (re.test(url)) return page;
+    }
+    return Page.HOME;
   }
 }
