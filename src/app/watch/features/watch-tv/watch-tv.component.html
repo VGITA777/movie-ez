@@ -35,9 +35,13 @@
     <section class="media-details-container">
     </section>
     <section class="sliders">
-      <app-media-slider (onCardClick)="handleOnCardClick($event)" [data]="mediaRecommendations()" mediaType="tv"
-                        subHeader="Recommendations for you"
-                        title="Recommendations"/>
+      @if (!mediaRecommendationsRequest.isLoading() && mediaRecommendations().length !== 0 && mediaRecommendationsRequest.error() !== null) {
+        <app-media-slider (onCardClick)="handleOnCardClick($event)" [data]="mediaRecommendations()" mediaType="tv"
+                          subHeader="Recommendations for you"
+                          title="Recommendations"/>
+      } @else if (mediaRecommendationsRequest.isLoading()) {
+        <app-media-slider-skeleton/>
+      }
     </section>
   </main>
 </div>

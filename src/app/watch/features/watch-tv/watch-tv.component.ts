@@ -16,6 +16,7 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {Router} from '@angular/router';
 import {environment} from '@env/environment';
+import {MediaSliderSkeletonComponent} from '@ui/media-slider-skeleton/media-slider-skeleton.component';
 
 @Component({
   selector: 'app-watch-tv',
@@ -23,7 +24,8 @@ import {environment} from '@env/environment';
     DropDownSelectComponent,
     ShineCardComponent,
     MediaSliderComponent,
-    SkeletonComponent
+    SkeletonComponent,
+    MediaSliderSkeletonComponent
   ],
   templateUrl: './watch-tv.component.html',
   styleUrl: './watch-tv.component.scss'
@@ -76,10 +78,6 @@ export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGener
     season: this.selectedSeasonOption().value ?? 1,
     episode: this.selectedEpisodeOption().value ?? 1
   }));
-
-  constructor() {
-    super();
-  }
 
   protected override mediaDetailsLoader(id: number): Promise<TvShowDetails> {
     return this.tmdb.tvShows.details(id);
