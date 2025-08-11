@@ -4,7 +4,7 @@
 
 import {inject, Injectable} from '@angular/core';
 import {NavigationExtras, Router} from '@angular/router';
-import {MediaLike} from '../ui/media-slider/media-slider.component';
+import {MediaLike} from '@ui/media-slider/media-slider.component';
 
 @Injectable({
   providedIn: 'root'
