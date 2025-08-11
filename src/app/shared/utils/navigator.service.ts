@@ -30,7 +30,7 @@ export class NavigatorService {
 
   navigateToWatch(media: MediaLike, season?: number, episode?: number, extras?: NavigationExtras, onNavigate?: () => void): void {
     if ('first_air_date' in media) {
-      this.navigateToWatchSeries(media.id, season!, episode!, extras, onNavigate);
+      this.navigateToWatchSeries(media.id, season ?? 1, episode ?? 1, extras, onNavigate);
       return;
     }
     this.navigateToWatchMovie(media.id, extras, onNavigate);
