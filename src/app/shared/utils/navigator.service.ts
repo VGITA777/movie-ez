@@ -16,8 +16,8 @@ export class NavigatorService {
     this.navigate(['/'], undefined, onNavigate);
   }
 
-  navigateToSearch(onNavigate?: () => void): void {
-    this.navigate(['search'], undefined, onNavigate);
+  navigateToSearch(extras?: NavigationExtras, onNavigate?: () => void): void {
+    this.navigate(['search'], extras, onNavigate);
   }
 
   navigateToMovies(onNavigate?: () => void): void {
