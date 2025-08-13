@@ -51,7 +51,8 @@ export class LocationListenerService {
       [/^\/search(?:\/|$)/, Page.SEARCH],
       [/^\/watch\/movie(?:\/|$)/, Page.WATCH_MOVIE],
       [/^\/watch\/tv(?:\/|$)/, Page.WATCH_TV_SHOW],
-      [/^\/settings(?:\/|$)/, Page.SETTINGS]
+      [/^\/settings(?:\/|$)/, Page.SETTINGS],
+      [/^\/error(?:\/|$)/, Page.ERROR]
     ];
 
     for (const [re, page] of patterns) {
