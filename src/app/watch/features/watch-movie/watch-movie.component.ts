@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {Component, inject, signal, Signal} from '@angular/core';
 import {MOVIE_EMBED_OBJS, MovieMediaLinkProvider,} from '@shared/watch-provider/media-link-provider';
 import {MovieDetails, Recommendations} from 'tmdb-ts';
@@ -9,12 +13,14 @@ import {DropDownSelectComponent} from '@ui/drop-down-select/drop-down-select.com
 import {MediaLike, MediaSliderComponent} from '@ui/media-slider/media-slider.component';
 import {NavigatorService} from '@utils/navigator.service';
 import {DeviceSizeService} from '@utils/device-size.service';
+import {MediaSliderSkeletonComponent} from '@ui/media-slider-skeleton/media-slider-skeleton.component';
 
 @Component({
   selector: 'app-watch-movie',
   imports: [
     DropDownSelectComponent,
-    MediaSliderComponent
+    MediaSliderComponent,
+    MediaSliderSkeletonComponent
   ],
   templateUrl: './watch-movie.component.html',
   styleUrl: './watch-movie.component.scss'

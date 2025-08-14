@@ -1,3 +1,7 @@
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
 <div class="container">
   <main class="watching-area">
     <section class="player-container">
@@ -13,9 +17,13 @@
       </section>
     }
     <section class="sliders">
-      <app-media-slider (onCardClick)="handleOnCardClick($event)" [data]="mediaRecommendations()" mediaType="tv"
-                        subHeader="Recommendations for you"
-                        title="Recommendations"/>
+      @if (!mediaRecommendationsRequest.isLoading() && mediaRecommendations().length !== 0 && mediaRecommendationsRequest.error() !== null) {
+        <app-media-slider (onCardClick)="handleOnCardClick($event)" [data]="mediaRecommendations()" mediaType="tv"
+                          subHeader="Recommendations for you"
+                          title="Recommendations"/>
+      } @else if (mediaRecommendationsRequest.isLoading()) {
+        <app-media-slider-skeleton/>
+      }
     </section>
   </main>
 </div>
