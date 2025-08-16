@@ -14,8 +14,8 @@ import {NgStyle} from '@angular/common';
   }
 })
 export class SkeletonComponent {
-  readonly width: InputSignal<string> = input('unset');
-  readonly height: InputSignal<string> = input('unset');
+  readonly width: InputSignal<string> = input('auto');
+  readonly height: InputSignal<string> = input('auto');
   readonly aspectRatio: InputSignal<string> = input('unset');
   readonly borderRadius: InputSignal<string> = input('0px');
 }

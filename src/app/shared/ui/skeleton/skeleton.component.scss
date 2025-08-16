@@ -6,8 +6,8 @@
 @use "constants";
 
 .skeleton {
-  height: var(--height, auto);
-  width: var(--width, auto);
+  height: 100%;
+  width: 100%;
   aspect-ratio: var(--aspect-ratio, unset);
   background-color: var(--bg-color, constants.$dark-surface-700);
   border-radius: var(--border-radius);
