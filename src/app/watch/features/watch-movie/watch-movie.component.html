@@ -12,8 +12,18 @@
     </section>
   </main>
   <main class="other-contents">
-    @if (deviceSizeService.isTablet()) {
+    @if (deviceSizeService.isLaptop() || deviceSizeService.isMobile() || deviceSizeService.isTablet()) {
       <section class="media-details-container">
+        <app-mini-media-description
+          [imageSrc]="posterImageUrl()"
+          [tags]="genreStrings()"
+          [mediaTitle]="title()"
+          [mediaReleaseDate]="mediaDetailsResult().release_date"
+          [mediaStatus]="mediaDetailsResult().status"
+          [mediaRating]="mediaDetailsResult().vote_average"
+          [mediaDescription]="mediaDetailsResult().overview"
+        >
+        </app-mini-media-description>
       </section>
     }
     <section class="sliders">

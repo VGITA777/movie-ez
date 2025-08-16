@@ -14,13 +14,15 @@ import {MediaLike, MediaSliderComponent} from '@ui/media-slider/media-slider.com
 import {NavigatorService} from '@utils/navigator.service';
 import {DeviceSizeService} from '@utils/device-size.service';
 import {MediaSliderSkeletonComponent} from '@ui/media-slider-skeleton/media-slider-skeleton.component';
+import {MiniMediaDescriptionComponent} from '@watch/ui/mini-media-description/mini-media-description.component';
 
 @Component({
   selector: 'app-watch-movie',
   imports: [
     DropDownSelectComponent,
     MediaSliderComponent,
-    MediaSliderSkeletonComponent
+    MediaSliderSkeletonComponent,
+    MiniMediaDescriptionComponent
   ],
   templateUrl: './watch-movie.component.html',
   styleUrl: './watch-movie.component.scss'

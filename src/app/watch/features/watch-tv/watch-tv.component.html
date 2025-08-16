@@ -35,6 +35,20 @@
 
   <main class="other-contents">
     <section class="media-details-container">
+      @if (deviceSizeService.isLaptop() || deviceSizeService.isMobile() || deviceSizeService.isTablet()) {
+        <section class="media-details-container">
+          <app-mini-media-description
+            [imageSrc]="posterImageUrl()"
+            [tags]="genreStrings()"
+            [mediaTitle]="title()"
+            [mediaReleaseDate]="mediaDetailsResult().first_air_date"
+            [mediaStatus]="mediaDetailsResult().status"
+            [mediaRating]="mediaDetailsResult().vote_average"
+            [mediaDescription]="mediaDetailsResult().overview"
+          >
+          </app-mini-media-description>
+        </section>
+      }
     </section>
     <section class="sliders">
       @if (!mediaRecommendationsRequest.isLoading() && mediaRecommendations().length !== 0 && mediaRecommendationsRequest.error() !== null) {

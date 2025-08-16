@@ -81,6 +81,7 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
     return '';
   });
   protected readonly genres: Signal<Genre[]> = computed(() => this.mediaDetailsRequest.value().genres ?? []);
+  protected readonly genreStrings: Signal<string[]> = computed(() => this.genres().map(g => g.name));
   protected readonly overview: Signal<string> = computed(() => this.mediaDetailsRequest.value().overview ?? '');
   /**
    * Signal-based property that is in charge of fetching the media recommendations
@@ -142,7 +143,7 @@ export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMe
    * Manages the current media link provider which can either be {@link MovieMediaLinkProvider}
    * or {@link TvMediaLinkProvider} which can be changed by the implementing class (dropdown, selection, etc.).
    * */
-  protected readonly selectedMediaLinkProvider: WritableSignal<Option> = linkedSignal({
+  protected selectedMediaLinkProvider: WritableSignal<Option> = linkedSignal({
     source: (): { provider: Option[] } => ({provider: this.mediaLinkProviderOptions()}),
     computation: (newOptions): Option => newOptions.provider
       .find(d => d.value === this.defaultVideoSource) ?? {
