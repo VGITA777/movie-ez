@@ -38,6 +38,15 @@
       width: 100%;
     }
   }
+
+  .other-contents {
+    @include mixins.width-height();
+    @include mixins.flex($direction: column, $gap: 42px);
+
+    app-mini-media-description {
+      @include mixins.width-height();
+    }
+  }
 }
 
 @include responsive.mobile-large {

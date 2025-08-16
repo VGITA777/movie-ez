@@ -19,6 +19,9 @@ import {MediaSliderSkeletonComponent} from '@ui/media-slider-skeleton/media-slid
 import {environment} from '@env/environment';
 import {MiniMediaDescriptionComponent} from '@watch/ui/mini-media-description/mini-media-description.component';
 import {DeviceSizeService} from '@utils/device-size.service';
+import {
+  MiniMediaDescriptionSkeletonComponent
+} from '@watch/ui/mini-media-description-skeleton/mini-media-description-skeleton.component';
 
 @Component({
   selector: 'app-watch-tv',
@@ -28,7 +31,8 @@ import {DeviceSizeService} from '@utils/device-size.service';
     MediaSliderComponent,
     SkeletonComponent,
     MediaSliderSkeletonComponent,
-    MiniMediaDescriptionComponent
+    MiniMediaDescriptionComponent,
+    MiniMediaDescriptionSkeletonComponent
   ],
   templateUrl: './watch-tv.component.html',
   styleUrl: './watch-tv.component.scss'
