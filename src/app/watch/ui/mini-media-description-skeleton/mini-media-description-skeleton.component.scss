@@ -1,0 +1,38 @@
+@use 'mixins';
+@use 'constants';
+@use 'responsive';
+
+.container {
+  @include mixins.flex($align-items: center);
+
+
+  .image-container {
+    flex: 1 0 150px;
+    max-width: 250px;
+    width: 100%;
+  }
+
+  .descriptions-container {
+    @include mixins.flex($direction: column, $gap: constants.$spacing-xxl);
+    flex: 1 1 0;
+    width: 100%;
+
+    .label-content-container {
+      @include mixins.flex($direction: column, $gap: constants.$spacing-md);
+      width: 100%;
+    }
+  }
+}
+
+@include responsive.tablet-half-below {
+  .container {
+    flex-direction: column;
+    align-items: center;
+
+    .descriptions-container {
+      .label-content-container {
+        align-items: center;
+      }
+    }
+  }
+}
