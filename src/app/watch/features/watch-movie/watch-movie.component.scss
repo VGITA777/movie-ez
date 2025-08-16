@@ -32,10 +32,14 @@
         border: none;
       }
     }
+  }
 
-    .media-settings-container {
-      @include mixins.flex($direction: row, $justify-content: start, $align-items: center, $gap: constants.$spacing-md);
-      width: 100%;
+  .other-contents {
+    @include mixins.width-height();
+    @include mixins.flex($direction: column, $gap: 42px);
+
+    app-mini-media-description {
+      @include mixins.width-height();
     }
   }
 }

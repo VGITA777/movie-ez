@@ -2,17 +2,17 @@
  * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
  */
 
-import {MediaLinkProvider, TvMediaLinkProvider} from '../../shared/watch-provider/media-link-provider';
+import {MediaLinkProvider, TvMediaLinkProvider} from '@shared/watch-provider/media-link-provider';
 import {Genre, MovieDetails, Recommendation, Recommendations, TvShowDetails} from 'tmdb-ts';
 import {computed, inject, linkedSignal, resource, ResourceRef, Signal, WritableSignal} from '@angular/core';
-import {TmdbService} from '../../shared/data-access/tmdb.service';
+import {TmdbService} from '@shared/data-access/tmdb.service';
 import {ActivatedRoute} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
-import {VideoSource} from '../../shared/constants';
-import {Option} from '../../shared/ui/drop-down-select/drop-down-select.component';
-import {environment} from '../../../environments/environment';
+import {VideoSource} from '@constants';
+import {Option} from '@ui/drop-down-select/drop-down-select.component';
+import {environment} from '@env/environment';
 
 /**
  * Typically used for Movies.
@@ -81,6 +81,7 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
     return '';
   });
   protected readonly genres: Signal<Genre[]> = computed(() => this.mediaDetailsRequest.value().genres ?? []);
+  protected readonly genreStrings: Signal<string[]> = computed(() => this.genres().map(g => g.name));
   protected readonly overview: Signal<string> = computed(() => this.mediaDetailsRequest.value().overview ?? '');
   /**
    * Signal-based property that is in charge of fetching the media recommendations
@@ -142,7 +143,7 @@ export abstract class WatchPage<P extends MediaLinkProvider, I extends GenericMe
    * Manages the current media link provider which can either be {@link MovieMediaLinkProvider}
    * or {@link TvMediaLinkProvider} which can be changed by the implementing class (dropdown, selection, etc.).
    * */
-  protected readonly selectedMediaLinkProvider: WritableSignal<Option> = linkedSignal({
+  protected selectedMediaLinkProvider: WritableSignal<Option> = linkedSignal({
     source: (): { provider: Option[] } => ({provider: this.mediaLinkProviderOptions()}),
     computation: (newOptions): Option => newOptions.provider
       .find(d => d.value === this.defaultVideoSource) ?? {

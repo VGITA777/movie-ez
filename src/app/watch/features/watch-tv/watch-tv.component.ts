@@ -17,6 +17,8 @@ import {map} from 'rxjs';
 import {Router} from '@angular/router';
 import {MediaSliderSkeletonComponent} from '@ui/media-slider-skeleton/media-slider-skeleton.component';
 import {environment} from '@env/environment';
+import {MiniMediaDescriptionComponent} from '@watch/ui/mini-media-description/mini-media-description.component';
+import {DeviceSizeService} from '@utils/device-size.service';
 
 @Component({
   selector: 'app-watch-tv',
@@ -25,13 +27,15 @@ import {environment} from '@env/environment';
     ShineCardComponent,
     MediaSliderComponent,
     SkeletonComponent,
-    MediaSliderSkeletonComponent
+    MediaSliderSkeletonComponent,
+    MiniMediaDescriptionComponent
   ],
   templateUrl: './watch-tv.component.html',
   styleUrl: './watch-tv.component.scss'
 })
 export class WatchTvComponent extends WatchPage<TvMediaLinkProvider, TvShowGenericMediaInfo, TvShowDetails> {
 
+  protected readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
   protected readonly navigatorService: NavigatorService = inject(NavigatorService);
   protected readonly router: Router = inject(Router);
   protected readonly mediaLinkProviders: Signal<Record<VideoSource, TvMediaLinkProvider>> = signal(TV_EMBED_OBJS);
