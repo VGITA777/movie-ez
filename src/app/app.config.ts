@@ -10,14 +10,6 @@ import {routes} from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
-    provideRouter(routes),
-    /*    providePrimeNG({
-          theme: {
-            preset: MyTheme,
-            options: {
-              darkModeSelector: '.dark-mode',
-            }
-          },
-        })*/
+    provideRouter(routes)
   ]
 };

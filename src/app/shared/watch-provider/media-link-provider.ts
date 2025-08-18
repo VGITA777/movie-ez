@@ -1,4 +1,8 @@
-import {MOVIE_EMBED_LINKS, TV_EMBED_LINKS, VideoSource} from '../constants';
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+import {MOVIE_EMBED_LINKS, TV_EMBED_LINKS, VideoSource} from '@constants';
 
 export interface MediaLinkProvider {
   provideLink(id: number): string;
