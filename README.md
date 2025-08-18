@@ -16,11 +16,11 @@ It provides a user-friendly interface to search for and stream content from vari
 
 ## TODO
 
-- [ ] Add Media Description at the Watch Page when user is in Half Tablet or in Mobile mode.
+- [x] Add Media Description at the Watch Page when user is in Half Tablet or in Mobile mode.
 - [ ] Add a way for users to customize which server would be used to stream the content and saved locally.
 - [ ] Add a feature to allow users to create and manage watchlist and be saved locally.
 - [ ] Implement a feature to allow users to mark movies and shows as favorites and be saved locally.
-- [ ] Dockerize the application for easier deployment.
+- [x] Dockerize the application for easier deployment.
 - [ ] Create a "How to Use" section in the README.
 
 ---
