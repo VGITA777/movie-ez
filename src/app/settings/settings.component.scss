@@ -4,8 +4,15 @@
 
 @use 'constants';
 @use 'mixins';
+@use 'responsive';
 
 .container {
   background-color: constants.$dark-surface-800;
   @include mixins.width-height()
+}
+
+@include responsive.tablet-half-below {
+  .container {
+    background-color: transparent;
+  }
 }
