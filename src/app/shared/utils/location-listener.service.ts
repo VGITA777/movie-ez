@@ -3,10 +3,10 @@
  */
 
 import {inject, Injectable, Signal} from '@angular/core';
-import {Page} from '@navigation/utils/page';
 import {ActivatedRouteSnapshot, NavigationEnd, Router} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {filter, map, startWith} from 'rxjs';
+import {Page} from '@constants';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,10 @@
-<button (click)="onClickHandler()" [ngClass]="{ 'selected': active() }" class="container">
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
+<button (click)="onClickHandler()" [ngClass]="{ 'selected': isActive() }" class="container">
   <div class="icon">
-    @if (active()) {
+    @if (isActive()) {
       <ng-content select="[iconActive]"></ng-content>
     } @else {
       <ng-content select="[iconInactive]"></ng-content>

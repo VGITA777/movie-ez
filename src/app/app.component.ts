@@ -24,14 +24,12 @@ import {NgClass} from '@angular/common';
 import {LoadingComponent} from './loading/loading.component';
 import {environment} from '@env/environment';
 import {BottomNavBarComponent} from '@ui/bottom-nav-bar/bottom-nav-bar.component';
-import {BottomNavItemComponent} from '@ui/bottom-nav-bar/ui/bottom-nav-item/bottom-nav-item.component';
 import {NavigatorService} from '@utils/navigator.service';
-import {LocationListenerService} from '@utils/location-listener.service';
 import {GlobalsService} from '@utils/globals.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent, NgClass, LoadingComponent, BottomNavBarComponent, BottomNavItemComponent],
+  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent, NgClass, LoadingComponent, BottomNavBarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: []
@@ -40,7 +38,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toastSubscription!: Subscription;
   readonly navigator: NavigatorService = inject(NavigatorService);
-  readonly locationListener: LocationListenerService = inject(LocationListenerService);
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
   readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
   readonly globalsService: GlobalsService = inject(GlobalsService);

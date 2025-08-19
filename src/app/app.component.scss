@@ -44,14 +44,6 @@
     z-index: 1000;
     left: 50%;
     @include mixins.width-height(95%, auto);
-
-    app-bottom-nav-bar {
-      app-bottom-nav-item {
-        svg {
-          @include mixins.width-height(1.5rem, 1.5rem);
-        }
-      }
-    }
   }
 
   .mobile-nav-filler {

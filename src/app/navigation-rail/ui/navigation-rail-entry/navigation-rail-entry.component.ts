@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {Component, input, InputSignal, output, OutputEmitterRef} from '@angular/core';
 import {NgClass} from '@angular/common';
 
@@ -11,7 +15,7 @@ import {NgClass} from '@angular/common';
 })
 export class NavigationRailEntryComponent {
   readonly onClick: OutputEmitterRef<void> = output();
-  readonly active: InputSignal<boolean> = input(false);
+  readonly isActive: InputSignal<boolean> = input(false);
 
   protected onClickHandler(): void {
     this.onClick.emit();

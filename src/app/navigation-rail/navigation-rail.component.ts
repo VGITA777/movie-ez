@@ -3,9 +3,9 @@
  */
 
 import {Component, inject, Signal} from '@angular/core';
-import {Page} from '@navigation/utils/page';
 import {LocationListenerService} from '@utils/location-listener.service';
 import {NavigatorService} from '@utils/navigator.service';
+import {Page} from '@constants';
 import {NavigationRailEntryComponent} from '@navigation/ui/navigation-rail-entry/navigation-rail-entry.component';
 
 @Component({
