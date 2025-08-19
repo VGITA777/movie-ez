@@ -6,7 +6,9 @@ import {Component, inject, Signal} from '@angular/core';
 import {LocationListenerService} from '@utils/location-listener.service';
 import {NavigatorService} from '@utils/navigator.service';
 import {Page} from '@constants';
-import {NavigationRailEntryComponent} from '@navigation/ui/navigation-rail-entry/navigation-rail-entry.component';
+import {
+  NavigationRailEntryComponent
+} from '@ui/navigation-rail/ui/navigation-rail-entry/navigation-rail-entry.component';
 
 @Component({
   selector: 'app-navigation-rail',

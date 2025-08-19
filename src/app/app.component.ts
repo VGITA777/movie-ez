@@ -15,7 +15,6 @@ import {
   WritableSignal
 } from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {NavigationRailComponent} from '@navigation/navigation-rail.component';
 import {Subscription, timer} from 'rxjs';
 import {ProgressShowerService, ProgressType} from '@utils/progress-shower.service';
 import {IndeterminateProgressBarComponent} from '@ui/indeterminate-progress-bar/indeterminate-progress-bar.component';
@@ -26,10 +25,11 @@ import {environment} from '@env/environment';
 import {BottomNavBarComponent} from '@ui/bottom-nav-bar/bottom-nav-bar.component';
 import {NavigatorService} from '@utils/navigator.service';
 import {GlobalsService} from '@utils/globals.service';
+import {NavigationRailComponent} from '@ui/navigation-rail/navigation-rail.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent, NgClass, LoadingComponent, BottomNavBarComponent],
+  imports: [RouterOutlet, NavigationRailComponent, IndeterminateProgressBarComponent, NgClass, LoadingComponent, BottomNavBarComponent, NavigationRailComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: []

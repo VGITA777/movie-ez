@@ -49,9 +49,6 @@
       "@settings/*": [
         "app/settings/*"
       ],
-      "@navigation/*": [
-        "app/navigation-rail/*"
-      ],
       "@error/*": [
         "app/error/*"
       ],
