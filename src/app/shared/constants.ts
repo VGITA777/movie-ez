@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 export const ONE_DAY_MILLIS = 1000 * 60 * 60 * 24;
 
 /* Movies Cache */
@@ -70,4 +74,15 @@ export const TV_EMBED_LINKS: Record<VideoSource, string> = {
   videasy: 'https://player.videasy.net/tv/{id}/{season}/{episode}',
   onemovies: 'https://111movies.com/tv/{id}/{season}/{episode}',
   vidzee: 'https://player.vidzee.wtf/embed/tv/{id}/{season}/{episode}',
+}
+
+export enum Page {
+  HOME = 'home',
+  SEARCH = 'search',
+  MOVIES = 'movies',
+  TV_SHOWS = 'tv-shows',
+  WATCH_MOVIE = 'watch-movie',
+  WATCH_TV_SHOW = 'watch-tv-show',
+  SETTINGS = 'settings',
+  ERROR = 'error',
 }
