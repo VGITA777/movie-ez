@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
 import {
   Component,
   effect,
@@ -40,8 +44,6 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
   readonly deviceSizeService: DeviceSizeService = inject(DeviceSizeService);
   readonly globalsService: GlobalsService = inject(GlobalsService);
-  readonly isTabletMedium: Signal<boolean> = this.deviceSizeService.isTabletMedium;
-  readonly isMobile: Signal<boolean> = this.deviceSizeService.isMobile;
   readonly progress: Signal<number> = this.progressShower.progress;
   readonly progressType: Signal<ProgressType> = this.progressShower.progressType;
 

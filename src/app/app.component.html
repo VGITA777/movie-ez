@@ -20,7 +20,7 @@
 }
 
 <div class="container">
-  @if (!isTabletMedium() && !isMobile()) {
+  @if (!deviceSizeService.isTabletMediumBelow()) {
     <aside class="content-container">
       <app-navigation-rail/>
     </aside>
@@ -29,7 +29,7 @@
     <router-outlet></router-outlet>
   </main>
 
-  @if (isMobile() || isTabletMedium()) {
+  @if (deviceSizeService.isTabletMediumBelow()) {
     <aside #bottomNavBar class="mobile-navigation-container">
       <app-bottom-nav-bar>
         <!-- Home -->

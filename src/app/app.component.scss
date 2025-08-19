@@ -25,6 +25,7 @@
 
   main {
     overflow: hidden;
+    background-color: constants.$dark-surface-800;
   }
 
   .content-container {
@@ -76,18 +77,7 @@ app-indeterminate-progress-bar {
   }
 }
 
-@include responsive.tablet-half {
-  .container {
-    @include mixins.grid(1fr, $gap: constants.$spacing-lg);
-    padding: 0;
-
-    main {
-      background-color: transparent;
-    }
-  }
-}
-
-@include responsive.mobile-large {
+@include responsive.tablet-half-below {
   .container {
     @include mixins.grid(1fr, $gap: constants.$spacing-lg);
     padding: 0;
