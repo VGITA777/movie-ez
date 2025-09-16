@@ -96,7 +96,7 @@ export abstract class MediaDetailsPage<I extends GenericMediaInfo, D extends Mov
    * Results from the media recommendations requests.
    * */
   protected readonly mediaRecommendations: Signal<Recommendation[]> = computed(() => this.mediaRecommendationsRequest.value().results)
-  private readonly environment = environment;
+  protected readonly environment = environment;
   protected readonly backdropImageUrl: Signal<string> = computed(() => this.environment.fullImageUrl(this.mediaDetailsRequest.value().backdrop_path ?? '', this.defaultImageSize));
   protected readonly posterImageUrl: Signal<string> = computed(() => this.environment.fullImageUrl(this.mediaDetailsRequest.value().poster_path ?? '', this.defaultImageSize));
 

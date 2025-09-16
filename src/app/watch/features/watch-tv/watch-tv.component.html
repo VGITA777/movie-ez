@@ -5,7 +5,7 @@
 <div class="container">
   <main class="watching-area">
     <section class="player-container">
-      <iframe [src]="mediaResourceUrl()" allowfullscreen></iframe>
+      <iframe [src]="(environment.isDebug) ? '' : mediaResourceUrl()" allowfullscreen></iframe>
     </section>
     <section class="media-settings-container">
       @if (!mediaDetailsRequest.isLoading()) {
