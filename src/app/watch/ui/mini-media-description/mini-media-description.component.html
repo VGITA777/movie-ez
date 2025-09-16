@@ -3,9 +3,8 @@
     <img [alt]="imageAlt()" [ngSrc]="imageSrc()" fill/>
   </div>
   <div class="descriptions-container">
-    @if (mediaTitle().length > 0) {
+    @if (mediaTitle().length > 0 && (deviceSizeService.isTabletLarge() || deviceSizeService.isLaptop())) {
       <div class="label-content-container">
-        <span class="label">Title</span>
         <h1 class="title">{{ mediaTitle() }}</h1>
       </div>
     }
