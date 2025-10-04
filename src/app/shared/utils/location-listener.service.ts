@@ -12,7 +12,7 @@ import {Page} from '@constants';
   providedIn: 'root'
 })
 export class LocationListenerService {
-  private readonly router = inject(Router);
+  private readonly router: Router = inject(Router);
 
   // Single source-of-truth signal derived from the Router
   readonly currentLocation: Signal<Page> = toSignal(
@@ -24,7 +24,6 @@ export class LocationListenerService {
   );
 
   private mapUrlToPage(url: string): Page {
-    const urlWithoutQuery = url.split('?')[0];
     const patterns: Array<[RegExp, Page]> = [
       [/^\/$/, Page.HOME],
       [/^\/movies(?:\/|$)/, Page.MOVIES],
@@ -35,9 +34,10 @@ export class LocationListenerService {
       [/^\/settings(?:\/|$)/, Page.SETTINGS],
       [/^\/error(?:\/|$)/, Page.ERROR]
     ];
+    const basePath: string = url.split(/[?#]/, 1)[0];
 
     for (const [re, page] of patterns) {
-      if (re.test(urlWithoutQuery)) return page;
+      if (re.test(basePath)) return page;
     }
     return Page.HOME;
   }
