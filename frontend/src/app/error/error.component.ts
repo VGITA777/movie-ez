@@ -13,6 +13,7 @@ import {Router} from '@angular/router';
 })
 export class ErrorComponent {
   private readonly router: Router = inject(Router);
-  protected readonly errorMessage: string = this.router.getCurrentNavigation()?.extras?.state?.['message'] ?? 'Page not found';
-  protected readonly errorCode: number = this.router.getCurrentNavigation()?.extras?.state?.['errorCode'] ?? 404;
+  protected readonly errorMessage: string = this.router.currentNavigation()?.extras?.state?.['message'] ??
+                                            'Page not found';
+  protected readonly errorCode: number = this.router.currentNavigation()?.extras?.state?.['errorCode'] ?? 404;
 }
