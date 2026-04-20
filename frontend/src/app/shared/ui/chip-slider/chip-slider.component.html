@@ -1,0 +1,24 @@
+<app-slider [data]="data()" [design]="chipDesign" [gap]="gap()" [ngStyle]="{ '--width': width() }"
+            [withProgress]="false"></app-slider>
+
+
+<ng-template #chipDesign let-model>
+  @if (withShine()) {
+    <app-shine-card borderRadius="100px">
+      <ng-container [ngTemplateOutlet]="chip" [ngTemplateOutletContext]="{ $implicit: model }"></ng-container>
+    </app-shine-card>
+  } @else {
+    <ng-container [ngTemplateOutlet]="chip" [ngTemplateOutletContext]="{ $implicit: model }"></ng-container>
+  }
+</ng-template>
+
+<ng-template #chip let-model>
+  <div [ngStyle]="{
+      '--chip-background-color': chipBackgroundColor(),
+      '--font-size': fontSize(),
+      '--text-color': chipTextColor()
+    }"
+       class="chip">
+    <span class="name">{{ model }}</span>
+  </div>
+</ng-template>

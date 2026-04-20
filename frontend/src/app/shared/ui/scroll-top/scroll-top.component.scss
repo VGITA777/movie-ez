@@ -1,0 +1,56 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use 'mixins';
+@use 'constants';
+
+:host {
+  position: absolute;
+  top: constants.$spacing-lg;
+  left: 50%;
+  z-index: 1000;
+  width: fit-content;
+  transform: translateX(-50%);
+}
+
+button {
+  @include mixins.transition($property: all, $duration: .5s, $timing-function: ease);
+  background-color: transparent;
+  border: none;
+
+  @starting-style {
+    transform: translateY(-125%);
+    bottom: constants.$spacing-lg;
+    opacity: 0;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    svg {
+      background-color: constants.$dark-surface-500;
+    }
+  }
+
+  &:active {
+    svg {
+      background-color: constants.$dark-surface-400;
+    }
+  }
+
+  svg {
+    @include mixins.width-height(2.8rem, 2.8rem);
+    border-radius: constants.$border-radius-full;
+    overflow: hidden;
+    fill: constants.$dark-surface-50;
+    background-color: constants.$dark-surface-600;
+    padding: constants.$spacing-md;
+  }
+}
+
+.deleting {
+  @include mixins.transition($property: all, $duration: .5s, $timing-function: ease);
+  transform: translateY(-125%);
+  opacity: 0;
+}

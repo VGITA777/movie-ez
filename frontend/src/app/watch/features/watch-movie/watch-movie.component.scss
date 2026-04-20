@@ -1,0 +1,51 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use "mixins";
+@use "constants";
+@use "responsive";
+
+.container {
+  overflow: auto;
+  height: 100%;
+  padding: constants.$spacing-xxl;
+  @include mixins.hidden-scrollbar();
+  @include mixins.flex($direction: column, $justify-content: start, $align-items: center, $gap: 3em);
+
+  main {
+    width: 100%;
+  }
+
+  .watching-area {
+    @include mixins.flex($direction: column, $justify-content: start, $align-items: start, $gap: constants.$spacing-md);
+
+    .player-container {
+      @include mixins.box-shadow();
+      border-radius: constants.$border-radius-lg;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+
+      iframe {
+        @include mixins.width-height();
+        border: none;
+      }
+    }
+  }
+
+  .other-contents {
+    @include mixins.width-height();
+    @include mixins.flex($direction: column, $gap: 42px);
+
+    app-mini-media-description {
+      @include mixins.width-height();
+    }
+  }
+}
+
+@include responsive.mobile-large {
+  .container {
+    padding: constants.$spacing-md;
+  }
+}

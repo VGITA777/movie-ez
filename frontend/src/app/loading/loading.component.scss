@@ -1,0 +1,42 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use "mixins";
+@use "constants";
+
+.container {
+  @include mixins.absolute($top: 0, $left: 0, $z-index: 9999);
+  @include mixins.flex(column, nowrap, center, center);
+  @include mixins.transition(opacity, 0.5s, ease-out);
+  @include mixins.width-height(100vw, 100vh);
+  background-color: constants.$dark-surface-950;
+  color: constants.$light-surface-50;
+
+  .content {
+    @include mixins.flex($gap: 1rem);
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+
+    span {
+      color: inherit;
+      font-size: 1.5rem;
+      font-weight: 400;
+      text-shadow: 0 0 4px rgba(255, 255, 255, .7);
+      animation: movement .6s ease-in-out infinite alternate;
+      animation-delay: calc(.1s * var(--delay));
+    }
+  }
+}
+
+@keyframes movement {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}

@@ -1,0 +1,25 @@
+@use "mixins";
+@use "constants";
+
+@font-face {
+  font-family: 'Inter';
+  src: url("/fonts/Inter.ttf");
+}
+
+@font-face {
+  font-family: 'Inter Italic';
+  src: url("/fonts/Inter-Italic.ttf");
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  color: constants.$light-surface-50;
+  margin: 0;
+  padding: 0;
+}
+
+svg {
+  @include mixins.one-by-one(2rem);
+  fill: constants.$light-surface-50;
+}

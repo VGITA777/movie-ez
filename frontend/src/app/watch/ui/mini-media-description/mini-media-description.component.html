@@ -1,0 +1,43 @@
+<div class="container">
+  <div class="image-container">
+    <img [alt]="imageAlt()" [ngSrc]="imageSrc()" fill/>
+  </div>
+  <div class="descriptions-container">
+    @if (mediaTitle().length > 0 && (deviceSizeService.isTabletLarge() || deviceSizeService.isLaptop())) {
+      <div class="label-content-container">
+        <h1 class="title">{{ mediaTitle() }}</h1>
+      </div>
+    }
+    @if (tags().length > 0 && (deviceSizeService.isTabletLarge() || deviceSizeService.isLaptop())) {
+      <div class="label-content-container">
+        <span class="label">Genre</span>
+        <app-chip-slider [data]="tags()"/>
+      </div>
+
+      @if (mediaDescription() !== undefined) {
+        <div class="label-content-container">
+          <span class="label">Description</span>
+          <app-read-more-text [contentLines]="2">
+            {{ mediaDescription() }}
+          </app-read-more-text>
+        </div>
+      }
+    }
+
+    <div class="generic-info-container">
+      <div class="label-content-container">
+        <span class="label">Status</span>
+        <span class="content">{{ mediaStatus() }}</span>
+      </div>
+      <div class="label-content-container">
+        <span class="label">Release On</span>
+        <span class="content">{{ mediaReleaseDate() }}</span>
+      </div>
+      <div class="label-content-container">
+        <span class="label">Rating</span>
+        <span class="content">{{ mediaRating() }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>

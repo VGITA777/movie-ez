@@ -1,0 +1,73 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use 'mixins';
+@use 'constants';
+
+.wrapper {
+  @include mixins.border-radius(constants.$border-radius-md);
+  @include mixins.transition($property: background-color, $duration: .7s, $timing-function: ease);
+
+  .container {
+    @include mixins.flex($direction: column, $gap: constants.$spacing-lg);
+    @include mixins.transition($property: scale, $duration: 1.2s, $timing-function: ease);
+
+    .image-wrapper {
+      @include mixins.container-border-radius(constants.$border-radius-md);
+      @include mixins.width-height();
+      position: relative;
+      aspect-ratio: 2 / 3;
+      width: 100%;
+
+      img {
+        object-fit: cover;
+      }
+    }
+
+    .info-container {
+      @include mixins.flex($direction: column, $gap: constants.$spacing-s);
+      text-align: left;
+      width: 100%;
+
+      .title {
+        @include mixins.max-lines(1);
+      }
+
+      .other-info {
+        @include mixins.flex($gap: constants.$spacing-s, $align-items: center);
+
+        .separator {
+          font-size: .4rem;
+        }
+
+        span {
+          color: constants.$dark-surface-200;
+          font-size: .8rem;
+        }
+      }
+    }
+
+  }
+
+  &:hover {
+    @include mixins.transition($property: background-color, $duration: .5s, $timing-function: ease, $delay: .5s);
+    //@include mixins.background-color(constants.$dark-surface-600, .6);
+    cursor: pointer;
+
+    .container {
+      @include mixins.transition($property: scale, $duration: .5s, $timing-function: ease, $delay: .5s);
+      scale: .97;
+    }
+  }
+
+  &:active {
+    @include mixins.transition($property: background-color, $duration: .3s, $timing-function: ease, $delay: 0s);
+    //@include mixins.background-color(constants.$dark-surface-500, .8);
+
+    .container {
+      @include mixins.transition($property: scale, $duration: .5s, $timing-function: ease, $delay: 0s);
+      scale: .95;
+    }
+  }
+}

@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
+<div class="container">
+  <main class="watching-area">
+    <section class="player-container">
+      <iframe [src]="(environment.isDebug) ? '' : mediaResourceUrl()" allowfullscreen></iframe>
+    </section>
+    <section class="media-settings-container">
+      @if (!mediaDetailsRequest.isLoading()) {
+        @if (seasons().length > 0) {
+          <app-shine-card>
+            <app-drop-down-select width="100%" [selected]="selectedSeasonOption()"
+                                  (selectedChange)="handleOnSeasonChange($event!)" [options]="seasonOptions()"/>
+          </app-shine-card>
+        }
+        @if (episodeOptions().length > 0) {
+          <app-shine-card>
+            <app-drop-down-select width="100%" [selected]="selectedEpisodeOption()"
+                                  (selectedChange)="handleOnEpisodeChange($event!)" [options]="episodeOptions()"/>
+          </app-shine-card>
+        }
+      } @else {
+        <app-skeleton borderRadius="8px" width="125px" height="100%"/>
+        <app-skeleton borderRadius="8px" width="125px" height="100%"/>
+      }
+
+      <app-shine-card>
+        <app-drop-down-select [(selected)]="selectedMediaLinkProvider" [options]="mediaLinkProviderOptions()"
+                              width="100%"/>
+      </app-shine-card>
+    </section>
+  </main>
+
+  <main class="other-contents">
+    <section class="media-details-container">
+      @if (deviceSizeService.isLaptop() || deviceSizeService.isMobile() || deviceSizeService.isTablet()) {
+        <section class="media-details-container">
+          @if (!mediaDetailsRequest.isLoading()) {
+            <app-mini-media-description
+              [imageSrc]="posterImageUrl()"
+              [tags]="genreStrings()"
+              [mediaTitle]="title()"
+              [mediaReleaseDate]="mediaDetailsResult().first_air_date"
+              [mediaStatus]="mediaDetailsResult().status"
+              [mediaRating]="mediaDetailsResult().vote_average"
+              [mediaDescription]="mediaDetailsResult().overview"/>
+          } @else {
+            <app-mini-media-description-skeleton/>
+          }
+        </section>
+      }
+    </section>
+    <section class="sliders">
+      @if (!mediaRecommendationsRequest.isLoading() && mediaRecommendations().length !== 0 && mediaRecommendationsRequest.error() !== null) {
+        <app-media-slider (onCardClick)="handleOnCardClick($event)" [data]="mediaRecommendations()" mediaType="tv"
+                          subHeader="Recommendations for you"
+                          title="Recommendations"/>
+      } @else if (mediaRecommendationsRequest.isLoading()) {
+        <app-media-slider-skeleton/>
+      }
+    </section>
+  </main>
+</div>

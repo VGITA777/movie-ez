@@ -1,0 +1,11 @@
+<div class="container">
+  <section appBottomNavBarSpacer [additionalPadding]="30" class="watch">
+    <router-outlet name="mediaWatch"></router-outlet>
+  </section>
+
+  @if (isDesktop()) {
+    <section class="description">
+      <router-outlet name="mediaDescription"></router-outlet>
+    </section>
+  }
+</div>

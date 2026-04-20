@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+import {Component, inject, OnInit, signal, WritableSignal} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {MovieDiscoverResult, PopularMovies, PopularTvShows, TvShowDiscoverResult} from 'tmdb-ts';
+import {take} from 'rxjs';
+import {ProgressShowerService} from '@utils/progress-shower.service';
+import {MediaSliderComponent} from '@ui/media-slider/media-slider.component';
+import {ScrollTopComponent} from '@ui/scroll-top/scroll-top.component';
+import {WatchNavigationHandler} from '@utils/navigator.service';
+import {GlobalsService} from '@utils/globals.service';
+import {BottomNavBarSpacerDirective} from '@shared/directives/bottom-nav-bar-spacer.directive';
+
+@Component({
+  selector: 'app-home',
+  imports: [
+    MediaSliderComponent,
+    ScrollTopComponent,
+    BottomNavBarSpacerDirective
+  ],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss'
+})
+export class HomeComponent extends WatchNavigationHandler implements OnInit {
+  readonly discoverMovies: WritableSignal<MovieDiscoverResult> = signal({} as MovieDiscoverResult);
+  readonly discoverTvShows: WritableSignal<TvShowDiscoverResult> = signal({} as TvShowDiscoverResult);
+  readonly popularMovies: WritableSignal<PopularMovies> = signal({} as PopularMovies);
+  readonly popularTvShows: WritableSignal<PopularTvShows> = signal({} as PopularTvShows);
+
+  readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  readonly progressShower: ProgressShowerService = inject(ProgressShowerService);
+  readonly globalsService: GlobalsService = inject(GlobalsService);
+
+  ngOnInit() {
+    this.activatedRoute.data.pipe(take(1)).subscribe((data) => {
+      this.discoverMovies.set(data['discoverMovies']);
+      this.discoverTvShows.set(data['discoverTvShows']);
+      this.popularMovies.set(data['popularMovies']);
+      this.popularTvShows.set(data['popularTvShows']);
+      this.progressShower.hide();
+    })
+  }
+}

@@ -1,0 +1,18 @@
+<div [ngStyle]="{
+       '--aspect-ratio': aspectRatio(),
+       '--width': width(),
+       '--height': height(),
+       '--title-max-lines': titleMaxLines(),
+       '--border-radius': borderRadius()
+     }"
+     class="container"
+>
+  <div class="image-container">
+    <img [alt]="alt()" [ngSrc]="src()" fill>
+  </div>
+  @if (title() !== '') {
+    <div class="title-container">
+      <h2 class="title">{{ title() }}</h2>
+    </div>
+  }
+</div>

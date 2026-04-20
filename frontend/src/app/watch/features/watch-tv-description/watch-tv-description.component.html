@@ -1,0 +1,59 @@
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
+<div class="container">
+  <section class="main-contents">
+    @if (!mediaDetailsRequest.isLoading()) {
+      <app-image-title [src]="posterImageUrl()" [alt]="title()" width="100%"/>
+      <app-chip-slider [data]="genresName()"/>
+    } @else {
+      <app-skeleton borderRadius="8px" aspectRatio="2 / 3" height="auto" width="100%"/>
+      <app-skeleton borderRadius="8px" aspectRatio="13 / 2" height="auto" width="100%"/>
+    }
+  </section>
+  <section class="text-contents">
+    <div class="generic-data">
+
+      @if (!mediaDetailsRequest.isLoading()) {
+        <div class="long-texts">
+          <div class="long-text-entry">
+            <span class="title">Title</span>
+            <span class="subtitle">{{ mediaDetailsResult().name }}</span>
+          </div>
+          <div class="long-text-entry">
+            <span class="title">Aired on</span>
+            <span class="subtitle">{{ mediaDetailsResult().first_air_date }}</span>
+          </div>
+        </div>
+
+        <div class="short-texts">
+          <div class="short-text-entry">
+            <span class="title">Seasons</span>
+            <span class="subtitle">{{ totalSeasons() }}</span>
+          </div>
+          <div class="short-text-entry">
+            <span class="title">Episodes</span>
+            <span class="subtitle">{{ totalEpisodes() }}</span>
+          </div>
+          <div class="short-text-entry">
+            <span class="title">Rating</span>
+            <span class="subtitle">{{ mediaDetailsResult().vote_average.toFixed(2) }}</span>
+          </div>
+        </div>
+      } @else {
+        <app-skeleton borderRadius="8px" aspectRatio="12 / 2" height="auto" width="100%"/>
+        <app-skeleton borderRadius="8px" aspectRatio="5 / 2" height="auto" width="100%"/>
+      }
+    </div>
+
+    @if (!mediaDetailsRequest.isLoading() && overview() !== '' && overview() !== null) {
+      <app-read-more-text contentTextAlign="justify" contentTextSize=".8rem" headerText="Overview" headerTextSize="1rem"
+                          headerTextWeight="500">
+        {{ overview() }}
+      </app-read-more-text>
+    } @else if (mediaDetailsRequest.isLoading()) {
+      <app-skeleton borderRadius="8px" aspectRatio="8 / 2.2" height="auto" width="100%"/>
+    }
+  </section>
+</div>

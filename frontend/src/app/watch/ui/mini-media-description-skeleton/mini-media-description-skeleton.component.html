@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="image-container">
+    <app-skeleton aspectRatio="2/3" borderRadius="8px" height="auto" width="100%"/>
+  </div>
+  <div class="descriptions-container">
+    <div class="label-content-container">
+      <app-skeleton borderRadius="8px" height="20px" width="40%"/>
+      <app-skeleton borderRadius="8px" height="50px" width="80%"/>
+    </div>
+    @if (!deviceSizeService.isTabletMedium()) {
+      <div class="label-content-container">
+        <app-skeleton width="60%" height="20px" borderRadius="8px"/>
+        <app-skeleton width="70%" height="70px" borderRadius="8px"/>
+      </div>
+      <div class="label-content-container">
+        <app-skeleton width="50%" height="20px" borderRadius="8px"/>
+        <app-skeleton width="90%" height="80px" borderRadius="8px"/>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,34 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use "mixins";
+@use "constants";
+
+.skeleton {
+  height: 100%;
+  width: 100%;
+  aspect-ratio: var(--aspect-ratio, unset);
+  background-color: var(--bg-color, constants.$dark-surface-700);
+  border-radius: var(--border-radius);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    @include mixins.width-height();
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 10%, rgba(constants.$dark-surface-600, .4) 50%, rgba(0, 0, 0, 0) 90%);
+    top: 0;
+    animation: shine 2s infinite ease;
+  }
+}
+
+@keyframes shine {
+  from {
+    left: -100%;
+  }
+  to {
+    left: 100%;
+  }
+}

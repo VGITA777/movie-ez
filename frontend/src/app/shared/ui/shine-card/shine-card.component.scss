@@ -1,0 +1,76 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use 'constants';
+@use 'mixins';
+
+:host {
+  height: fit-content;
+  width: fit-content;
+}
+
+.card {
+  @include mixins.width-height();
+  @include mixins.border-radius(var(--border-radius, constants.$border-radius-md));
+  background-color: rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), 0);
+  position: relative;
+  overflow: hidden;
+
+  // Used for border
+  .card-border {
+    content: '';
+    @include mixins.width-height();
+    @include mixins.transition($property: opacity, $duration: .5s, $timing-function: ease);
+    @include mixins.absolute($top: 0, $left: 0);
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+        var(--shine-radius) circle at var(--shine-pos-x) var(--shine-pos-y),
+        rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), .7) 0%,
+        rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), 0) 100%
+    );
+    opacity: var(--border-opacity, 0);
+    z-index: 1;
+  }
+
+  &:hover .card-border {
+    opacity: var(--border-opacity-hover, 1);
+  }
+
+  // Used for shine effect
+  &::before {
+    content: '';
+    @include mixins.width-height();
+    @include mixins.transition($property: opacity, $duration: .5s, $timing-function: ease);
+    @include mixins.absolute($top: 0, $left: 0);
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+        var(--shine-radius) circle at var(--shine-pos-x) var(--shine-pos-y),
+        rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), .1) 0%,
+        rgba(var(--bg-color-r), var(--bg-color-g), var(--bg-color-b), 0) 100%
+    );
+    opacity: 0;
+    z-index: 3;
+  }
+
+  &:hover::before {
+    opacity: 1;
+
+    .card {
+      background-color: rgba(var(--shine-color-r), var(--shine-color-g), var(--shine-color-b), var(--shine-opacity));
+    }
+  }
+
+  .card-content {
+    @include mixins.width-height(calc(100% - 4px), calc(100% - 4px));
+    padding: var(--content-padding);
+    background-color: rgba(var(--bg-color-r), var(--bg-color-g), var(--bg-color-b), var(--bg-opacity));
+    position: relative;
+    border-radius: inherit;
+    overflow: hidden;
+    margin: 2px;
+    z-index: 2;
+  }
+}

@@ -1,0 +1,38 @@
+<!--
+  ~ Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+  -->
+
+<!--@if (progressType() !== 'hidden') {-->
+<!--  <p-progress-bar [mode]="(progressType() === 'indeterminate') ? 'indeterminate' : ''"-->
+<!--                  [style]="{ 'height': '3px', 'background-color': 'transparent' }"/>-->
+<!--}-->
+<!--<p-toast/>-->
+
+@if (progressType() === 'indeterminate') {
+  <app-indeterminate-progress-bar/>
+}
+
+<!-- Loading Screen Overlay -->
+@if (showLoadingScreen()) {
+  <div #loadingContainer class="loading-container" [ngClass]="{'fade-out': isDeletingLoadingScreen()}">
+    <app-loading/>
+  </div>
+}
+
+<div class="container">
+  @if (!deviceSizeService.isTabletMediumBelow()) {
+    <aside class="content-container">
+      <app-navigation-rail/>
+    </aside>
+  }
+  <main class="content-container">
+    <router-outlet></router-outlet>
+  </main>
+
+  @if (deviceSizeService.isTabletMediumBelow()) {
+    <aside #bottomNavBar class="mobile-navigation-container">
+      <app-bottom-nav-bar/>
+    </aside>
+  }
+</div>
+

@@ -1,0 +1,21 @@
+/*!
+ * Copyright (c) 2025. This code is created by Prince Angelo Coquia.
+ */
+
+@use 'mixins';
+@use 'constants';
+@use 'responsive';
+
+.container {
+  overflow: auto;
+  background-color: constants.$dark-surface-800;
+  padding: constants.$spacing-md;
+  @include mixins.hidden-scrollbar();
+  @include mixins.flex($direction: column, $gap: 3em);
+}
+
+@include responsive.mobile-large {
+  .container {
+    background-color: transparent;
+  }
+}
