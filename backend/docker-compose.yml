@@ -1,0 +1,101 @@
+name: movie-ez
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "app"
+      POSTGRES_USER_FILE: "/run/secrets/DB_USER"
+      POSTGRES_PASSWORD_FILE: "/run/secrets/DB_PASSWORD"
+    secrets:
+      - DB_USER
+      - DB_PASSWORD
+    volumes:
+      - postgres-data:/var/lib/postgresql/18/docker
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d app -h localhost -p 5432 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - movie-ez-network
+
+  authentik-server:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2026.2.2}
+    command: server
+    ports:
+      - ${COMPOSE_PORT_HTTP:-9000}:9000
+      - ${COMPOSE_PORT_HTTPS:-9443}:9443
+    restart: unless-stopped
+    shm_size: 512mb
+    depends_on:
+      postgres:
+        condition: service_healthy
+    secrets:
+      - DB_USER
+      - DB_PASSWORD
+      - AUTHENTIK_SECRET_KEY
+    environment:
+      AUTHENTIK_POSTGRESQL__HOST: "postgres"
+      AUTHENTIK_POSTGRESQL__NAME: "authentik"
+      AUTHENTIK_POSTGRESQL__USER: "file:///run/secrets/DB_USER"
+      AUTHENTIK_POSTGRESQL__PASSWORD: "file:///run/secrets/DB_PASSWORD"
+      AUTHENTIK_SECRET_KEY: "file:///run/secrets/AUTHENTIK_SECRET_KEY"
+    volumes:
+      - authentik-data:/media
+    networks:
+      - movie-ez-network
+
+  authentik-worker:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2026.2.2}
+    command: worker
+    restart: unless-stopped
+    shm_size: 512mb
+    user: root
+    depends_on:
+      postgres:
+        condition: service_healthy
+    secrets:
+      - DB_USER
+      - DB_PASSWORD
+      - AUTHENTIK_SECRET_KEY
+    environment:
+      AUTHENTIK_POSTGRESQL__HOST: "postgres"
+      AUTHENTIK_POSTGRESQL__NAME: "authentik"
+      AUTHENTIK_POSTGRESQL__USER: "file:///run/secrets/DB_USER"
+      AUTHENTIK_POSTGRESQL__PASSWORD: "file:///run/secrets/DB_PASSWORD"
+      AUTHENTIK_SECRET_KEY: "file:///run/secrets/AUTHENTIK_SECRET_KEY"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount the same Docker volume to the same root directory
+      - authentik-data:/media
+    networks:
+      - movie-ez-network
+
+networks:
+  movie-ez-network:
+    name: movie-ez-network
+    driver: bridge
+    attachable: true
+
+volumes:
+  postgres-data:
+    name: postgres-data
+  authentik-data:
+    name: authentik-data
+
+secrets:
+  DB_PASSWORD:
+    file: ./secrets/db_password.txt
+  DB_USER:
+    file: ./secrets/db_user.txt
+  AUTHENTIK_SECRET_KEY:
+    file: ./secrets/authentik_secret_key.txt
