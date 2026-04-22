@@ -30,7 +30,6 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.6.3'
     implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.3.0'
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
-    implementation 'org.keycloak:keycloak-admin-client:26.0.8'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
     annotationProcessor 'org.projectlombok:lombok'

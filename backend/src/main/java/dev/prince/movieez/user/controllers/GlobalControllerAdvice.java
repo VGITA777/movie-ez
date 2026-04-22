@@ -6,6 +6,7 @@ import dev.prince.movieez.user.exceptions.MalformedEmailException;
 import dev.prince.movieez.user.exceptions.MalformedInput;
 import dev.prince.movieez.user.exceptions.MalformedPasswordException;
 import dev.prince.movieez.user.exceptions.NotFoundException;
+import dev.prince.movieez.user.exceptions.PlaylistNotFoundException;
 import dev.prince.movieez.user.exceptions.ResourceAlreadyExistsException;
 import dev.prince.movieez.user.exceptions.UserNotFoundException;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
@@ -30,11 +31,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
-public class UserControllerAdvice {
+public class GlobalControllerAdvice {
 
   private final MessageSource messageSource;
 
-  public UserControllerAdvice(MessageSource messageSource) {
+  public GlobalControllerAdvice(MessageSource messageSource) {
     this.messageSource = messageSource;
   }
 
@@ -209,6 +210,18 @@ public class UserControllerAdvice {
   public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
     String title = msg("validation.invalid.title", "Invalid Input");
     return createErrorResponse(title, e.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  /***
+   * Handles Playlist Exceptions
+   * */
+
+  @ExceptionHandler(PlaylistNotFoundException.class)
+  public ResponseEntity<?> handlePlaylistNotFoundException(PlaylistNotFoundException e) {
+    String title = msg("playlist.notFound.title", "Playlist Not Found");
+    String base = msg("playlist.notFound.message", "Requested playlist not found.");
+    String message = appendDetail(base, e.getMessage());
+    return createErrorResponse(title, message, HttpStatus.OK);
   }
 
   @ExceptionHandler(Exception.class)
