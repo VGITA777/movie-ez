@@ -45,3 +45,8 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+springBoot {
+    mainClass = 'dev.prince.movieez.MovieEzApplication'
+}
+
