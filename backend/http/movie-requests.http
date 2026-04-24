@@ -1,0 +1,30 @@
+@baseUrl = http://localhost:4000
+@movieId = 157336
+
+### Get Movie Alternative Titles
+GET {{baseUrl}}/media/movie/{{movieId}}/alternative-titles?country=JP
+
+### Get Movie Credits
+GET {{baseUrl}}/media/movie/{{movieId}}/credits?language=ja
+
+### Get Movie Details
+GET {{baseUrl}}/media/movie/{{movieId}}/details?language=ja
+
+### Get Movie Images
+GET {{baseUrl}}/media/movie/{{movieId}}/images?language=ja
+
+### Get Movie Keywords
+GET {{baseUrl}}/media/movie/{{movieId}}/keywords
+
+### Get Latest Movie
+GET {{baseUrl}}/media/movie/latest
+
+### Get Movie Recommendations
+GET {{baseUrl}}/media/movie/{{movieId}}/recommendations?language=en&page=1
+
+### Get Similar Movies
+GET {{baseUrl}}/media/movie/{{movieId}}/similar?language=en&page=1
+
+### Get Movie Videos
+GET {{baseUrl}}/media/movie/{{movieId}}/videos?language=en
+

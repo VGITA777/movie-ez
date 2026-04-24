@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:4000
+
+### Search Movies
+GET {{baseUrl}}/media/search/movie?query=inception&page=1&language=en&includeAdult=false&primaryReleaseYear=2010&region=US&year=2010
+
+### Search TV Series
+GET {{baseUrl}}/media/search/tv?query=dark&page=1&language=en&includeAdult=false&firstAirDateYear=2017
+
+### Search Multi
+GET {{baseUrl}}/media/search/multi?query=matrix&page=1&language=en&includeAdult=false
+

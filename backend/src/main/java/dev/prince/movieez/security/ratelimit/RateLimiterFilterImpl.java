@@ -1,9 +1,9 @@
 package dev.prince.movieez.security.ratelimit;
 
-import dev.prince.movieez.shared.models.UserIdentifierModel;
-import dev.prince.movieez.shared.models.responses.ServerGenericResponse;
-import dev.prince.movieez.shared.utilities.SecurityUtils;
-import dev.prince.movieez.user.models.MovieEzAppRole;
+import dev.prince.movieez.ServerResponse;
+import dev.prince.movieez.security.SecurityUtils;
+import dev.prince.movieez.security.models.UserIdentifier;
+import dev.prince.movieez.users.UserRole;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -49,7 +49,7 @@ public class RateLimiterFilterImpl extends RateLimiterFilter {
     } else {
       var token = (JwtAuthenticationToken) authentication;
       var role = RateLimiterUserRoles.from(getHighestPriorityRole(token));
-      rateLimiterIdentifier = new RateLimiterIdentifier(identifier, role, UserIdentifierModel.of(token.getToken()));
+      rateLimiterIdentifier = new RateLimiterIdentifier(identifier, role, UserIdentifier.of(token.getToken()));
     }
 
     var rateLimiter = getOrCreateRateLimiter(rateLimiterIdentifier);
@@ -68,27 +68,27 @@ public class RateLimiterFilterImpl extends RateLimiterFilter {
     return request.getRemoteAddr();
   }
 
-  private MovieEzAppRole getHighestPriorityRole(JwtAuthenticationToken authentication) {
+  private UserRole getHighestPriorityRole(JwtAuthenticationToken authentication) {
     if (authentication == null) {
-      return MovieEzAppRole.GUEST;
+      return UserRole.GUEST;
     }
     var authorities = authentication.getAuthorities();
     return authorities
         .stream()
-        .map(grantedAuthority -> MovieEzAppRole.fromRole(grantedAuthority.getAuthority()))
-        .max(Comparator.comparingInt(MovieEzAppRole::getPriority))
-        .orElse(MovieEzAppRole.GUEST);
+        .map(grantedAuthority -> UserRole.fromRole(grantedAuthority.getAuthority()))
+        .max(Comparator.comparingInt(UserRole::getPriority))
+        .orElse(UserRole.GUEST);
   }
 
   private RateLimiter getOrCreateRateLimiter(RateLimiterIdentifier identifier) {
     var rateLimiter = rateLimiterService.get(identifier);
     return (rateLimiter == null) ? rateLimiterService
-        .create(identifier)
-        .getRateLimiter() : rateLimiter.getRateLimiter();
+                                   .create(identifier)
+                                   .getRateLimiter() : rateLimiter.getRateLimiter();
   }
 
   private void returnFailResponse(HttpServletResponse response) throws IOException {
-    var message = ServerGenericResponse.failure("Too many requests. Please try again later.", null);
+    var message = ServerResponse.failure("Too many requests. Please try again later.", null);
     response.setStatus(429);
     response.setContentType("application/json");
     response

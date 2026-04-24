@@ -23,7 +23,7 @@ public class RateLimiterServiceImpl implements RateLimiterService {
   private final Cache<String, RateLimiterEntry> rateLimiters;
 
   public RateLimiterServiceImpl(
-      @Value("${app.rate-limiter.expiry-duration-minutes:3}")
+      @Value("${app.rate-limiter.expiry-duration-minutes:1}")
       long expiryDurationMinutes
   ) {
     this.expiryDurationMinutes = expiryDurationMinutes;

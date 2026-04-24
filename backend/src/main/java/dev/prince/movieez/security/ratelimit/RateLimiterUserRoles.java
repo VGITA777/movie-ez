@@ -1,6 +1,6 @@
 package dev.prince.movieez.security.ratelimit;
 
-import dev.prince.movieez.user.models.MovieEzAppRole;
+import dev.prince.movieez.users.UserRole;
 import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import java.time.Duration;
 
@@ -22,7 +22,7 @@ public enum RateLimiterUserRoles {
     this.timeoutDuration = timeoutDuration;
   }
 
-  public static RateLimiterUserRoles from(MovieEzAppRole role) {
+  public static RateLimiterUserRoles from(UserRole role) {
     return switch (role) {
       case USER -> USER;
       case ADMIN -> ADMIN;
@@ -31,10 +31,11 @@ public enum RateLimiterUserRoles {
   }
 
   public RateLimiterConfig getRateLimiterConfig() {
-    return RateLimiterConfig.custom()
-                            .limitForPeriod(limitForPeriod)
-                            .limitRefreshPeriod(limitRefreshPeriod)
-                            .timeoutDuration(timeoutDuration)
-                            .build();
+    return RateLimiterConfig
+        .custom()
+        .limitForPeriod(limitForPeriod)
+        .limitRefreshPeriod(limitRefreshPeriod)
+        .timeoutDuration(timeoutDuration)
+        .build();
   }
 }

@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:4000
+@seriesId = 1399
+
+### Get TV Series Credits
+GET {{baseUrl}}/media/tv-series/{{seriesId}}/credits?language=en
+
+### Get TV Series Details
+GET {{baseUrl}}/media/tv-series/{{seriesId}}/details?language=en
+
+### Get TV Series Images
+GET {{baseUrl}}/media/tv-series/{{seriesId}}/images?language=en
+
+### Get TV Series Keywords
+GET {{baseUrl}}/media/tv-series/{{seriesId}}/keywords
+
+### Get Latest TV Series
+GET {{baseUrl}}/media/tv-series/latest
+
+### Get TV Series Recommendations
+GET {{baseUrl}}/media/tv-series/{{seriesId}}/recommendations?language=en&page=1
+
+### Get Similar TV Series
+GET {{baseUrl}}/media/tv-series/{{seriesId}}/similar?language=en&page=1
+
+### Get TV Series Videos
+GET {{baseUrl}}/media/tv-series/{{seriesId}}/videos?language=en
+

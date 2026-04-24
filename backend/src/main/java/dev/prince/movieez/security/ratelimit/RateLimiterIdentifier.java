@@ -1,6 +1,6 @@
 package dev.prince.movieez.security.ratelimit;
 
-import dev.prince.movieez.shared.models.UserIdentifierModel;
+import dev.prince.movieez.security.models.UserIdentifier;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
@@ -18,7 +18,7 @@ public class RateLimiterIdentifier implements Serializable {
 
   private String id;
   private RateLimiterUserRoles role;
-  private UserIdentifierModel details;
+  private UserIdentifier details;
 
   @Override
   public int hashCode() {

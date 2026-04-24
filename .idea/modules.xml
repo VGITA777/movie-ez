@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
       <module fileurl="file://$PROJECT_DIR$/movie-ez.iml" filepath="$PROJECT_DIR$/movie-ez.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/movieez.main.iml" filepath="$PROJECT_DIR$/.idea/modules/movieez.main.iml" />
     </modules>
   </component>
 </project>

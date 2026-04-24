@@ -1,0 +1,18 @@
+package dev.prince.movieez.media.models.movies;
+
+import dev.prince.movieez.media.json.deserializers.StringToMediaTypeDeserializer;
+import dev.prince.movieez.media.json.serializers.MediaTypeToStringSerializer;
+import dev.prince.movieez.media.models.enums.MediaType;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class MovieShortDetailsWithMediaTypeModel extends MovieShortDetailsModel {
+
+  @JsonDeserialize(using = StringToMediaTypeDeserializer.class)
+  @JsonSerialize(using = MediaTypeToStringSerializer.class)
+  private MediaType media_type = MediaType.MOVIE;
+}

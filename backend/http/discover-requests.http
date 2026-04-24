@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:4000
+
+### Discover Movies (defaults)
+GET {{baseUrl}}/media/discover/movies
+
+### Discover Movies (with filters)
+GET {{baseUrl}}/media/discover/movies?includeAdult=true&language=en&page=1&primaryReleaseYear=2025&region=US&year=2025
+
+### Discover TV Series (defaults)
+GET {{baseUrl}}/media/discover/tv
+
+### Discover TV Series (with filters)
+GET {{baseUrl}}/media/discover/tv?includeAdult=true&language=en&page=1&firstAirDateYear=2024
+
