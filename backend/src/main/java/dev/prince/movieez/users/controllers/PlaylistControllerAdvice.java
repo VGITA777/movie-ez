@@ -1,14 +1,16 @@
 package dev.prince.movieez.users.controllers;
 
 import dev.prince.movieez.ServerResponse;
+import dev.prince.movieez.exceptions.PlaylistAlreadyExistsException;
 import dev.prince.movieez.exceptions.PlaylistContentAlreadyExistsException;
 import dev.prince.movieez.exceptions.PlaylistNotFoundException;
+import dev.prince.movieez.users.services.PlaylistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(assignableTypes = PlaylistController.class)
+@RestControllerAdvice(assignableTypes = { PlaylistController.class, PlaylistService.class })
 public class PlaylistControllerAdvice {
 
   @ExceptionHandler(PlaylistNotFoundException.class)
@@ -19,7 +21,7 @@ public class PlaylistControllerAdvice {
         .body(response);
   }
 
-  @ExceptionHandler(PlaylistContentAlreadyExistsException.class)
+  @ExceptionHandler({ PlaylistContentAlreadyExistsException.class, PlaylistAlreadyExistsException.class })
   public ResponseEntity<ServerResponse<?>> handleConflict(PlaylistContentAlreadyExistsException ex) {
     var response = ServerResponse.failure(ex.getMessage(), null);
     return ResponseEntity

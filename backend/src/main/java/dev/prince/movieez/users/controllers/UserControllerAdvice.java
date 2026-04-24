@@ -2,12 +2,13 @@ package dev.prince.movieez.users.controllers;
 
 import dev.prince.movieez.ServerResponse;
 import dev.prince.movieez.exceptions.UserNotFoundException;
+import dev.prince.movieez.users.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice(assignableTypes = UserController.class)
+@ControllerAdvice(assignableTypes = { UserController.class, UserService.class })
 public class UserControllerAdvice {
 
   @ExceptionHandler(UserNotFoundException.class)

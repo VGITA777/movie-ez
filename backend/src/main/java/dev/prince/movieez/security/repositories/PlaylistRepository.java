@@ -15,4 +15,6 @@ public interface PlaylistRepository extends JpaRepository<PlaylistModel, UUID> {
   List<PlaylistModel> findAllByUserId(UUID userId);
 
   void deleteByNameAndUserId(String name, UUID userId);
+
+  boolean existsByNameAndUserId(String name, UUID userId);
 }

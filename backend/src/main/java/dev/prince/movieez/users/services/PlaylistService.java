@@ -1,5 +1,6 @@
 package dev.prince.movieez.users.services;
 
+import dev.prince.movieez.exceptions.PlaylistAlreadyExistsException;
 import dev.prince.movieez.exceptions.PlaylistContentAlreadyExistsException;
 import dev.prince.movieez.exceptions.PlaylistNotFoundException;
 import dev.prince.movieez.exceptions.UserNotFoundException;
@@ -44,6 +45,16 @@ public class PlaylistService {
         });
     playlistModel.setUser(user);
     return playlistRepository.save(playlistModel);
+  }
+
+  @Transactional
+  public PlaylistModel createPlaylist(PlaylistModel playlistModel, UUID userId) {
+    var name = playlistModel.getName();
+    if (playlistRepository.existsByNameAndUserId(name, userId)) {
+      var msg = "Playlist with name: '" + name + "' already exists";
+      throw new PlaylistAlreadyExistsException(msg);
+    }
+    return save(playlistModel, userId);
   }
 
   public Optional<PlaylistModel> find(String name, UUID userId) {
@@ -103,6 +114,7 @@ public class PlaylistService {
     playlistRepository.deleteById(id);
   }
 
+  @Transactional
   public void delete(String name, UUID userId) {
     var existing = playlistRepository.findByNameAndUserId(name, userId);
     if (existing.isEmpty()) {
@@ -110,6 +122,17 @@ public class PlaylistService {
     }
 
     playlistRepository.deleteByNameAndUserId(name, userId);
+  }
+
+  @Transactional
+  public PlaylistModel deleteTrackFromPlaylist(String name, String trackId, UUID userId) {
+    var playlist = getPlaylist(name, userId);
+    playlist
+        .getItems()
+        .removeIf(item -> item
+            .getTrackId()
+            .equals(trackId));
+    return playlistRepository.save(playlist);
   }
 
   private PlaylistModel getPlaylist(String name, UUID userId) {
@@ -129,15 +152,8 @@ public class PlaylistService {
         .build();
   }
 
-  @Transactional
-  public PlaylistModel deleteTrackFromPlaylist(String name, String trackId, UUID userId) {
-    var playlist = getPlaylist(name, userId);
-    playlist
-        .getItems()
-        .removeIf(item -> item
-            .getTrackId()
-            .equals(trackId));
-    return playlistRepository.save(playlist);
+  private boolean isPlaylistExisting(String name, UUID userId) {
+    return playlistRepository.existsByNameAndUserId(name, userId);
   }
 
 }

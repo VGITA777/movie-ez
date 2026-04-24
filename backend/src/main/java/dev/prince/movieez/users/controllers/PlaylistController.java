@@ -90,7 +90,7 @@ public class PlaylistController {
     var playlist = new PlaylistModel();
     playlist.setName(name);
     var userId = SecurityUtils.getUserId();
-    var saved = playlistService.save(playlist, userId);
+    var saved = playlistService.createPlaylist(playlist, userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(saved));
     return ResponseEntity.ok(response);
   }
