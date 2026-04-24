@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
+@Transactional
 @Service
 public class PlaylistService {
 

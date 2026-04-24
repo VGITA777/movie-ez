@@ -3,9 +3,11 @@ package dev.prince.movieez.users.services;
 import dev.prince.movieez.exceptions.UserNotFoundException;
 import dev.prince.movieez.security.models.UserModel;
 import dev.prince.movieez.security.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
+@Transactional
 @Service
 public class UserService {
 
