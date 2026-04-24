@@ -17,7 +17,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
-@Transactional
 @Service
 public class PlaylistService {
 
@@ -72,23 +71,6 @@ public class PlaylistService {
     return playlistRepository.save(playlist);
   }
 
-  private PlaylistModel getPlaylist(String name, UUID userId) {
-    return playlistRepository
-        .findByNameAndUserId(name, userId)
-        .orElseThrow(() -> {
-          var msg = "Playlist with name '" + name + "' not found";
-          return new PlaylistNotFoundException(msg);
-        });
-  }
-
-  private PlaylistContentModel toPlaylistContentModel(String track, PlaylistModel playlistModel) {
-    return PlaylistContentModel
-        .builder()
-        .trackId(track)
-        .playlist(playlistModel)
-        .build();
-  }
-
   @Transactional
   public PlaylistModel addToPlaylist(String name, Set<String> trackIds, UUID userId) {
     var playlist = getPlaylist(name, userId);
@@ -96,6 +78,7 @@ public class PlaylistService {
         .getItems()
         .stream()
         .map(PlaylistContentModel::getTrackId)
+        .filter(trackId -> !trackId.isBlank())
         .collect(Collectors.toSet());
     var tracksToAdd = new HashSet<>(trackIds);
     tracksToAdd.removeAll(existingTracks);
@@ -128,4 +111,33 @@ public class PlaylistService {
 
     playlistRepository.deleteByNameAndUserId(name, userId);
   }
+
+  private PlaylistModel getPlaylist(String name, UUID userId) {
+    return playlistRepository
+        .findByNameAndUserId(name, userId)
+        .orElseThrow(() -> {
+          var msg = "Playlist with name '" + name + "' not found";
+          return new PlaylistNotFoundException(msg);
+        });
+  }
+
+  private PlaylistContentModel toPlaylistContentModel(String track, PlaylistModel playlistModel) {
+    return PlaylistContentModel
+        .builder()
+        .trackId(track)
+        .playlist(playlistModel)
+        .build();
+  }
+
+  @Transactional
+  public PlaylistModel deleteTrackFromPlaylist(String name, String trackId, UUID userId) {
+    var playlist = getPlaylist(name, userId);
+    playlist
+        .getItems()
+        .removeIf(item -> item
+            .getTrackId()
+            .equals(trackId));
+    return playlistRepository.save(playlist);
+  }
+
 }

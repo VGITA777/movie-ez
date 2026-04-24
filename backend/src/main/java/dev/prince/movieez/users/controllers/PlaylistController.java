@@ -133,4 +133,17 @@ public class PlaylistController {
     playlistService.delete(name, SecurityUtils.getUserId());
     return ResponseEntity.ok(ServerResponse.success("Playlist with name: '" + name + "' deleted successfully", null));
   }
+
+  @DeleteMapping("/{name}/tracks/{trackId}")
+  public ResponseEntity<ServerResponse<?>> deleteTrackFromPlaylist(
+      @PathVariable
+      @Valid
+      @NotBlank
+      String name,
+      @PathVariable
+      String trackId
+  ) {
+    var response = playlistService.deleteTrackFromPlaylist(name, trackId, SecurityUtils.getUserId());
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(response)));
+  }
 }
