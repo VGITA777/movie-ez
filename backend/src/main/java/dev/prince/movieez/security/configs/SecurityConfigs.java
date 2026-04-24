@@ -1,8 +1,10 @@
 package dev.prince.movieez.security.configs;
 
+import dev.prince.movieez.security.authentik.AuthentikUserSyncFilter;
 import dev.prince.movieez.security.ratelimit.RateLimiterFilterImpl;
 import dev.prince.movieez.security.ratelimit.RateLimiterServiceImpl;
 import dev.prince.movieez.users.UserRole;
+import dev.prince.movieez.users.services.UserService;
 import java.util.Collection;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
@@ -46,7 +48,7 @@ public class SecurityConfigs {
 
   @Bean
   @Order(2)
-  public SecurityFilterChain userConfigs(HttpSecurity httpSecurity) {
+  public SecurityFilterChain userConfigs(HttpSecurity httpSecurity, UserService userService) {
     return httpSecurity
         .securityMatcher("/users/**")
         .oauth2ResourceServer(oauth2 -> {
@@ -59,6 +61,7 @@ public class SecurityConfigs {
               .anyRequest()
               .authenticated();
         })
+        .addFilterAfter(new AuthentikUserSyncFilter(userService), AuthorizationFilter.class)
         .build();
   }
 
