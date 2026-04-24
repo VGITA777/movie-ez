@@ -8,6 +8,8 @@ import dev.prince.movieez.security.dto.PlaylistDto;
 import dev.prince.movieez.security.dto.PlaylistMapper;
 import dev.prince.movieez.security.models.PlaylistModel;
 import dev.prince.movieez.users.services.PlaylistService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,6 +47,8 @@ public class PlaylistController {
   @GetMapping("/{name}")
   public ResponseEntity<ServerResponse<Optional<PlaylistDto>>> getPlaylistByName(
       @PathVariable
+      @Valid
+      @NotBlank
       String name
   ) {
     var playlist = playlistService
@@ -58,6 +62,8 @@ public class PlaylistController {
   @GetMapping("/{name}/tracks")
   public ResponseEntity<ServerResponse<List<PlaylistContentDto>>> getPlaylistContents(
       @PathVariable
+      @Valid
+      @NotBlank
       String name
   ) {
     var playlist = playlistService
@@ -77,11 +83,14 @@ public class PlaylistController {
   @PostMapping("/{name}")
   public ResponseEntity<ServerResponse<PlaylistDto>> createPlaylist(
       @PathVariable
+      @Valid
+      @NotBlank
       String name
   ) {
     var playlist = new PlaylistModel();
     playlist.setName(name);
-    var saved = playlistService.save(playlist, SecurityUtils.getUserId());
+    var userId = SecurityUtils.getUserId();
+    var saved = playlistService.save(playlist, userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(saved));
     return ResponseEntity.ok(response);
   }
@@ -89,6 +98,8 @@ public class PlaylistController {
   @PostMapping("/{name}/tracks/{trackId}")
   public ResponseEntity<ServerResponse<PlaylistDto>> addTrackToPlaylist(
       @PathVariable
+      @Valid
+      @NotBlank
       String name,
       @PathVariable
       String trackId
@@ -101,6 +112,8 @@ public class PlaylistController {
   @PostMapping("/{name}/tracks")
   public ResponseEntity<ServerResponse<PlaylistDto>> addAllTracksToPlaylist(
       @PathVariable
+      @Valid
+      @NotBlank
       String name,
       @RequestBody
       Set<String> trackIds
@@ -113,6 +126,8 @@ public class PlaylistController {
   @DeleteMapping("/{name}")
   public ResponseEntity<ServerResponse<?>> deletePlaylist(
       @PathVariable
+      @Valid
+      @NotBlank
       String name
   ) {
     playlistService.delete(name, SecurityUtils.getUserId());

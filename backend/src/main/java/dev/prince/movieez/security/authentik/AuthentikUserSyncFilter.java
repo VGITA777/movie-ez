@@ -1,7 +1,7 @@
 package dev.prince.movieez.security.authentik;
 
 import dev.prince.movieez.security.models.UserModel;
-import dev.prince.movieez.users.services.UserService;
+import dev.prince.movieez.security.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,10 +16,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class AuthentikUserSyncFilter extends OncePerRequestFilter {
 
-  private final UserService userService;
+  private final UserRepository userRepository;
 
-  public AuthentikUserSyncFilter(UserService userService) {
-    this.userService = userService;
+  public AuthentikUserSyncFilter(UserRepository userRepository) {
+    this.userRepository = userRepository;
   }
 
   @Override
@@ -34,7 +34,15 @@ public class AuthentikUserSyncFilter extends OncePerRequestFilter {
     }
 
     var user = extractUser(token);
-    userService.save(user);
+    var userToBeSaved = userRepository
+        .findById(user.getId())
+        .map(existing -> {
+          existing.setEmail(user.getEmail());
+          existing.setUsername(user.getUsername());
+          return existing;
+        })
+        .orElse(user);
+    userRepository.save(userToBeSaved);
     filterChain.doFilter(request, response);
   }
 

@@ -2,11 +2,12 @@ package dev.prince.movieez.users.services;
 
 import dev.prince.movieez.exceptions.PlaylistContentAlreadyExistsException;
 import dev.prince.movieez.exceptions.PlaylistNotFoundException;
+import dev.prince.movieez.exceptions.UserNotFoundException;
 import dev.prince.movieez.security.models.PlaylistContentModel;
 import dev.prince.movieez.security.models.PlaylistModel;
-import dev.prince.movieez.security.models.UserModel;
 import dev.prince.movieez.security.repositories.PlaylistContentRepository;
 import dev.prince.movieez.security.repositories.PlaylistRepository;
+import dev.prince.movieez.security.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
@@ -20,17 +21,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlaylistService {
 
+  private final UserRepository userRepository;
   private final PlaylistRepository playlistRepository;
   private final PlaylistContentRepository playlistContentRepository;
 
-  public PlaylistService(PlaylistRepository playlistRepository, PlaylistContentRepository playlistContentRepository) {
+  public PlaylistService(
+      UserRepository userRepository,
+      PlaylistRepository playlistRepository,
+      PlaylistContentRepository playlistContentRepository
+  ) {
+    this.userRepository = userRepository;
     this.playlistRepository = playlistRepository;
     this.playlistContentRepository = playlistContentRepository;
   }
 
+  @Transactional
   public PlaylistModel save(PlaylistModel playlistModel, UUID userId) {
-    var user = new UserModel();
-    user.setId(userId);
+    var user = userRepository
+        .findById(userId)
+        .orElseThrow(() -> {
+          var msg = "User with ID: '" + userId + "' not found";
+          return new UserNotFoundException(msg);
+        });
     playlistModel.setUser(user);
     return playlistRepository.save(playlistModel);
   }
