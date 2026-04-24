@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/backend/src/main/java/dev/prince/movieez/security/repositories/PlaylistRepository.java" value="e16da495-2d6a-4fcd-8e08-8c9491add24b" />
+  </component>
+</project>

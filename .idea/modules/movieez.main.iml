@@ -5,4 +5,19 @@
       <sourceFolder url="file://$MODULE_DIR$/../../backend/build/generated/sources/annotationProcessor/java/main" isTestSource="false" generated="true" />
     </content>
   </component>
+  <component name="FacetManager">
+    <facet type="jpa" name="JPA">
+      <configuration>
+        <setting name="validation-enabled" value="true" />
+        <setting name="provider-name" value="Hibernate" />
+        <datasource-mapping>
+          <factory-entry name="entityManagerFactory" value="e16da495-2d6a-4fcd-8e08-8c9491add24b" />
+          <factory-entry name="movieez.main" value="e16da495-2d6a-4fcd-8e08-8c9491add24b" />
+        </datasource-mapping>
+        <naming-strategy-map>
+          <unit-entry name="entityManagerFactory" />
+        </naming-strategy-map>
+      </configuration>
+    </facet>
+  </component>
 </module>
