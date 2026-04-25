@@ -1,11 +1,43 @@
-<div class="hero-slider">
-  <hlm-carousel class="w-full">
-    <hlm-carousel-content>
+<div
+  class="hero-slider relative w-full h-full mask-[linear-gradient(to_bottom,var(--background)_85%,transparent_100%)]">
+  <hlm-carousel class="w-full h-full" [plugins]="plugins" [options]="options">
+    <hlm-carousel-content class="h-full">
       @for (item of items(); track item) {
-        <hlm-carousel-item>
-          <hlm-card class="relative aspect-4/3 min-w-[200px]">
-            <img class="object-cover" [ngSrc]="item.imgSrc" [alt]="item.title" fill />
-          </hlm-card>
+        <hlm-carousel-item class="w-full h-[95vh] pl-0">
+          <!-- Carousel Entry Item Container-->
+          <div
+            class="carousel-item__container relative w-full h-full bg-cover bg-center"
+            [style.background-image]="'url(' + item.imgSrc + ')'">
+            <!-- Carousel Item Contents Container -->
+            <div
+              class="carousel-item-content absolute left-8 bottom-[15%] w-[80%] max-w-175 flex flex-col gap-5 p-4">
+              <h1 class="font-bold text-6xl">{{ item.title }}</h1>
+              <p class="text-lg font-light">{{ item.description }}</p>
+
+              <!-- Ratings Container -->
+              <div class="carousel-item-rating__container flex gap-4">
+                <div class="rating__star flex gap-1 items-center">
+                  <ng-icon name="lucideStar" class="text-md" />
+                  <span class="text-md">{{ item.rating.toFixed(1) }}</span>
+                </div>
+                <span class="rating__year text-md">{{ item.year }}</span>
+                <span class="rating__tag text-md">{{ item.tag }}</span>
+              </div>
+
+              <!-- Play Now & add to Playlist Container -->
+              <div class="carousel-item-content__buttons flex gap-4">
+                <button hlmBtn size="lg" class="horizontal w-40">
+                  <ng-icon name="lucidePlay" class="text-sm" />
+                  Play Now
+                </button>
+                <button hlmBtn size="lg" class="horizontal w-40" variant="secondary">
+                  <ng-icon name="lucidePlus" class="text-md" />
+                  My List
+                </button>
+              </div>
+            </div>
+
+          </div>
         </hlm-carousel-item>
       }
     </hlm-carousel-content>

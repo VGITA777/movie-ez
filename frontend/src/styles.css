@@ -10,8 +10,21 @@
 @font-face {
   font-family: 'Quicksand';
   src: url("/fonts/Quicksand.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url("/fonts/NotoSans.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url("/fonts/Montserrat.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'GoogleSans';
+  src: url("/fonts/GoogleSans.ttf") format("truetype");
 }
 
 * {
@@ -20,10 +33,14 @@
   padding: 0;
 }
 
+button:hover, a:hover, [role="button"]:hover, [role="link"]:hover {
+  cursor: pointer;
+}
+
 :root {
   color-scheme: light;
 
-  --font-sans: 'Quicksand';
+  --font-sans: 'GoogleSans';
 
   --radius: 0.625rem;
   --background: oklch(1 0 0);
