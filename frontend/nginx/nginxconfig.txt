@@ -1,1 +1,0 @@
-https://www.digitalocean.com/community/tools/nginx?domains.0.server.domain=localhost&domains.0.server.path=%2Fvar%2Fwww%2Fmovieez.com&domains.0.server.redirectSubdomains=false&domains.0.https.https=false&domains.0.php.php=false&domains.0.routing.index=index.html&domains.0.routing.fallbackHtml=true&domains.0.routing.fallbackPhp=false
