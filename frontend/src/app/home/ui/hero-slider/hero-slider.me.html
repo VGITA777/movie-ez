@@ -1,7 +1,13 @@
 <div class="hero-slider">
   <hlm-carousel class="w-full">
     <hlm-carousel-content>
-
+      @for (item of items(); track item) {
+        <hlm-carousel-item>
+          <hlm-card class="relative aspect-4/3 min-w-[200px]">
+            <img class="object-cover" [ngSrc]="item.imgSrc" [alt]="item.title" fill />
+          </hlm-card>
+        </hlm-carousel-item>
+      }
     </hlm-carousel-content>
   </hlm-carousel>
 </div>
