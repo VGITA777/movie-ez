@@ -13,7 +13,8 @@
           "skipTests": true
         },
         "@schematics/angular:component": {
-          "skipTests": true
+          "skipTests": true,
+          "type": "me"
         },
         "@schematics/angular:directive": {
           "skipTests": true
