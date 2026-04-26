@@ -33,8 +33,8 @@ import { HlmCarousel } from './hlm-carousel';
   `,
 })
 export class HlmCarouselNext {
-  private readonly _button = inject(HlmButton);
   protected readonly _carousel = inject(HlmCarousel);
+  private readonly _button = inject(HlmButton);
   private readonly _computedClass = computed(() =>
     hlm(
       'absolute h-8 w-8 rounded-full',
@@ -43,7 +43,6 @@ export class HlmCarouselNext {
         : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
     ),
   );
-  protected readonly isDisabled = () => !this._carousel.canScrollNext();
 
   constructor() {
     effect(() => {
@@ -52,4 +51,6 @@ export class HlmCarouselNext {
       untracked(() => this._button.setClass(computedClass));
     });
   }
+
+  protected readonly isDisabled = () => !this._carousel.canScrollNext();
 }

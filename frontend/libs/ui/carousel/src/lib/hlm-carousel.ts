@@ -41,13 +41,11 @@ import {
   `,
 })
 export class HlmCarousel {
-  protected readonly _emblaCarousel = viewChild.required(EmblaCarouselDirective);
-
   public readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
   public readonly options: InputSignal<Omit<EmblaOptionsType, 'axis'> | undefined> =
     input<Omit<EmblaOptionsType, 'axis'>>();
   public readonly plugins: InputSignal<EmblaPluginType[]> = input<EmblaPluginType[]>([]);
-
+  protected readonly _emblaCarousel = viewChild.required(EmblaCarouselDirective);
   protected readonly _emblaOptions: Signal<EmblaOptionsType> = computed(() => ({
     ...this.options(),
     axis: this.orientation() === 'horizontal' ? 'x' : 'y',
@@ -65,6 +63,14 @@ export class HlmCarousel {
 
   constructor() {
     classes(() => 'relative');
+  }
+
+  scrollPrev() {
+    this._emblaCarousel().scrollPrev();
+  }
+
+  scrollNext() {
+    this._emblaCarousel().scrollNext();
   }
 
   protected onEmblaEvent(event: EmblaEventType) {
@@ -91,13 +97,5 @@ export class HlmCarousel {
       event.preventDefault();
       this._emblaCarousel().scrollNext();
     }
-  }
-
-  scrollPrev() {
-    this._emblaCarousel().scrollPrev();
-  }
-
-  scrollNext() {
-    this._emblaCarousel().scrollNext();
   }
 }

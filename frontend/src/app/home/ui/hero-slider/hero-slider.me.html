@@ -1,42 +1,50 @@
 <div
   class="hero-slider relative w-full mask-[linear-gradient(to_bottom,var(--background)_85%,transparent_100%)]">
-  <hlm-carousel #carousel class="w-full h-full" [plugins]="plugins" [options]="options">
+  <hlm-carousel #carousel [options]="options" [plugins]="plugins" class="w-full h-full">
     <hlm-carousel-content>
       @for (item of items(); track item) {
         <hlm-carousel-item class="w-full h-[95vh] pl-0">
           <!-- Carousel Entry Item Container-->
           <div
-            class="carousel-item__container relative w-full h-full bg-cover bg-center"
-            [style.background-image]="'url(' + item.imgSrc + ')'">
+            [style.background-image]="'url(' + item.imgSrc + ')'"
+            class="carousel-item__container relative w-full h-full bg-cover bg-center">
             <!-- Carousel Item Contents Container -->
             <div
               class="carousel-item-content absolute left-8 bottom-[15%] w-fill md:w-[80%] md:max-w-175 flex flex-col gap-5 p-4">
               <h1 class="font-bold text-6xl">{{ item.title }}</h1>
-              <p class="text-lg font-light line-clamp-3 text-justify lg:line-clamp-4">{{ item.description }}</p>
+              <p class="text-lg font-light line-clamp-3 text-justify select-none lg:line-clamp-4">{{
+                  item.description
+                }}</p>
 
               <!-- Ratings Container -->
-              <div class="carousel-item-rating__container flex gap-4">
+              <div
+                class="carousel-item-rating__container flex flex-wrap gap-8 items-center select-none">
                 <div class="rating__star flex gap-1 items-center">
                   <ng-icon
-                    name="lucideStar" class="text-md text-[#ffc107] [&_svg]:fill-[#ffc107]" />
+                    class="text-md text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
                   <span class="text-md">{{ item.rating.toFixed(1) }}</span>
                 </div>
                 <span class="rating__year text-md">{{ item.year }}</span>
-                <span class="rating__tag text-md">{{ item.tag }}</span>
+                <span
+                  class="rating__tag inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-sm font-medium tracking-wide text-white backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.25)]">
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>{{ item.tag.trim() }}
+                </span>
               </div>
 
               <!-- Play Now & add to Playlist Container -->
               <div class="carousel-item-content__buttons w-full flex gap-4 flex-wrap">
                 <button
-                  hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40"
-                  (click)="onPlay(item)">
-                  <ng-icon name="lucidePlay" class="text-sm" />
+                  (click)="onPlay(item)" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40"
+                  hlmBtn
+                  size="lg">
+                  <ng-icon class="text-sm" name="lucidePlay" />
                   <span class="hidden sm:inline">Play Now</span>
                 </button>
                 <button
-                  hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40"
-                  variant="secondary" (click)="onAddToPlaylist(item)">
-                  <ng-icon name="lucidePlus" class="text-md" />
+                  (click)="onAddToPlaylist(item)"
+                  class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40" hlmBtn
+                  size="lg" variant="secondary">
+                  <ng-icon class="text-md" name="lucidePlus" />
                   <span class="hidden sm:inline">My List</span>
                 </button>
               </div>
@@ -51,12 +59,12 @@
   <!-- Carousel Controls Container (Hidden on Mobile) -->
   <div class="carousel-controls hidden gap-4 absolute right-8 bottom-[15%] p-4 md:flex">
     <button
-      hlmBtn (click)="onPrevious()" class="rounded-full backdrop-blur-sm" size="lg">
-      <ng-icon name="lucideChevronLeft" class="text-lg" />
+      (click)="onPrevious()" class="rounded-full backdrop-blur-sm" hlmBtn size="lg">
+      <ng-icon class="text-lg" name="lucideChevronLeft" />
     </button>
     <button
-      hlmBtn (click)="onNext()" class="rounded-full backdrop-blur-sm" size="lg">
-      <ng-icon name="lucideChevronRight" class="text-lg" />
+      (click)="onNext()" class="rounded-full backdrop-blur-sm" hlmBtn size="lg">
+      <ng-icon class="text-lg" name="lucideChevronRight" />
     </button>
   </div>
 </div>

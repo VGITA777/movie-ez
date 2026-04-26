@@ -16,15 +16,11 @@ import { HlmCarousel } from './hlm-carousel';
   `,
 })
 export class HlmCarouselSlideDisplay {
-  protected readonly _carousel = inject(HlmCarousel);
-
-  protected readonly _currentSlide = computed(() => this._carousel.currentSlide() + 1);
-
   public readonly slideClass = input<ClassValue>('text-muted-foreground text-sm');
-
   /** Screen reader only text for the slide display */
   public readonly label = input<string>('Slide');
-
+  protected readonly _carousel = inject(HlmCarousel);
+  protected readonly _currentSlide = computed(() => this._carousel.currentSlide() + 1);
   protected readonly _labelContent = computed(() => {
     const currentSlide = this._currentSlide();
     const slideCount = this._carousel.slideCount();
