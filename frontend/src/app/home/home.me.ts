@@ -13,26 +13,26 @@ export class HomeMe {
     {
       id: '123',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/2ssWTSVklAEc98frZUQhgtGHx7s.jpg`,
-      title: 'A very long title that cannot fit in one line.',
+      title: 'Interstellar',
       rating: 9.8,
       type: 'movie',
       description:
-        "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival. " +
-        "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival. " +
-        "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival",
+        'The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the' +
+        ' limitations on human space travel and conquer the vast distances involved in an interstellar voyage.',
       year: 2024,
       tag: 'Sci-Fi / Adventure',
     },
     {
       id: '123',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/2ssWTSVklAEc98frZUQhgtGHx7s.jpg`,
-      title: 'Interstellar',
-      rating: 9.8,
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/3ooXDVaz4xHKtwe4lkmF1gNopOC.jpg`,
+      title: 'Thrash',
+      rating: 6.8,
       type: 'movie',
       description:
-        "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
-      year: 2024,
-      tag: 'Sci-Fi / Adventure',
+        'When a Category 5 hurricane decimates a coastal town, the storm surge brings devastation, chaos, and' +
+        ' something far more frightening onto shore: hungry sharks.',
+      year: 2026,
+      tag: 'Adventure / Drama',
     },
   ];
 }
