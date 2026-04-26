@@ -15,6 +15,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { EmblaOptionsType } from 'embla-carousel-angular';
 
 export interface HomeHeroSliderItem {
+  readonly id: string;
   readonly imgSrc: string;
   readonly title: string;
   readonly rating: number;
@@ -35,6 +36,12 @@ export interface HomeHeroSliderItem {
 })
 export class HeroSliderMe {
   public readonly items: InputSignal<HomeHeroSliderItem[]> = input.required();
+  public readonly handlePlay: InputSignal<((item: HomeHeroSliderItem) => void) | undefined> =
+    input();
+  /* TODO: Create a directive that handles adding media to a playlist */
+  public readonly handleAddToPlaylist: InputSignal<
+    ((item: HomeHeroSliderItem) => void) | undefined
+  > = input();
 
   protected readonly carousel: Signal<HlmCarousel> = viewChild.required('carousel');
   protected readonly plugins = [Autoplay({ delay: 5000, stopOnInteraction: true })];
@@ -48,5 +55,13 @@ export class HeroSliderMe {
 
   protected onPrevious(): void {
     this.carousel().scrollPrev();
+  }
+
+  protected onPlay(item: HomeHeroSliderItem): void {
+    this.handlePlay()?.(item);
+  }
+
+  protected onAddToPlaylist(item: HomeHeroSliderItem): void {
+    this.handleAddToPlaylist()?.(item);
   }
 }

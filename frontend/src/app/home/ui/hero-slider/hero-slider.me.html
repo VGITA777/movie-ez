@@ -17,7 +17,8 @@
               <!-- Ratings Container -->
               <div class="carousel-item-rating__container flex gap-4">
                 <div class="rating__star flex gap-1 items-center">
-                  <ng-icon name="lucideStar" class="text-md text-[#ffc107] [&_svg]:fill-[#ffc107]" />
+                  <ng-icon
+                    name="lucideStar" class="text-md text-[#ffc107] [&_svg]:fill-[#ffc107]" />
                   <span class="text-md">{{ item.rating.toFixed(1) }}</span>
                 </div>
                 <span class="rating__year text-md">{{ item.year }}</span>
@@ -26,11 +27,15 @@
 
               <!-- Play Now & add to Playlist Container -->
               <div class="carousel-item-content__buttons w-full flex gap-4 flex-wrap">
-                <button hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40">
+                <button
+                  hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40"
+                  (click)="onPlay(item)">
                   <ng-icon name="lucidePlay" class="text-sm" />
                   <span class="hidden sm:inline">Play Now</span>
                 </button>
-                <button hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40" variant="secondary">
+                <button
+                  hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40"
+                  variant="secondary" (click)="onAddToPlaylist(item)">
                   <ng-icon name="lucidePlus" class="text-md" />
                   <span class="hidden sm:inline">My List</span>
                 </button>
@@ -43,6 +48,7 @@
     </hlm-carousel-content>
   </hlm-carousel>
 
+  <!-- Carousel Controls Container (Hidden on Mobile) -->
   <div class="carousel-controls hidden gap-4 absolute right-8 bottom-[15%] p-4 md:flex">
     <button
       hlmBtn (click)="onPrevious()" class="rounded-full backdrop-blur-sm" size="lg">
