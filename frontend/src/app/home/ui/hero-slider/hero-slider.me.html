@@ -1,7 +1,7 @@
 <div
-  class="hero-slider relative w-full h-full mask-[linear-gradient(to_bottom,var(--background)_85%,transparent_100%)]">
-  <hlm-carousel class="w-full h-full" [plugins]="plugins" [options]="options">
-    <hlm-carousel-content class="h-full">
+  class="hero-slider relative w-full mask-[linear-gradient(to_bottom,var(--background)_85%,transparent_100%)]">
+  <hlm-carousel #carousel class="w-full h-full" [plugins]="plugins" [options]="options">
+    <hlm-carousel-content>
       @for (item of items(); track item) {
         <hlm-carousel-item class="w-full h-[95vh] pl-0">
           <!-- Carousel Entry Item Container-->
@@ -10,14 +10,14 @@
             [style.background-image]="'url(' + item.imgSrc + ')'">
             <!-- Carousel Item Contents Container -->
             <div
-              class="carousel-item-content absolute left-8 bottom-[15%] w-[80%] max-w-175 flex flex-col gap-5 p-4">
+              class="carousel-item-content absolute left-8 bottom-[15%] w-fill md:w-[80%] md:max-w-175 flex flex-col gap-5 p-4">
               <h1 class="font-bold text-6xl">{{ item.title }}</h1>
               <p class="text-lg font-light line-clamp-3 lg:line-clamp-4">{{ item.description }}</p>
 
               <!-- Ratings Container -->
               <div class="carousel-item-rating__container flex gap-4">
                 <div class="rating__star flex gap-1 items-center">
-                  <ng-icon name="lucideStar" class="text-md" />
+                  <ng-icon name="lucideStar" class="text-md text-[#ffc107] [&_svg]:fill-[#ffc107]" />
                   <span class="text-md">{{ item.rating.toFixed(1) }}</span>
                 </div>
                 <span class="rating__year text-md">{{ item.year }}</span>
@@ -25,14 +25,14 @@
               </div>
 
               <!-- Play Now & add to Playlist Container -->
-              <div class="carousel-item-content__buttons flex gap-4">
-                <button hlmBtn size="lg" class="horizontal w-40">
+              <div class="carousel-item-content__buttons w-full flex gap-4 flex-wrap">
+                <button hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40">
                   <ng-icon name="lucidePlay" class="text-sm" />
-                  Play Now
+                  <span class="hidden sm:inline">Play Now</span>
                 </button>
-                <button hlmBtn size="lg" class="horizontal w-40" variant="secondary">
+                <button hlmBtn size="lg" class="horizontal px-6 py-4 sm:p-0 sm:w-full sm:max-w-40" variant="secondary">
                   <ng-icon name="lucidePlus" class="text-md" />
-                  My List
+                  <span class="hidden sm:inline">My List</span>
                 </button>
               </div>
             </div>
@@ -42,4 +42,15 @@
       }
     </hlm-carousel-content>
   </hlm-carousel>
+
+  <div class="carousel-controls hidden gap-4 absolute right-8 bottom-[15%] p-4 md:flex">
+    <button
+      hlmBtn (click)="onPrevious()" class="rounded-full backdrop-blur-sm" size="lg">
+      <ng-icon name="lucideChevronLeft" class="text-lg" />
+    </button>
+    <button
+      hlmBtn (click)="onNext()" class="rounded-full backdrop-blur-sm" size="lg">
+      <ng-icon name="lucideChevronRight" class="text-lg" />
+    </button>
+  </div>
 </div>
