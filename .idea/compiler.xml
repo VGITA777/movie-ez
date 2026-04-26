@@ -26,4 +26,8 @@
       <module name="movieez.test" options="-parameters" />
     </option>
   </component>
+  <component name="TypeScriptCompiler">
+    <option name="memoryAutoIncrease" value="true" />
+    <option name="memoryLimit" value="4096" />
+  </component>
 </project>

@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 export class HomeMe {
   protected readonly items: HomeHeroSliderItem[] = [
     {
+      id: '123',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/2ssWTSVklAEc98frZUQhgtGHx7s.jpg`,
       title: 'A very long title that cannot fit in one line.',
       rating: 9.8,
@@ -23,6 +24,7 @@ export class HomeMe {
       tag: 'Sci-Fi / Adventure',
     },
     {
+      id: '123',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/2ssWTSVklAEc98frZUQhgtGHx7s.jpg`,
       title: 'Interstellar',
       rating: 9.8,
