@@ -13,9 +13,10 @@ import {
 import { provideIcons } from '@ng-icons/core';
 import Autoplay from 'embla-carousel-autoplay';
 import { EmblaOptionsType } from 'embla-carousel-angular';
+import { ID } from '@shared/shared-types';
 
 export interface HomeHeroSliderItem {
-  readonly id: string;
+  readonly id: ID;
   readonly imgSrc: string;
   readonly title: string;
   readonly rating: number;
