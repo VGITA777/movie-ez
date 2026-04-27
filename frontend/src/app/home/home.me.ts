@@ -7,10 +7,20 @@ import {
   MediaCarouselBackdropItem,
   MediaCarouselBackdropItemMe,
 } from '@shared/ui/media-carousel/media-carousel-backdrop-item/media-carousel-backdrop-item.me';
+import {
+  MediaCarouselTopItem,
+  MediaCarouselTopItemMe,
+} from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 
 @Component({
   selector: 'me-home',
-  imports: [HeroSliderMe, MediaCarouselMe, MediaCarouselCoverItemMe, MediaCarouselBackdropItemMe],
+  imports: [
+    HeroSliderMe,
+    MediaCarouselMe,
+    MediaCarouselCoverItemMe,
+    MediaCarouselBackdropItemMe,
+    MediaCarouselTopItemMe,
+  ],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',
 })
@@ -46,7 +56,7 @@ export class HomeMe {
     },
   ];
 
-  protected readonly mediaItems: MediaCarouselItem[] = [
+  protected readonly mediaItemsPoster: MediaCarouselItem[] = [
     {
       id: '123',
       title: 'Interstellar',
@@ -81,7 +91,7 @@ export class HomeMe {
     },
   ];
 
-  protected readonly mediaItems2: MediaCarouselBackdropItem[] = [
+  protected readonly mediaItemsBackdrop: MediaCarouselBackdropItem[] = [
     {
       id: '157336',
       title: 'Interstellar',
@@ -117,6 +127,45 @@ export class HomeMe {
       genre: 'Adventure',
       year: 2026,
       runtime: 90,
+    },
+  ];
+
+  protected readonly mediaItemsRanking: MediaCarouselTopItem[] = [
+    {
+      id: '157336',
+      title: 'Interstellar',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
+      rating: 9.8,
+      genre: 'Sci-Fi',
+      year: 2024,
+      ranking: 1,
+    },
+    {
+      id: '1290417',
+      title: 'Thrash',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
+      rating: 6.8,
+      genre: 'Adventure',
+      year: 2026,
+      ranking: 2,
+    },
+    {
+      id: '157336',
+      title: 'Interstellar',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
+      rating: 9.8,
+      genre: 'Sci-Fi',
+      year: 2024,
+      ranking: 3,
+    },
+    {
+      id: '1290417',
+      title: 'Thrash',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
+      rating: 6.8,
+      genre: 'Adventure',
+      year: 2026,
+      ranking: 4,
     },
   ];
 }

@@ -4,9 +4,11 @@
     class="w-full accent-background" />
 
   <!-- TODO: Create sliders that would house discovery medias -->
-  <me-media-carousel [items]="mediaItems" [template]="mediaCoverItem" />
+  <me-media-carousel [items]="mediaItemsPoster" [template]="mediaCoverItem" />
 
-  <me-media-carousel [items]="mediaItems2" [template]="mediaBackdropItem" />
+  <me-media-carousel [items]="mediaItemsBackdrop" [template]="mediaBackdropItem" />
+
+  <me-media-carousel [items]="mediaItemsRanking" [template]="mediaRankingItem" />
 
 </section>
 
@@ -16,4 +18,8 @@
 
 <ng-template #mediaBackdropItem let-item>
   <me-media-carousel-backdrop-item class="ml-4 min-w-[300px] md:min-w-[375px]" [item]="item" />
+</ng-template>
+
+<ng-template #mediaRankingItem let-item>
+  <me-media-carousel-top-item class="ml-12 min-w-[175px] md:min-w-[225px]" [item]="item" />
 </ng-template>
