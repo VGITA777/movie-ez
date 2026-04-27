@@ -1,6 +1,6 @@
 <!-- Carousel Entry Item Container-->
 <div
-  meVisibleFor meNotVisibleFor (visibleLongEnough)="startVideo.set(true)"
+  meVisibleFor meNotVisibleFor [visibleForDelay]="8000" (visibleLongEnough)="startVideo.set(true)"
   (notVisibleLongEnough)="startVideo.set(false)"
   [style.background-image]="'url(' + item().imgSrc + ')'"
   class="carousel-item__container relative w-full h-full bg-cover bg-center">
