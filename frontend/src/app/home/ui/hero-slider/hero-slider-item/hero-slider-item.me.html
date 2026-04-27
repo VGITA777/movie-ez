@@ -1,6 +1,6 @@
 <!-- Carousel Entry Item Container-->
 <div
-  meVisibleFor meNotVisibleFor [visibleForDelay]="8000" (visibleLongEnough)="startVideo.set(true)"
+  meVisibleFor meNotVisibleFor [visibleForDelay]="5000" (visibleLongEnough)="startVideo.set(true)"
   (notVisibleLongEnough)="startVideo.set(false)"
   [style.background-image]="'url(' + item().imgSrc + ')'"
   class="carousel-item__container relative w-full h-full bg-cover bg-center">
@@ -20,7 +20,7 @@
       class="text-4xl md:text-5xl font-bold text-white uppercase tracking-widest drop-shadow-xl">
       {{ item().title }}
     </h1>
-    <p class="font-light line-clamp-3 text-justify select-none lg:line-clamp-4">{{
+    <p class="font-light line-clamp-3 text-justify text-white select-none lg:line-clamp-4">{{
         item().description
       }}</p>
 
@@ -30,9 +30,9 @@
       <div class="rating__star flex gap-1 items-center">
         <ng-icon
           class="text-md text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
-        <span class="text-md">{{ item().rating.toFixed(1) }}</span>
+        <span class="text-md text-white">{{ item().rating.toFixed(1) }}</span>
       </div>
-      <span class="rating__year text-md">{{ item().year }}</span>
+      <span class="rating__year text-md text-white">{{ item().year }}</span>
       <span
         class="rating__tag inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-sm font-medium tracking-wide text-white backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.25)]">
                   <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>{{ item().tag.trim() }}
