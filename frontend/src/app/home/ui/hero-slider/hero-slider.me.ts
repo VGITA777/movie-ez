@@ -1,4 +1,12 @@
-import { Component, input, InputSignal, Signal, viewChild } from '@angular/core';
+import {
+  Component,
+  input,
+  InputSignal,
+  output,
+  OutputEmitterRef,
+  Signal,
+  viewChild,
+} from '@angular/core';
 import { HlmCarousel, HlmCarouselImports } from '@spartan-ng/helm/carousel';
 import { MediaType } from '@shared/models';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
@@ -37,12 +45,9 @@ export interface HomeHeroSliderItem {
 })
 export class HeroSliderMe {
   public readonly items: InputSignal<HomeHeroSliderItem[]> = input.required();
-  public readonly handlePlay: InputSignal<((item: HomeHeroSliderItem) => void) | undefined> =
-    input();
+  public readonly handlePlay: OutputEmitterRef<HomeHeroSliderItem> = output();
   /* TODO: Create a directive that handles adding media to a playlist */
-  public readonly handleAddToPlaylist: InputSignal<
-    ((item: HomeHeroSliderItem) => void) | undefined
-  > = input();
+  public readonly handleAddToPlaylist: OutputEmitterRef<HomeHeroSliderItem> = output();
 
   protected readonly carousel: Signal<HlmCarousel> = viewChild.required('carousel');
   protected readonly plugins = [Autoplay({ delay: 5000, stopOnInteraction: true })];
@@ -59,10 +64,10 @@ export class HeroSliderMe {
   }
 
   protected onPlay(item: HomeHeroSliderItem): void {
-    this.handlePlay()?.(item);
+    this.handleAddToPlaylist.emit(item);
   }
 
   protected onAddToPlaylist(item: HomeHeroSliderItem): void {
-    this.handleAddToPlaylist()?.(item);
+    this.handleAddToPlaylist.emit(item);
   }
 }
