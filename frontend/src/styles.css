@@ -110,4 +110,8 @@ button:hover, a:hover, [role="button"]:hover, [role="link"]:hover {
   body {
     @apply bg-background text-foreground;
   }
+
+  html {
+    @apply text-[0.875rem] md:text-[0.9rem] lg:text-[1rem];
+  }
 }
