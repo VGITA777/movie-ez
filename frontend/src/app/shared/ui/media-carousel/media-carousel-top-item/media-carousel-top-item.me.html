@@ -6,7 +6,10 @@
     (click)="itemClick.emit(itemData)"
     class="media-item-img__container group relative w-full aspect-2/3">
 
-    <span class="text-[9rem] font-black absolute bottom-0 -left-10 z-10 leading-none">{{ itemData.ranking }}</span>
+    <span
+      class="text-[9rem] font-black absolute bottom-0 -left-10 z-10 leading-none opacity-85 text-shadow-lg">{{
+        itemData.ranking
+      }}</span>
 
     <img
       [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill
@@ -17,7 +20,7 @@
   <!-- Media Information -->
   <div class="media-item-info flex flex-col gap-1">
     <!-- Title -->
-    <h3 class="media-item-specific-info__title font-bold">{{ itemData.title }}</h3>
+    <h3 class="media-item-specific-info__title font-bold leading-none">{{ itemData.title }}</h3>
     <!-- Rating, Genre, Year -->
     <div class="media-item-specific-info__container flex items-center gap-2 w-full ">
       <div class="media-item-specific-info__rating flex gap-1 items-center">
