@@ -50,7 +50,9 @@ export class HeroSliderMe {
   public readonly handleAddToPlaylist: OutputEmitterRef<HomeHeroSliderItem> = output();
 
   protected readonly carousel: Signal<HlmCarousel> = viewChild.required('carousel');
-  protected readonly plugins = [Autoplay({ delay: 5000, stopOnInteraction: true })];
+  protected readonly plugins = [
+    Autoplay({ delay: 10_000, stopOnInteraction: true, stopOnMouseEnter: true }),
+  ];
   protected readonly options: EmblaOptionsType = {
     loop: true,
   };
