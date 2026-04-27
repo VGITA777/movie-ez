@@ -3,10 +3,14 @@ import { HeroSliderMe, HomeHeroSliderItem } from '@home/ui/hero-slider/hero-slid
 import { environment } from '../../environments/environment';
 import { MediaCarouselItem, MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
+import {
+  MediaCarouselBackdropItem,
+  MediaCarouselBackdropItemMe,
+} from '@shared/ui/media-carousel/media-carousel-backdrop-item/media-carousel-backdrop-item.me';
 
 @Component({
   selector: 'me-home',
-  imports: [HeroSliderMe, MediaCarouselMe, MediaCarouselCoverItemMe],
+  imports: [HeroSliderMe, MediaCarouselMe, MediaCarouselCoverItemMe, MediaCarouselBackdropItemMe],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',
 })
@@ -74,6 +78,45 @@ export class HomeMe {
       rating: 6.8,
       genre: 'Adventure',
       year: 2026,
+    },
+  ];
+
+  protected readonly mediaItems2: MediaCarouselBackdropItem[] = [
+    {
+      id: '157336',
+      title: 'Interstellar',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/rFvnZYcJzLoC2l6cTFLQRUgYSgL.jpg`,
+      rating: 9.8,
+      genre: 'Sci-Fi',
+      year: 2024,
+      runtime: 160,
+    },
+    {
+      id: '1290417',
+      title: 'Thrash',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/4HIJS1btE2XvKoC0nqOr91uCcHE.jpg`,
+      rating: 6.8,
+      genre: 'Adventure',
+      year: 2026,
+      runtime: 90,
+    },
+    {
+      id: '157336',
+      title: 'Interstellar',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/rFvnZYcJzLoC2l6cTFLQRUgYSgL.jpg`,
+      rating: 9.8,
+      genre: 'Sci-Fi',
+      year: 2024,
+      runtime: 160,
+    },
+    {
+      id: '1290417',
+      title: 'Thrash',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/4HIJS1btE2XvKoC0nqOr91uCcHE.jpg`,
+      rating: 6.8,
+      genre: 'Adventure',
+      year: 2026,
+      runtime: 90,
     },
   ];
 }
