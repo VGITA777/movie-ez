@@ -6,7 +6,7 @@
     (click)="itemClick.emit(itemData)"
     class="media-item-img__container group relative w-full aspect-2/3">
 
-    <span class="text-9xl font-black absolute bottom-0 -left-10 z-10">{{ itemData.ranking }}</span>
+    <span class="text-[9rem] font-black absolute bottom-0 -left-10 z-10 leading-none">{{ itemData.ranking }}</span>
 
     <img
       [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill
