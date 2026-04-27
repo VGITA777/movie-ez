@@ -1,3 +1,11 @@
 <div class="media-carousel">
-
+  <hlm-carousel [options]="carouselOptions()">
+    <hlm-carousel-content CLASS="pl-2">
+      @for (item of items(); track item) {
+        <ng-container
+          [ngTemplateOutlet]="template()"
+          [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
+      }
+    </hlm-carousel-content>
+  </hlm-carousel>
 </div>

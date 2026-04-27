@@ -1,8 +1,13 @@
-<section class="home flex justify-center">
+<section class="home flex flex-col justify-center">
   <me-hero-slider
     [items]="items"
     class="w-full accent-background" />
 
   <!-- TODO: Create sliders that would house discovery medias -->
+  <me-media-carousel [items]="mediaItems" [template]="mediaCoverItem" />
 
 </section>
+
+<ng-template #mediaCoverItem let-item>
+  <me-media-carousel-cover-item class="min-w-[225px]" [item]="item" />
+</ng-template>

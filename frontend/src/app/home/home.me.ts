@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { HeroSliderMe, HomeHeroSliderItem } from '@home/ui/hero-slider/hero-slider.me';
 import { environment } from '../../environments/environment';
+import { MediaCarouselItem, MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
+import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 
 @Component({
   selector: 'me-home',
-  imports: [HeroSliderMe],
+  imports: [HeroSliderMe, MediaCarouselMe, MediaCarouselCoverItemMe],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',
 })
@@ -33,6 +35,41 @@ export class HomeMe {
         ' something far more frightening onto shore: hungry sharks.',
       year: 2026,
       tag: 'Adventure / Drama',
+    },
+  ];
+
+  protected readonly mediaItems: MediaCarouselItem[] = [
+    {
+      id: '123',
+      title: 'Interstellar',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/xWA7Bbo9VeahPcKCFYiC7NZXNoV.jpg`,
+      rating: 9.8,
+      genre: 'Sci-Fi',
+      year: 2024,
+    },
+    {
+      id: '123',
+      title: 'Thrash',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/v6GKbuCUGy4KbEN0SOevSLJbWiG.jpg`,
+      rating: 6.8,
+      genre: 'Adventure',
+      year: 2026,
+    },
+    {
+      id: '123',
+      title: 'Interstellar',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/xWA7Bbo9VeahPcKCFYiC7NZXNoV.jpg`,
+      rating: 9.8,
+      genre: 'Sci-Fi',
+      year: 2024,
+    },
+    {
+      id: '123',
+      title: 'Thrash',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/v6GKbuCUGy4KbEN0SOevSLJbWiG.jpg`,
+      rating: 6.8,
+      genre: 'Adventure',
+      year: 2026,
     },
   ];
 }
