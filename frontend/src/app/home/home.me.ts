@@ -27,7 +27,7 @@ import {
 export class HomeMe {
   protected readonly items: HomeHeroSliderItem[] = [
     {
-      id: '123',
+      id: '157336',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/2ssWTSVklAEc98frZUQhgtGHx7s.jpg`,
       title: 'Interstellar',
       rating: 9.8,
@@ -41,9 +41,9 @@ export class HomeMe {
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
-      id: '123',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/3ooXDVaz4xHKtwe4lkmF1gNopOC.jpg`,
+      id: '1290417',
       title: 'Thrash',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/3ooXDVaz4xHKtwe4lkmF1gNopOC.jpg`,
       rating: 6.8,
       type: 'movie',
       description:
@@ -58,33 +58,33 @@ export class HomeMe {
 
   protected readonly mediaItemsPoster: MediaCarouselItem[] = [
     {
-      id: '123',
+      id: '157336',
       title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/xWA7Bbo9VeahPcKCFYiC7NZXNoV.jpg`,
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
       rating: 9.8,
       genre: 'Sci-Fi',
       year: 2024,
     },
     {
-      id: '123',
+      id: '1290417',
       title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/v6GKbuCUGy4KbEN0SOevSLJbWiG.jpg`,
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
       rating: 6.8,
       genre: 'Adventure',
       year: 2026,
     },
     {
-      id: '123',
+      id: '157336',
       title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/xWA7Bbo9VeahPcKCFYiC7NZXNoV.jpg`,
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
       rating: 9.8,
       genre: 'Sci-Fi',
       year: 2024,
     },
     {
-      id: '123',
+      id: '1290417',
       title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/v6GKbuCUGy4KbEN0SOevSLJbWiG.jpg`,
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
       rating: 6.8,
       genre: 'Adventure',
       year: 2026,
