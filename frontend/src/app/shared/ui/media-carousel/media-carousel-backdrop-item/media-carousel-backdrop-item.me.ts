@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { Component, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
 import { NgOptimizedImage } from '@angular/common';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
@@ -18,6 +18,7 @@ export interface MediaCarouselBackdropItem extends MediaCarouselItem {
 })
 export class MediaCarouselBackdropItemMe {
   public readonly item: InputSignal<MediaCarouselBackdropItem> = input.required();
+  public readonly itemClick: OutputEmitterRef<MediaCarouselBackdropItem> = output();
 
   protected convertRuntimeToHoursAndMinutes(runtime: number): string {
     const hours: number = Math.floor(runtime / 60);

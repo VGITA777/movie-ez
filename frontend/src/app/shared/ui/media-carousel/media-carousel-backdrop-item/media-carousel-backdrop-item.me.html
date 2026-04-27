@@ -2,6 +2,7 @@
   @let itemData = item();
 
   <button
+    (click)="itemClick.emit(itemData)"
     class="media-item-img__container relative w-full overflow-hidden rounded-xl aspect-video ">
     <img class="object-cover" [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill>
   </button>
@@ -19,6 +20,8 @@
     <span class="media-item-specific-info__genre text-sm font-thin">{{ itemData.genre }}</span>
     <span>&middot;</span>
     <!-- Rating Container -->
-    <span class="media-item-specific-info__rating text-sm font-thin">{{ itemData.rating.toFixed(1) }}</span>
+    <span class="media-item-specific-info__rating text-sm font-thin">{{
+        itemData.rating.toFixed(1)
+      }}</span>
   </div>
 </div>

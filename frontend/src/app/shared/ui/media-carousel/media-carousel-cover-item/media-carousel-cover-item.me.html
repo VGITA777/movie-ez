@@ -1,28 +1,31 @@
 <div class="media-item w-full flex flex-col gap-1">
+  @let itemData = item();
+
   <!-- Media Image Container-->
   <button
+    (click)="itemClick.emit(itemData)"
     class="media-item-img__container group relative w-full aspect-2/3 overflow-hidden rounded-xl">
     <img
-      [ngSrc]="item().imgSrc" [alt]="item().title" fill
+      [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill
       class="object-cover transition-transform duration-300 ease-out group-hover:scale-102"
-      [title]="item().title">
+      [title]="itemData.title">
   </button>
 
   <!-- Media Information -->
   <div class="media-item-info flex flex-col gap-1">
     <!-- Title -->
-    <h3 class="media-item-specific-info__title font-bold">{{ item().title }}</h3>
+    <h3 class="media-item-specific-info__title font-bold">{{ itemData.title }}</h3>
     <!-- Rating, Genre, Year -->
     <div class="media-item-specific-info__container flex items-center gap-2 w-full ">
       <div class="media-item-specific-info__rating flex gap-1 items-center">
         <ng-icon
           class="text-xs text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
-        <span class="text-sm font-thin">{{ item().rating.toFixed(1) }}</span>
+        <span class="text-sm font-thin">{{ itemData.rating.toFixed(1) }}</span>
       </div>
       <span>&middot;</span>
-      <span class="media-item-specific-info__genre text-sm font-thin">{{ item().genre }}</span>
+      <span class="media-item-specific-info__genre text-sm font-thin">{{ itemData.genre }}</span>
       <span>&middot;</span>
-      <span class="media-item-specific-info__year text-sm font-thin">{{ item().year }}</span>
+      <span class="media-item-specific-info__year text-sm font-thin">{{ itemData.year }}</span>
     </div>
   </div>
 </div>
