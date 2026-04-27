@@ -15,9 +15,9 @@ import {
   selector: '[meVisibleFor]',
 })
 export class VisibleFor implements OnDestroy {
-  public readonly delay: InputSignal<number> = input(2000);
-  public readonly threshold: InputSignal<number> = input(0.5);
-  public readonly onceVisible: InputSignal<boolean> = input(false);
+  public readonly visibleForDelay: InputSignal<number> = input(2000);
+  public readonly visibleThreshold: InputSignal<number> = input(0.5);
+  public readonly visibleOnceEmmit: InputSignal<boolean> = input(false);
   public readonly visibleLongEnough: OutputEmitterRef<void> = output<void>();
 
   private el = inject(ElementRef);
@@ -27,7 +27,7 @@ export class VisibleFor implements OnDestroy {
 
   constructor() {
     this.effect = effect(() => {
-      this.setupObserver(this.threshold());
+      this.setupObserver(this.visibleThreshold());
     });
   }
 
@@ -40,10 +40,10 @@ export class VisibleFor implements OnDestroy {
           this.timer = setTimeout(() => {
             this.visibleLongEnough.emit();
 
-            if (this.onceVisible()) {
+            if (this.visibleOnceEmmit()) {
               this.cleanup(true);
             }
-          }, this.delay());
+          }, this.visibleForDelay());
         } else {
           clearTimeout(this.timer);
         }

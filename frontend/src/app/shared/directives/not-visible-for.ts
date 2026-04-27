@@ -15,10 +15,10 @@ import {
   selector: '[meNotVisibleFor]',
 })
 export class NotVisibleFor implements OnDestroy {
-  public readonly notVisibleTimer: InputSignal<number> = input(2000);
-  public readonly threshold: InputSignal<number> = input(0.5);
-  public readonly onceNotVisible: InputSignal<boolean> = input(false);
-  public readonly immediateCheck: InputSignal<boolean> = input(false);
+  public readonly notVisibleDelay: InputSignal<number> = input(2000);
+  public readonly notVisibleThreshold: InputSignal<number> = input(0.5);
+  public readonly notVisibleImmediateCheck: InputSignal<boolean> = input(false);
+  public readonly notVisibleOnceEmmit: InputSignal<boolean> = input(false);
   public readonly notVisibleLongEnough: OutputEmitterRef<void> = output();
 
   private el = inject(ElementRef);
@@ -29,7 +29,7 @@ export class NotVisibleFor implements OnDestroy {
 
   constructor() {
     this.effect = effect(() => {
-      this.setupObserver(this.threshold());
+      this.setupObserver(this.notVisibleThreshold());
     });
   }
 
@@ -42,14 +42,14 @@ export class NotVisibleFor implements OnDestroy {
           this.hasBeenVisible = true;
         }
 
-        if (!entry.isIntersecting && (this.hasBeenVisible || this.immediateCheck())) {
+        if (!entry.isIntersecting && (this.hasBeenVisible || this.notVisibleImmediateCheck())) {
           this.timer = setTimeout(() => {
             this.notVisibleLongEnough.emit();
 
-            if (this.onceNotVisible()) {
+            if (this.notVisibleOnceEmmit()) {
               this.cleanup(true);
             }
-          }, this.notVisibleTimer());
+          }, this.notVisibleDelay());
         } else {
           clearTimeout(this.timer);
         }
