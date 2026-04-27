@@ -1,1 +1,24 @@
-<p>media-carousel-backdrop-item works!</p>
+<div class="media-item w-full flex flex-col gap-2">
+  @let itemData = item();
+
+  <button
+    class="media-item-img__container relative w-full overflow-hidden rounded-xl aspect-video ">
+    <img class="object-cover" [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill>
+  </button>
+
+  <div class="media-item-info flex flex-row gap-2 items-center">
+    <!-- Runtime Container -->
+    <div class="media-item-specific-info__runtime__container flex items-center gap-1">
+      <ng-icon name="lucideClock" class="text-sm" />
+      <span class="media-item-specific-info__runtime text-sm font-thin">
+        {{ convertRuntimeToHoursAndMinutes(itemData.runtime) }}
+      </span>
+    </div>
+    <span>&middot;</span>
+    <!-- Genre Container -->
+    <span class="media-item-specific-info__genre text-sm font-thin">{{ itemData.genre }}</span>
+    <span>&middot;</span>
+    <!-- Rating Container -->
+    <span class="media-item-specific-info__rating text-sm font-thin">{{ itemData.rating.toFixed(1) }}</span>
+  </div>
+</div>
