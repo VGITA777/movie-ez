@@ -23,6 +23,8 @@ export class HomeMe {
         ' limitations on human space travel and conquer the vast distances involved in an interstellar voyage.',
       year: 2024,
       tag: 'Sci-Fi / Adventure',
+      videoSrc:
+        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1',
     },
     {
       id: '123',
@@ -35,6 +37,8 @@ export class HomeMe {
         ' something far more frightening onto shore: hungry sharks.',
       year: 2026,
       tag: 'Adventure / Drama',
+      videoSrc:
+        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1',
     },
   ];
 

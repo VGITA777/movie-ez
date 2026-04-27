@@ -19,9 +19,9 @@ import {
   lucideStar,
 } from '@ng-icons/lucide';
 import { provideIcons } from '@ng-icons/core';
-import Autoplay from 'embla-carousel-autoplay';
 import { EmblaOptionsType } from 'embla-carousel-angular';
 import { ID } from '@shared/shared-types';
+import { HeroSliderItemMe } from '@home/ui/hero-slider/hero-slider-item/hero-slider-item.me';
 
 export interface HomeHeroSliderItem {
   readonly id: ID;
@@ -32,11 +32,12 @@ export interface HomeHeroSliderItem {
   readonly description: string;
   readonly year: number;
   readonly tag: string;
+  readonly videoSrc?: string;
 }
 
 @Component({
   selector: 'me-hero-slider',
-  imports: [HlmCarouselImports, HlmButtonImports, HlmIconImports],
+  imports: [HlmCarouselImports, HlmButtonImports, HlmIconImports, HeroSliderItemMe],
   providers: [
     provideIcons({ lucidePlay, lucidePlus, lucideStar, lucideChevronRight, lucideChevronLeft }),
   ],
@@ -50,9 +51,6 @@ export class HeroSliderMe {
   public readonly handleAddToPlaylist: OutputEmitterRef<HomeHeroSliderItem> = output();
 
   protected readonly carousel: Signal<HlmCarousel> = viewChild.required('carousel');
-  protected readonly plugins = [
-    Autoplay({ delay: 10_000, stopOnInteraction: true, stopOnMouseEnter: true }),
-  ];
   protected readonly options: EmblaOptionsType = {
     loop: true,
   };
@@ -63,13 +61,5 @@ export class HeroSliderMe {
 
   protected onPrevious(): void {
     this.carousel().scrollPrev();
-  }
-
-  protected onPlay(item: HomeHeroSliderItem): void {
-    this.handleAddToPlaylist.emit(item);
-  }
-
-  protected onAddToPlaylist(item: HomeHeroSliderItem): void {
-    this.handleAddToPlaylist.emit(item);
   }
 }
