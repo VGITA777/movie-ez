@@ -24,7 +24,7 @@ export class HomeMe {
       year: 2024,
       tag: 'Sci-Fi / Adventure',
       videoSrc:
-        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1',
+        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
       id: '123',
@@ -38,7 +38,7 @@ export class HomeMe {
       year: 2026,
       tag: 'Adventure / Drama',
       videoSrc:
-        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1',
+        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
     },
   ];
 
