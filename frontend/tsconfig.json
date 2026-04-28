@@ -29,7 +29,8 @@
       "@home/*": ["./src/app/home/*"],
       "@shared/*": ["./src/app/shared/*"],
       "@models/*": ["./src/app/shared/model/*"],
-      "@spartan-ng/helm/card": ["./libs/ui/card/src/index.ts"]
+      "@spartan-ng/helm/card": ["./libs/ui/card/src/index.ts"],
+      "@spartan-ng/helm/sonner": ["./libs/ui/sonner/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
