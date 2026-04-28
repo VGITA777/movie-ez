@@ -1,11 +1,27 @@
-<div class="media-carousel">
-  <hlm-carousel [options]="carouselOptions()">
+<div class="media-carousel relative group/carousel">
+  <hlm-carousel #carousel [options]="carouselOptions()">
     <hlm-carousel-content>
       @for (item of items(); track item) {
         <ng-container
-          [ngTemplateOutlet]="template()"
-          [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
+          [ngTemplateOutletContext]="{$implicit: item}"
+          [ngTemplateOutlet]="template()"></ng-container>
       }
     </hlm-carousel-content>
   </hlm-carousel>
+
+  <button
+    (click)="nextSlide()"
+    class="hidden md:inline prev pointer-events-none opacity-0 absolute left-0 top-0 bottom-0 px-0.5
+         group-hover/carousel:opacity-100 group-hover/carousel:pointer-events-auto
+         transition duration-300 ease-in-out hover:bg-accent/25">
+    <ng-icon class="text-3xl" name="lucideChevronLeft" />
+  </button>
+
+  <button
+    (click)="prevSlide()"
+    class="hidden md:inline next pointer-events-none opacity-0 absolute right-0 top-0 bottom-0 px-0.5
+         group-hover/carousel:opacity-100 group-hover/carousel:pointer-events-auto
+         transition duration-300 ease-in-out hover:bg-accent/25">
+    <ng-icon class="text-3xl" name="lucideChevronRight" />
+  </button>
 </div>
