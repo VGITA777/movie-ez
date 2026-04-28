@@ -1,10 +1,12 @@
 import {
   Component,
+  computed,
   inject,
   input,
   InputSignal,
   output,
   OutputEmitterRef,
+  Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -29,8 +31,11 @@ export class HeroSliderItemMe {
 
   protected readonly sanitizer: DomSanitizer = inject(DomSanitizer);
   protected readonly startVideo: WritableSignal<boolean> = signal(false);
-
-  protected sanitizeUri(videoSrc: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(videoSrc);
-  }
+  protected readonly sanitizedVideoSrc: Signal<SafeResourceUrl | undefined> = computed(() => {
+    let url: string | undefined = this.item().videoSrc;
+    if (url === undefined) {
+      return;
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.item().videoSrc!);
+  });
 }

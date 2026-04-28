@@ -8,7 +8,7 @@
   <!-- If the image has been on the screen for some time and playing video is allowed and video source is present -->
   @if (startVideo() && playVideo() && item().videoSrc) {
     <iframe
-      [src]="this.sanitizeUri(item().videoSrc!)"
+      [src]="sanitizedVideoSrc()"
       allow="autoplay; encrypted-media"
       class="absolute top-1/2 left-1/2 w-dvw h-[56.25dvw] min-w-[177.77dvh] min-h-dvh max-w-none -translate-x-1/2 -translate-y-1/2 scale-105 z-0 pointer-events-none"
       height="100%" width="100%"></iframe>
