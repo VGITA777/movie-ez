@@ -14,20 +14,21 @@ import {
   selector: '[meLongHover]',
 })
 export class LongHover {
-  public readonly hoverDelay: InputSignal<number> = input(1000);
-  public readonly longHover: OutputEmitterRef<void> = output();
+  public readonly longHoverDelay: InputSignal<number> = input(1000);
+  public readonly longHover: OutputEmitterRef<boolean> = output();
 
   private readonly isHovered: WritableSignal<boolean> = signal(false);
 
   constructor() {
     effect((onCleanup) => {
       if (!this.isHovered()) {
+        this.longHover.emit(false);
         return;
       }
 
       let timeout: number = setTimeout(() => {
-        this.longHover.emit();
-      }, this.hoverDelay());
+        this.longHover.emit(true);
+      }, this.longHoverDelay());
 
       onCleanup(() => {
         clearTimeout(timeout);
