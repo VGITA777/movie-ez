@@ -13,13 +13,19 @@
 </section>
 
 <ng-template #mediaCoverItem let-item>
-  <me-media-carousel-cover-item class="ml-4 min-w-[175px] md:min-w-[225px]" [item]="item" />
+  <me-media-carousel-cover-item
+    class="ml-4 min-w-[175px] md:min-w-[225px]" [item]="item"
+    (itemClick)="handleItemClick($event)" />
 </ng-template>
 
 <ng-template #mediaBackdropItem let-item>
-  <me-media-carousel-backdrop-item class="ml-4 min-w-[300px] md:min-w-[375px]" [item]="item" />
+  <me-media-carousel-backdrop-item
+    class="ml-4 min-w-[300px] md:min-w-[375px]" [item]="item"
+    (itemClick)="handleItemClick($event)" />
 </ng-template>
 
 <ng-template #mediaRankingItem let-item>
-  <me-media-carousel-top-item class="ml-12 min-w-[175px] md:min-w-[225px]" [item]="item" />
+  <me-media-carousel-top-item
+    class="ml-12 min-w-[175px] md:min-w-[225px]" [item]="item"
+    (itemClick)="handleItemClick($event)" />
 </ng-template>

@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 import { HeroSliderMe, HomeHeroSliderItem } from '@home/ui/hero-slider/hero-slider.me';
 import { environment } from '../../environments/environment';
-import { MediaCarouselItem, MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
+import {
+  MediaCarouselItem,
+  MediaCarouselMe,
+  MediaCarouselOutput,
+} from '@shared/ui/media-carousel/media-carousel.me';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import {
   MediaCarouselBackdropItem,
@@ -64,6 +68,8 @@ export class HomeMe {
       rating: 9.8,
       genre: 'Sci-Fi',
       year: 2024,
+      videoSrc:
+        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
       id: '1290417',
@@ -72,22 +78,8 @@ export class HomeMe {
       rating: 6.8,
       genre: 'Adventure',
       year: 2026,
-    },
-    {
-      id: '157336',
-      title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
-      rating: 9.8,
-      genre: 'Sci-Fi',
-      year: 2024,
-    },
-    {
-      id: '1290417',
-      title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
-      rating: 6.8,
-      genre: 'Adventure',
-      year: 2026,
+      videoSrc:
+        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
     },
   ];
 
@@ -100,6 +92,8 @@ export class HomeMe {
       genre: 'Sci-Fi',
       year: 2024,
       runtime: 160,
+      videoSrc:
+        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
       id: '1290417',
@@ -109,24 +103,8 @@ export class HomeMe {
       genre: 'Adventure',
       year: 2026,
       runtime: 90,
-    },
-    {
-      id: '157336',
-      title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/rFvnZYcJzLoC2l6cTFLQRUgYSgL.jpg`,
-      rating: 9.8,
-      genre: 'Sci-Fi',
-      year: 2024,
-      runtime: 160,
-    },
-    {
-      id: '1290417',
-      title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/4HIJS1btE2XvKoC0nqOr91uCcHE.jpg`,
-      rating: 6.8,
-      genre: 'Adventure',
-      year: 2026,
-      runtime: 90,
+      videoSrc:
+        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
     },
   ];
 
@@ -139,6 +117,8 @@ export class HomeMe {
       genre: 'Sci-Fi',
       year: 2024,
       ranking: 1,
+      videoSrc:
+        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
       id: '1290417',
@@ -148,24 +128,12 @@ export class HomeMe {
       genre: 'Adventure',
       year: 2026,
       ranking: 2,
-    },
-    {
-      id: '157336',
-      title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
-      rating: 9.8,
-      genre: 'Sci-Fi',
-      year: 2024,
-      ranking: 3,
-    },
-    {
-      id: '1290417',
-      title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
-      rating: 6.8,
-      genre: 'Adventure',
-      year: 2026,
-      ranking: 4,
+      videoSrc:
+        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
     },
   ];
+
+  protected handleItemClick(event: MediaCarouselOutput): void {
+    console.debug('Backdrop item clicked:', event.title);
+  }
 }

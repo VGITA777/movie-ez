@@ -4,7 +4,7 @@
   <button
     (click)="itemClick.emit(itemData)"
     class="media-item-img__container relative w-full overflow-hidden rounded-xl aspect-video ">
-    <img class="object-cover" [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill>
+    <me-interactive-media-card [item]="itemData" class="w-full h-full" />
   </button>
 
   <div class="media-item-info flex flex-row gap-2 items-center">

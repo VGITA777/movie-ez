@@ -12,8 +12,9 @@ import { NgTemplateOutlet } from '@angular/common';
 import { EmblaOptionsType } from 'embla-carousel-angular';
 import { MediaCarouselTopItem } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { MediaCarouselBackdropItem } from '@shared/ui/media-carousel/media-carousel-backdrop-item/media-carousel-backdrop-item.me';
+import { InteractiveMediaCardItem } from '@shared/ui/interactive-media-card/interactive-media-card.me';
 
-export interface MediaCarouselItem {
+export interface MediaCarouselItem extends InteractiveMediaCardItem {
   readonly id: ID;
   readonly title: string;
   readonly imgSrc: string;
