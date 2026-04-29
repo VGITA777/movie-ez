@@ -5,4 +5,9 @@ export const environment = {
   youtube: {
     embedBaseUrl: 'https://www.youtube.com/embed/',
   },
+  api: {
+    baseUrl: '',
+    mediaBaseUrl: '',
+    userBaseUrl: '',
+  },
 };
