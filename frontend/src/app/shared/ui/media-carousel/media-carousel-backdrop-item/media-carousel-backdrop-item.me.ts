@@ -4,6 +4,7 @@ import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
 import { lucideClock } from '@ng-icons/lucide';
 import { InteractiveMediaCardMe } from '@shared/ui/interactive-media-card/interactive-media-card.me';
+import { convertRuntimeToHoursAndMinutes } from '@shared/utils';
 
 export interface MediaCarouselBackdropItem extends MediaCarouselItem {
   readonly runtime: number;
@@ -19,10 +20,5 @@ export interface MediaCarouselBackdropItem extends MediaCarouselItem {
 export class MediaCarouselBackdropItemMe {
   public readonly item: InputSignal<MediaCarouselBackdropItem> = input.required();
   public readonly itemClick: OutputEmitterRef<MediaCarouselBackdropItem> = output();
-
-  protected convertRuntimeToHoursAndMinutes(runtime: number): string {
-    const hours: number = Math.floor(runtime / 60);
-    const minutes: number = runtime % 60;
-    return `${hours}h ${minutes.toFixed(0)}m`;
-  }
+  protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
 }
