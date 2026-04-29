@@ -1,12 +1,14 @@
-import { AfterViewInit, Component, inject, WritableSignal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { AfterViewInit, Component, WritableSignal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { HlmToasterImports } from '@spartan-ng/helm/sonner';
-import { toast } from '@spartan-ng/brain/sonner';
+import { ExternalToast, toast } from '@spartan-ng/brain/sonner';
 import { routerListener, storage } from '@signality/core';
 
+export type ToastType = 'error' | 'message' | 'info';
+
 export interface GenericRouteData {
-  isError: boolean;
   message: string;
+  type: ToastType;
 }
 
 @Component({
@@ -16,12 +18,11 @@ export interface GenericRouteData {
   styleUrl: './app.css',
 })
 export class App implements AfterViewInit {
-  private readonly router: Router = inject(Router);
   private readonly showSwipeToast: WritableSignal<boolean> = storage('showSwipeToast', true);
 
   constructor() {
     routerListener('navigationend', () => {
-      this.handleRedirectMessages(() => {
+      this.handleMessages(() => {
         this.clearHistoryState();
       });
     });
@@ -47,50 +48,46 @@ export class App implements AfterViewInit {
     });
   }
 
-  private handleRedirectMessages(callback: () => void): void {
-    this.handleRedirectErrorMessages();
-    this.handleRedirectGenericMessages();
+  private handleMessages(callback: () => void): void {
+    const { messages = [] as GenericRouteData[] } = history.state || {};
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return;
+    }
+
+    messages.forEach((messageData: GenericRouteData) => {
+      const { message, type } = messageData;
+      this.triggerToast(message, type);
+    });
     callback();
   }
 
-  private handleRedirectGenericMessages(): void {
-    const state = history.state['messages'] as GenericRouteData[];
-    if (!this.checkArrayIsNotEmpty(state)) {
-      return;
+  private triggerToast(
+    message: string,
+    type: ToastType,
+    data: ExternalToast = { position: 'top-right' },
+  ): void {
+    switch (type) {
+      case 'error':
+        toast.error(message, data);
+        break;
+      case 'message':
+        toast.message(message, data);
+        break;
+      default:
+        toast.info(message, data);
+        break;
     }
-
-    const data: GenericRouteData[] = state.filter((data) => !data.isError && data.message);
-    data.forEach((messageData) => {
-      toast(messageData.message, {
-        position: 'top-right',
-      });
-    });
-  }
-
-  private handleRedirectErrorMessages(): void {
-    const state = history.state['errors'] as GenericRouteData[];
-    if (!this.checkArrayIsNotEmpty(state)) {
-      return;
-    }
-
-    const data: GenericRouteData[] = state.filter((data) => data.isError && data.message);
-    data.forEach((errorData) => {
-      console.log('Redirected with error message: ', errorData.message);
-      this.triggerErrorToast(errorData.message);
-    });
-  }
-
-  private triggerErrorToast(message: string): void {
-    toast.error(message, {
-      position: 'top-right',
-    });
   }
 
   private clearHistoryState(): void {
-    history.replaceState({ isError: false, message: '' } as GenericRouteData, '');
-  }
-
-  private checkArrayIsNotEmpty(arr: any): boolean {
-    return Array.isArray(arr) && arr.length > 0;
+    const current = history.state || {};
+    history.replaceState(
+      {
+        ...current,
+        messages: [],
+      },
+      '',
+    );
   }
 }

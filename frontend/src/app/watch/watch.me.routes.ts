@@ -21,7 +21,7 @@ const watchPageMediaTypeGuard: CanActivateFn = (
     console.debug('Query parameter validation failed: ', z.treeifyError(validationResult.error));
     return new RedirectCommand(router.parseUrl('/'), {
       state: {
-        errors: [{ isError: true, message: 'Invalid query parameters' } as GenericRouteData],
+        messages: [{ message: 'Invalid query parameters', type: 'error' } as GenericRouteData],
       },
     });
   }
@@ -31,8 +31,8 @@ const watchPageMediaTypeGuard: CanActivateFn = (
     console.debug('Media type of "person" is currently not supported');
     return new RedirectCommand(router.parseUrl('/'), {
       state: {
-        errors: [
-          { isError: true, message: `Invalid Media Type of '${mediaType}'` } as GenericRouteData,
+        messages: [
+          { message: `Invalid Media Type of '${mediaType}'`, type: 'error' } as GenericRouteData,
         ],
       },
     });
