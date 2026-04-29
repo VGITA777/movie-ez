@@ -18,6 +18,7 @@ import { InteractiveMediaCardItem } from '@shared/ui/interactive-media-card/inte
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
+import { MediaType } from '@shared/models';
 
 export interface MediaCarouselItem extends InteractiveMediaCardItem {
   readonly id: ID;
@@ -26,6 +27,7 @@ export interface MediaCarouselItem extends InteractiveMediaCardItem {
   readonly rating: number;
   readonly genre: string;
   readonly year: number;
+  readonly type: MediaType;
 }
 
 export type MediaCarouselOutput =

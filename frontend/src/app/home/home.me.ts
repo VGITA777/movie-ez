@@ -16,10 +16,10 @@ import {
   MediaCarouselTopItemMe,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
-import { MediaDiscoverService } from '@shared/services/media-discover.service';
 import { first } from 'rxjs';
-import { MediaMovieService } from '@shared/services/media-movie.service';
 import { MediaSearchService } from '@shared/services/media-search-service';
+import { Router } from '@angular/router';
+import { NavigationFacade } from '@shared/navigation-facade.service';
 
 @Component({
   selector: 'me-home',
@@ -65,7 +65,6 @@ export class HomeMe {
         'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
     },
   ];
-
   protected readonly mediaItemsPoster: MediaCarouselItem[] = [
     {
       id: 157336,
@@ -76,6 +75,7 @@ export class HomeMe {
       year: 2024,
       videoSrc:
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
+      type: 'movie',
     },
     {
       id: 1290417,
@@ -86,9 +86,9 @@ export class HomeMe {
       year: 2026,
       videoSrc:
         'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
+      type: 'movie',
     },
   ];
-
   protected readonly mediaItemsBackdrop: MediaCarouselBackdropItem[] = [
     {
       id: 157336,
@@ -100,6 +100,7 @@ export class HomeMe {
       runtime: 160,
       videoSrc:
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
+      type: 'movie',
     },
     {
       id: 1290417,
@@ -111,9 +112,9 @@ export class HomeMe {
       runtime: 90,
       videoSrc:
         'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
+      type: 'movie',
     },
   ];
-
   protected readonly mediaItemsRanking: MediaCarouselTopItem[] = [
     {
       id: 157336,
@@ -125,6 +126,7 @@ export class HomeMe {
       ranking: 1,
       videoSrc:
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
+      type: 'movie',
     },
     {
       id: 1290417,
@@ -136,15 +138,16 @@ export class HomeMe {
       ranking: 2,
       videoSrc:
         'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
+      type: 'movie',
     },
   ];
 
-  private readonly discoverService: MediaDiscoverService = inject(MediaDiscoverService);
-  private readonly movieService: MediaMovieService = inject(MediaMovieService);
+  private readonly router: Router = inject(Router);
+  private readonly navFacade: NavigationFacade = inject(NavigationFacade);
   private readonly searchService: MediaSearchService = inject(MediaSearchService);
 
   protected handleItemClick(event: MediaCarouselOutput): void {
-    console.debug('Backdrop item clicked:', event.title);
+    this.navFacade.navigateToWatchPage({ mediaId: event.id, mediaType: event.type });
   }
 
   protected fetchData(): void {
