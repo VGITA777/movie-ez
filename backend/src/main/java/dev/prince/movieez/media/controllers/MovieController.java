@@ -6,6 +6,7 @@ import dev.prince.movieez.media.models.enums.Language;
 import dev.prince.movieez.media.models.movies.MovieAlternativeTitlesModel;
 import dev.prince.movieez.media.models.movies.MovieDetailsModel;
 import dev.prince.movieez.media.models.movies.MovieKeywordsModel;
+import dev.prince.movieez.media.models.movies.MovieLatestModel;
 import dev.prince.movieez.media.models.movies.MovieRecommendationsModel;
 import dev.prince.movieez.media.models.movies.MovieSimilarModel;
 import dev.prince.movieez.media.models.shared.CreditsModel;
@@ -92,7 +93,7 @@ public class MovieController {
   }
 
   @GetMapping("/latest")
-  public ResponseEntity<?> getLatest() {
+  public ResponseEntity<MovieLatestModel> getLatest() {
     return ResponseEntity.ok(movieRequestsService.getLatest());
   }
 
