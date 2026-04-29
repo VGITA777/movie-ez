@@ -10,7 +10,9 @@ public class MediaTypeToStringSerializer extends ValueSerializer<MediaType> {
 
   @Override
   public void serialize(MediaType value, JsonGenerator gen, SerializationContext ctxt) throws JacksonException {
-    var mediaType = value.toString();
+    var mediaType = value
+        .toString()
+        .toLowerCase();
     gen.writeString(mediaType);
   }
 }
