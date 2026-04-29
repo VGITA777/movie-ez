@@ -15,6 +15,10 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { TvData } from '@shared/tv-data';
 import { MovieData } from '@shared/movie-data';
 import { NavigationFacade } from '@shared/navigation-facade.service';
+import { convertRuntimeToHoursAndMinutes, getYearFromDate } from '@shared/utils';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
+import { provideIcons } from '@ng-icons/core';
+import { lucideStar } from '@ng-icons/lucide';
 
 export type MediaData = MovieData | TvData;
 
@@ -27,9 +31,10 @@ export const watchPageQueryParams = z.object({
 
 @Component({
   selector: 'me-watch',
-  imports: [],
+  imports: [HlmIconImports],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
+  providers: [provideIcons({ lucideStar })],
 })
 export class WatchMe {
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
@@ -100,4 +105,7 @@ export class WatchMe {
   protected handleClick() {
     this.navFacade.navigateToHomePage();
   }
+
+  protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
+  protected readonly getYearFromDate = getYearFromDate;
 }

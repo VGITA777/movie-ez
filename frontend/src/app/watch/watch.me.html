@@ -1,22 +1,69 @@
 <section class="watch flex flex-col gap-4 w-full items-center">
   <div
-    class="video-player-container overflow-hidden relative bg-accent aspect-video w-full max-w-[1000px] rounded-2xl">
+    class="video-player-container overflow-hidden relative bg-accent aspect-video w-full max-w-[1250px] rounded-2xl">
   </div>
 
-  <div class="information-container">
+  <div class="information flex flex-col gap-2">
+    <!-- Title -->
+    @let title = movieDetails()?.title ?? tvDetails()?.name;
+    <h1 class="information__title text-5xl font-black">{{ title }}</h1>
 
+    <!-- Specific Information Container -->
+    <div class="information-specifics flex gap-4 items-center">
+
+      <!-- Release Year -->
+      @let releaseYear = getYearFromDate(movieDetails()?.release_date
+                                           ?? tvDetails()?.first_air_date);
+      <span class="information-specifics__release-date">{{ releaseYear }}</span>
+
+      <!-- Tv Specific Information -->
+      @if (tvDetails()) {
+        <span class="information-specifics__total-seasons">{{ tvDetails()?.number_of_seasons }}
+          Seasons</span>
+      }
+
+      <!-- Movie Specific Information -->
+      @if (movieDetails()) {
+        <span class="information-specifics__duration">{{
+            convertRuntimeToHoursAndMinutes(movieDetails()?.runtime ?? 0)
+          }}</span>
+      }
+
+      <!-- Rating -->
+      @let rating = movieDetails()?.vote_average ?? tvDetails()?.vote_average ?? 0;
+      <div class="information-specifics__rating flex gap-1 items-center">
+        <ng-icon
+          class="text-md text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
+        <span class="text-md text-white">{{ rating?.toFixed(1) }}</span>
+      </div>
+
+      <!-- Genres -->
+      @let genres = movieDetails()?.genres ?? tvDetails()?.genres ?? [];
+      @if (genres.length > 0) {
+        <div class="information-specifics__genres flex gap-0.5 items-center">
+          @for (genre of genres.slice(0, 3); track genre; ) {
+            <span class="information-specifics__genre">{{ genre.name.trim() }}</span>
+            @if ($index < genres.length - 1 && $index < 2) {
+              <span class="information-specifics__genre-separator">&middot;</span>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Description -->
+    @let description = movieDetails()?.overview ?? tvDetails()?.overview;
+    <p class="information__description">{{ description }}</p>
   </div>
 
-  <div class="similar-container">
+  <!-- Episode Lists -->
+  @if (tvDetails()) {
+    <div class="eppisode-list"></div>
+  }
 
-  </div>
+  <!-- Similar Contents -->
+  <div class="similar">
 
-  <div
-    class="video-player-container overflow-hidden relative bg-accent aspect-video w-full max-w-[1000px] rounded-2xl">
-  </div>
-
-  <div
-    class="video-player-container overflow-hidden relative bg-accent aspect-video w-full max-w-[1000px] rounded-2xl">
   </div>
 
   <button (click)="handleClick()">Home</button>
