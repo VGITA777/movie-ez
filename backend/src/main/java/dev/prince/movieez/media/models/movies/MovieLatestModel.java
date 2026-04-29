@@ -1,6 +1,7 @@
 package dev.prince.movieez.media.models.movies;
 
 import dev.prince.movieez.media.models.enums.MediaType;
+import lombok.NoArgsConstructor;
 
 /**
  * Model representing the response from the TMDB "Get Latest Movie" endpoint. This model extends
@@ -8,11 +9,8 @@ import dev.prince.movieez.media.models.enums.MediaType;
  *
  * @see <a href=https://developer.themoviedb.org/reference/movie-latest-id>Movie Latest API Referece</a>
  */
+@NoArgsConstructor
 public class MovieLatestModel extends MovieDetailsModel {
-
-  public MovieLatestModel() {
-    super();
-  }
 
   public MovieLatestModel(
       BelongsToCollection belongs_to_collection,
@@ -23,8 +21,7 @@ public class MovieLatestModel extends MovieDetailsModel {
       long revenue,
       int runtime,
       String title,
-      boolean video,
-      MediaType media_type
+      boolean video
   ) {
     super(
         belongs_to_collection,
@@ -36,7 +33,7 @@ public class MovieLatestModel extends MovieDetailsModel {
         runtime,
         title,
         video,
-        media_type
+        MediaType.MOVIE
     );
   }
 }

@@ -5,8 +5,12 @@ import dev.prince.movieez.media.json.serializers.MediaTypeToStringSerializer;
 import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.media.models.shared.MediaDetailsModel;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 
@@ -18,6 +22,9 @@ import tools.jackson.databind.annotation.JsonSerialize;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TvSeriesDetailsModel extends MediaDetailsModel {
 
   private String first_air_date;
@@ -36,6 +43,7 @@ public class TvSeriesDetailsModel extends MediaDetailsModel {
   private String original_name;
   private List<Season> seasons;
   private String type;
+  @Builder.Default
   @JsonDeserialize(using = StringToMediaTypeDeserializer.class)
   @JsonSerialize(using = MediaTypeToStringSerializer.class)
   private MediaType media_type = MediaType.TV;
@@ -105,5 +113,9 @@ public class TvSeriesDetailsModel extends MediaDetailsModel {
     private String poster_path;
     private int season_number;
     private double vote_average;
+  }
+
+  public MediaType getMedia_type() {
+    return MediaType.TV;
   }
 }
