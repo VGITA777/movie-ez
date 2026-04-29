@@ -1,0 +1,90 @@
+import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
+import { BackendService } from '@shared/services/backend-service';
+import { ID } from '@shared/shared-types';
+import {
+  CountryCode,
+  CreditsModel,
+  LanguageCode,
+  MovieAlternativeTitle,
+  MovieAlternativeTitlesModel,
+  MovieLatestModel,
+  MovieRecommendationsModel,
+  MovieSimilarModel,
+  VideosModel,
+} from '@shared/models';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MovieService extends BackendService {
+  constructor() {
+    super(`${environment.api.mediaBaseUrl}movie/`);
+  }
+
+  public getMovieAlternativeTitles(
+    id: ID,
+    countryCode?: CountryCode,
+  ): Observable<MovieAlternativeTitlesModel> {
+    return this.performRequest<MovieAlternativeTitlesModel, { country?: CountryCode }>(
+      `${id}/alternative-titles`,
+      { country: countryCode },
+    );
+  }
+
+  public getMovieCredits(id: ID, language?: LanguageCode): Observable<CreditsModel> {
+    return this.performRequest<CreditsModel, { language?: LanguageCode }>(`${id}/credits`, {
+      language,
+    });
+  }
+
+  public getMovieDetails(id: ID, language?: LanguageCode): Observable<MovieAlternativeTitle> {
+    return this.performRequest<MovieAlternativeTitle, { language?: LanguageCode }>(
+      `${id}/details`,
+      { language },
+    );
+  }
+
+  public getMovieImages(id: ID, language?: LanguageCode): Observable<MovieAlternativeTitle> {
+    return this.performRequest<MovieAlternativeTitle, { language?: LanguageCode }>(`${id}/images`, {
+      language,
+    });
+  }
+
+  public getMovieKeywords(id: ID): Observable<MovieAlternativeTitle> {
+    return this.performRequest<MovieAlternativeTitle, {}>(`${id}/keywords`, {});
+  }
+
+  public getLatest(): Observable<MovieLatestModel> {
+    return this.performRequest<MovieLatestModel, {}>(`latest`, {});
+  }
+
+  public getMovieRecommendations(
+    id: ID,
+    language?: LanguageCode,
+    page?: number,
+  ): Observable<MovieRecommendationsModel> {
+    return this.performRequest<
+      MovieRecommendationsModel,
+      { language?: LanguageCode; page?: number }
+    >(`${id}/recommendations`, { language, page });
+  }
+
+  public getMovieSimilar(
+    id: ID,
+    language?: LanguageCode,
+    page?: number,
+  ): Observable<MovieSimilarModel> {
+    return this.performRequest<MovieSimilarModel, { language?: LanguageCode; page?: number }>(
+      `${id}/similar`,
+      { language, page },
+    );
+  }
+
+  public getMovieVideos(id: ID, language?: LanguageCode): Observable<VideosModel> {
+    return this.performRequest<VideosModel, { language?: LanguageCode }>(`${id}/videos`, {
+      language,
+    });
+  }
+}
