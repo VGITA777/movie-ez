@@ -8,6 +8,7 @@ import {
   LanguageCode,
   MovieAlternativeTitle,
   MovieAlternativeTitlesModel,
+  MovieDetailsModel,
   MovieLatestModel,
   MovieRecommendationsModel,
   MovieSimilarModel,
@@ -39,11 +40,10 @@ export class MediaMovieService extends AbstractMediaBackendService {
     });
   }
 
-  public getMovieDetails(id: ID, language?: LanguageCode): Observable<MovieAlternativeTitle> {
-    return this.performRequest<MovieAlternativeTitle, { language?: LanguageCode }>(
-      `${id}/details`,
-      { language },
-    );
+  public getMovieDetails(id: ID, language?: LanguageCode): Observable<MovieDetailsModel> {
+    return this.performRequest<MovieDetailsModel, { language?: LanguageCode }>(`${id}/details`, {
+      language,
+    });
   }
 
   public getMovieImages(id: ID, language?: LanguageCode): Observable<MovieAlternativeTitle> {

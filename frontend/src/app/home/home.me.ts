@@ -16,8 +16,10 @@ import {
   MediaCarouselTopItemMe,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
-import { DiscoverService } from '@shared/services/discover-service';
+import { MediaDiscoverService } from '@shared/services/media-discover.service';
 import { first } from 'rxjs';
+import { MediaMovieService } from '@shared/services/media-movie.service';
+import { MediaSearchService } from '@shared/services/media-search-service';
 
 @Component({
   selector: 'me-home',
@@ -35,7 +37,7 @@ import { first } from 'rxjs';
 export class HomeMe {
   protected readonly items: HomeHeroSliderItem[] = [
     {
-      id: '157336',
+      id: 157336,
       imgSrc: `${environment.tmdb.imageBaseUrl}original/2ssWTSVklAEc98frZUQhgtGHx7s.jpg`,
       title: 'Interstellar',
       rating: 9.8,
@@ -49,7 +51,7 @@ export class HomeMe {
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
-      id: '1290417',
+      id: 1290417,
       title: 'Thrash',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/3ooXDVaz4xHKtwe4lkmF1gNopOC.jpg`,
       rating: 6.8,
@@ -66,7 +68,7 @@ export class HomeMe {
 
   protected readonly mediaItemsPoster: MediaCarouselItem[] = [
     {
-      id: '157336',
+      id: 157336,
       title: 'Interstellar',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
       rating: 9.8,
@@ -76,7 +78,7 @@ export class HomeMe {
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
-      id: '1290417',
+      id: 1290417,
       title: 'Thrash',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
       rating: 6.8,
@@ -89,7 +91,7 @@ export class HomeMe {
 
   protected readonly mediaItemsBackdrop: MediaCarouselBackdropItem[] = [
     {
-      id: '157336',
+      id: 157336,
       title: 'Interstellar',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/rFvnZYcJzLoC2l6cTFLQRUgYSgL.jpg`,
       rating: 9.8,
@@ -100,7 +102,7 @@ export class HomeMe {
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
-      id: '1290417',
+      id: 1290417,
       title: 'Thrash',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/4HIJS1btE2XvKoC0nqOr91uCcHE.jpg`,
       rating: 6.8,
@@ -114,7 +116,7 @@ export class HomeMe {
 
   protected readonly mediaItemsRanking: MediaCarouselTopItem[] = [
     {
-      id: '157336',
+      id: 157336,
       title: 'Interstellar',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
       rating: 9.8,
@@ -125,7 +127,7 @@ export class HomeMe {
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
     {
-      id: '1290417',
+      id: 1290417,
       title: 'Thrash',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
       rating: 6.8,
@@ -137,22 +139,25 @@ export class HomeMe {
     },
   ];
 
-  private readonly discoverService: DiscoverService = inject(DiscoverService);
+  private readonly discoverService: MediaDiscoverService = inject(MediaDiscoverService);
+  private readonly movieService: MediaMovieService = inject(MediaMovieService);
+  private readonly searchService: MediaSearchService = inject(MediaSearchService);
 
   protected handleItemClick(event: MediaCarouselOutput): void {
     console.debug('Backdrop item clicked:', event.title);
   }
 
   protected fetchData(): void {
-    this.discoverService
-      .discoverTvShows({
+    this.searchService
+      .searchMovie({
         includeAdult: true,
-        language: 'en',
+        language: 'ja',
         page: 1,
+        query: 'Thrash',
       })
       .pipe(first())
       .subscribe((data) => {
-        console.debug('Discover tv response:', data);
+        console.debug('Response:', data);
       });
   }
 }
