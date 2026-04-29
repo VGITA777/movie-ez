@@ -8,6 +8,7 @@ import dev.prince.movieez.users.UserRole;
 import java.util.Collection;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -20,10 +21,16 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigs {
+
+  @Value("${app.allowed-origins}")
+  private List<String> allowedOrigins;
 
   @Bean
   public SecurityFilterChain commonConfigs(HttpSecurity httpSecurity, RateLimiterServiceImpl rateLimiterService) {
@@ -63,6 +70,21 @@ public class SecurityConfigs {
         })
         .addFilterAfter(new AuthentikUserSyncFilter(userRepository), AuthorizationFilter.class)
         .build();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    var allEndpointsConfig = new CorsConfiguration();
+    allEndpointsConfig.setAllowedHeaders(List.of("GET", "POST", "DELETE"));
+    allEndpointsConfig.setAllowedOrigins(allowedOrigins);
+
+    var userEndpointConfig = new CorsConfiguration();
+    userEndpointConfig.setAllowCredentials(true);
+
+    var source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", allEndpointsConfig);
+    source.registerCorsConfiguration("/user/**", userEndpointConfig);
+    return source;
   }
 
   @Bean
