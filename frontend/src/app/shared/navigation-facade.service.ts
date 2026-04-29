@@ -9,14 +9,14 @@ import { GenericRouteData } from '../app';
 export class NavigationFacade {
   private readonly router: Router = inject(Router);
 
-  public navigateToHomePage(input: {
-    messages?: { messages?: GenericRouteData[] };
+  public navigateToHomePage(input?: {
+    messages?: GenericRouteData[];
     onNavigate?: () => void;
   }): void {
     this.router
       .navigate(['/'], {
         state: {
-          messages: input.messages?.messages ?? [],
+          messages: input?.messages ?? [],
         },
       })
       .then(() => input?.onNavigate?.());
@@ -25,6 +25,7 @@ export class NavigationFacade {
   public navigateToWatchPage(input: {
     mediaType: MediaType;
     mediaId: number;
+    messages?: GenericRouteData[];
     season?: number;
     episode?: number;
     onNavigate?: () => void;
@@ -35,6 +36,13 @@ export class NavigationFacade {
       season: input.season,
       episode: input.episode,
     };
-    this.router.navigate(['/watch'], { queryParams }).then(() => input?.onNavigate?.());
+    this.router
+      .navigate(['/watch'], {
+        queryParams: queryParams,
+        state: {
+          messages: input?.messages ?? [],
+        },
+      })
+      .then(() => input?.onNavigate?.());
   }
 }

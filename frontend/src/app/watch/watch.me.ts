@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, resource, ResourceRef, Signal } from '@angular/core';
+import { Component, computed, effect, inject, ResourceRef, Signal } from '@angular/core';
 import { z } from 'zod';
 import {
   MEDIA_TYPES,
@@ -14,6 +14,7 @@ import { Observable, of } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TvData } from '@shared/tv-data';
 import { MovieData } from '@shared/movie-data';
+import { NavigationFacade } from '@shared/navigation-facade.service';
 
 export type MediaData = MovieData | TvData;
 
@@ -80,6 +81,8 @@ export class WatchMe {
     return this.mediaDetails.value() as TvSeriesDetailsModel;
   });
 
+  private readonly navFacade = inject(NavigationFacade);
+
   constructor() {
     effect(() => {
       console.debug(`Movie Details`, this.movieDetails());
@@ -88,5 +91,13 @@ export class WatchMe {
     effect(() => {
       console.debug(`Tv Details`, this.tvDetails());
     });
+
+    effect(() => {
+      console.debug(`Query Params`, this.queryParams.value());
+    });
+  }
+
+  protected handleClick() {
+    this.navFacade.navigateToHomePage();
   }
 }

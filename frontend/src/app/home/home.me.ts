@@ -15,10 +15,6 @@ import {
   MediaCarouselTopItem,
   MediaCarouselTopItemMe,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
-import { HlmButtonImports } from '@spartan-ng/helm/button';
-import { first } from 'rxjs';
-import { MediaSearchService } from '@shared/services/media-search-service';
-import { Router } from '@angular/router';
 import { NavigationFacade } from '@shared/navigation-facade.service';
 
 @Component({
@@ -29,7 +25,6 @@ import { NavigationFacade } from '@shared/navigation-facade.service';
     MediaCarouselCoverItemMe,
     MediaCarouselBackdropItemMe,
     MediaCarouselTopItemMe,
-    HlmButtonImports,
   ],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',
@@ -142,25 +137,12 @@ export class HomeMe {
     },
   ];
 
-  private readonly router: Router = inject(Router);
   private readonly navFacade: NavigationFacade = inject(NavigationFacade);
-  private readonly searchService: MediaSearchService = inject(MediaSearchService);
 
   protected handleItemClick(event: MediaCarouselOutput): void {
-    this.navFacade.navigateToWatchPage({ mediaId: event.id, mediaType: event.type });
-  }
-
-  protected fetchData(): void {
-    this.searchService
-      .searchMovie({
-        includeAdult: true,
-        language: 'ja',
-        page: 1,
-        query: 'Thrash',
-      })
-      .pipe(first())
-      .subscribe((data) => {
-        console.debug('Response:', data);
-      });
+    this.navFacade.navigateToWatchPage({
+      mediaId: event.id,
+      mediaType: event.type,
+    });
   }
 }
