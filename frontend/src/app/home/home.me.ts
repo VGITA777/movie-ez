@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeroSliderMe, HomeHeroSliderItem } from '@home/ui/hero-slider/hero-slider.me';
 import { environment } from '../../environments/environment';
 import {
@@ -15,6 +15,9 @@ import {
   MediaCarouselTopItem,
   MediaCarouselTopItemMe,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { DiscoverService } from '@shared/services/discover-service';
+import { first } from 'rxjs';
 
 @Component({
   selector: 'me-home',
@@ -24,6 +27,7 @@ import {
     MediaCarouselCoverItemMe,
     MediaCarouselBackdropItemMe,
     MediaCarouselTopItemMe,
+    HlmButtonImports,
   ],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',
@@ -133,7 +137,22 @@ export class HomeMe {
     },
   ];
 
+  private readonly discoverService: DiscoverService = inject(DiscoverService);
+
   protected handleItemClick(event: MediaCarouselOutput): void {
     console.debug('Backdrop item clicked:', event.title);
+  }
+
+  protected fetchData(): void {
+    this.discoverService
+      .discoverTvShows({
+        includeAdult: true,
+        language: 'en',
+        page: 1,
+      })
+      .pipe(first())
+      .subscribe((data) => {
+        console.debug('Discover tv response:', data);
+      });
   }
 }

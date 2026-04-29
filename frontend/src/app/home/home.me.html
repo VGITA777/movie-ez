@@ -10,6 +10,8 @@
 
   <me-media-carousel [items]="mediaItemsRanking" [template]="mediaRankingItem" />
 
+  <button hlmBtn (click)="fetchData()">Fetch</button>
+
 </section>
 
 <ng-template #mediaCoverItem let-item>
