@@ -8,12 +8,12 @@ import {
   Page,
 } from '@shared/models';
 import { Observable } from 'rxjs';
-import { BackendService } from '@shared/services/backend-service';
+import { MediaBackendService } from './media-backend-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DiscoverService extends BackendService {
+export class MediaDiscoverService extends MediaBackendService {
   constructor() {
     super(`${environment.api.mediaBaseUrl}discover`);
   }

@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-export abstract class BackendService {
+export abstract class AbstractMediaBackendService {
   protected readonly client: HttpClient = inject(HttpClient);
   protected readonly baseUrl: string;
 
@@ -14,7 +14,7 @@ export abstract class BackendService {
     endpoint: string,
     input: I,
   ): Observable<T> {
-    const convertedInput: Record<string, any> = BackendService.buildHttpParams(input);
+    const convertedInput: Record<string, any> = AbstractMediaBackendService.buildHttpParams(input);
     const httpParam: HttpParams = new HttpParams({ fromObject: convertedInput });
     return this.client.get<T>(`${this.baseUrl}${endpoint}`, {
       params: httpParam,
