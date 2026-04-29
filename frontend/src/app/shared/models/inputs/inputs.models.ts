@@ -8,9 +8,9 @@ export interface SearchMultiInput {
 }
 
 export interface SearchMovieInput extends SearchMultiInput {
-  primaryReleaseYear: number;
-  region: string;
-  year: number;
+  primaryReleaseYear?: number;
+  region?: string;
+  year?: number;
 }
 
 export interface SearchTvInput extends SearchMultiInput {

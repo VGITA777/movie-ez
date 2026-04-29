@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { MediaBackendService } from './media-backend-service';
+import { AbstractMediaBackendService } from './abstract-media-backend-service';
 import { ID } from '@shared/shared-types';
 import {
   CountryCode,
@@ -18,7 +18,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class MediaMovieService extends MediaBackendService {
+export class MediaMovieService extends AbstractMediaBackendService {
   constructor() {
     super(`${environment.api.mediaBaseUrl}movie/`);
   }
