@@ -7,6 +7,7 @@ import dev.prince.movieez.security.repositories.UserRepository;
 import dev.prince.movieez.users.UserRole;
 import java.util.Collection;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigs {
@@ -32,10 +34,21 @@ public class SecurityConfigs {
   @Value("${app.allowed-origins}")
   private List<String> allowedOrigins;
 
+  @Value("${app.allowed-origins-pattern}")
+  private List<String> allowedOriginsPattern;
+
   @Bean
   public SecurityFilterChain commonConfigs(HttpSecurity httpSecurity, RateLimiterServiceImpl rateLimiterService) {
     return httpSecurity
         .securityMatcher("/**")
+        .cors(cors -> {
+          cors.configurationSource(corsConfigurationSource());
+        })
+        .authorizeHttpRequests(auth -> {
+          auth
+              .anyRequest()
+              .authenticated();
+        })
         .addFilterBefore(new RateLimiterFilterImpl(rateLimiterService), AuthorizationFilter.class)
         .build();
   }
@@ -74,16 +87,28 @@ public class SecurityConfigs {
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
-    var allEndpointsConfig = new CorsConfiguration();
-    allEndpointsConfig.setAllowedHeaders(List.of("GET", "POST", "DELETE"));
-    allEndpointsConfig.setAllowedOrigins(allowedOrigins);
+    log.info("Configuring CORS with allowed origins: {}", String.join(", ", allowedOrigins));
+    log.info("Configuring CORS with allowed origin patterns: {}", String.join(", ", allowedOriginsPattern));
 
-    var userEndpointConfig = new CorsConfiguration();
-    userEndpointConfig.setAllowCredentials(true);
+    var defaultOption = new CorsConfiguration();
+    defaultOption.setAllowedOrigins(allowedOrigins);
+    defaultOption.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
+    defaultOption.setAllowedHeaders(List.of("*"));
+    defaultOption.setAllowedOriginPatterns(allowedOriginsPattern);
+    defaultOption.setAllowCredentials(false);
+
+    var userOption = new CorsConfiguration();
+    userOption.setAllowedOrigins(allowedOrigins);
+    defaultOption.setAllowedOriginPatterns(allowedOriginsPattern);
+    userOption.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
+    userOption.setAllowedHeaders(List.of("*"));
+    userOption.setAllowCredentials(true);
 
     var source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", allEndpointsConfig);
-    source.registerCorsConfiguration("/user/**", userEndpointConfig);
+    source.registerCorsConfiguration("/users/**", userOption);
+    source.registerCorsConfiguration("/media/**", defaultOption);
+    source.registerCorsConfiguration("/**", defaultOption);
+
     return source;
   }
 
