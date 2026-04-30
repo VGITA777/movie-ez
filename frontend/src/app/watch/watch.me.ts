@@ -7,7 +7,7 @@ import {
   TvSeriesDetailsModel,
   VideosModel,
 } from '@shared/models';
-import { queryParams } from '@signality/core';
+import { breakpoints, queryParams } from '@signality/core';
 import { MediaMovieService } from '@shared/services/media-movie.service';
 import { MediaTvSeries } from '@shared/services/media-tv-series';
 import { Observable, of } from 'rxjs';
@@ -18,7 +18,9 @@ import { NavigationFacade } from '@shared/navigation-facade.service';
 import { convertRuntimeToHoursAndMinutes, getYearFromDate } from '@shared/utils';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucideStar } from '@ng-icons/lucide';
+import { lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
 
 export type MediaData = MovieData | TvData;
 
@@ -31,10 +33,10 @@ export const watchPageQueryParams = z.object({
 
 @Component({
   selector: 'me-watch',
-  imports: [HlmIconImports],
+  imports: [HlmIconImports, HlmButtonImports, HlmTooltipImports],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
-  providers: [provideIcons({ lucideStar })],
+  providers: [provideIcons({ lucideStar, lucidePlus, lucideShare })],
 })
 export class WatchMe {
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
@@ -62,6 +64,13 @@ export class WatchMe {
       },
     });
 
+  readonly bp = breakpoints({
+    sm: '(min-width: 640px)',
+    md: '(min-width: 768px)',
+    lg: '(min-width: 1024px)',
+    xl: '(min-width: 1280px)',
+    '2xl': '(min-width: 1536px)',
+  });
   protected readonly mediaVideos: ResourceRef<VideosModel | undefined> = rxResource({
     params: (): MediaData | undefined => this.mediaObject(),
     stream: (data): Observable<VideosModel | undefined> => {
