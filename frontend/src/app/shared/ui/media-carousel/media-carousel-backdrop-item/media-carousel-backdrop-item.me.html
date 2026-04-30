@@ -12,7 +12,11 @@
     <div class="media-item-specific-info__runtime__container flex items-center gap-1">
       <ng-icon name="lucideClock" class="text-sm" />
       <span class="media-item-specific-info__runtime text-sm font-thin">
-        {{ convertRuntimeToHoursAndMinutes(itemData.runtime) }}
+        @if (itemData.type === 'movie') {
+          {{ convertRuntimeToHoursAndMinutes(itemData.runtime) }}
+        } @else {
+          {{ itemData.runtime }} Seasons
+        }
       </span>
     </div>
     <span>&middot;</span>
