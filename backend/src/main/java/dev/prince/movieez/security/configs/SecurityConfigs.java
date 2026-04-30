@@ -46,6 +46,12 @@ public class SecurityConfigs {
         })
         .authorizeHttpRequests(auth -> {
           auth
+              .requestMatchers("/media/**")
+              .permitAll();
+          auth
+              .requestMatchers("/users/**")
+              .authenticated();
+          auth
               .anyRequest()
               .authenticated();
         })
@@ -58,11 +64,6 @@ public class SecurityConfigs {
   public SecurityFilterChain mediaConfigs(HttpSecurity httpSecurity) {
     return httpSecurity
         .securityMatcher("/media/**")
-        .authorizeHttpRequests(auth -> {
-          auth
-              .anyRequest()
-              .permitAll();
-        })
         .build();
   }
 
@@ -75,11 +76,6 @@ public class SecurityConfigs {
           oauth2.jwt(jwtConfigurer -> {
             jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter());
           });
-        })
-        .authorizeHttpRequests(auth -> {
-          auth
-              .anyRequest()
-              .authenticated();
         })
         .addFilterAfter(new AuthentikUserSyncFilter(userRepository), AuthorizationFilter.class)
         .build();
