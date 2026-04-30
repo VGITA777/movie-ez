@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, ResourceRef, Signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  EffectRef,
+  inject,
+  OnDestroy,
+  ResourceRef,
+  Signal,
+} from '@angular/core';
 import { z } from 'zod';
 import {
   MEDIA_TYPES,
@@ -21,6 +30,8 @@ import { provideIcons } from '@ng-icons/core';
 import { lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
+import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
+import { NgTemplateOutlet } from '@angular/common';
 
 export type MediaData = MovieData | TvData;
 
@@ -33,12 +44,19 @@ export const watchPageQueryParams = z.object({
 
 @Component({
   selector: 'me-watch',
-  imports: [HlmIconImports, HlmButtonImports, HlmTooltipImports],
+  imports: [
+    HlmIconImports,
+    HlmButtonImports,
+    HlmTooltipImports,
+    HlmSkeletonImports,
+    NgTemplateOutlet,
+  ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
   providers: [provideIcons({ lucideStar, lucidePlus, lucideShare })],
 })
-export class WatchMe {
+export class WatchMe implements OnDestroy {
+  private readonly navigator: NavigationFacade = inject(NavigationFacade);
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
   private readonly tvSeries: MediaTvSeries = inject(MediaTvSeries);
   private readonly queryParams = queryParams({ schema: watchPageQueryParams });
@@ -64,7 +82,15 @@ export class WatchMe {
       },
     });
 
-  readonly bp = breakpoints({
+  protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
+  protected readonly getYearFromDate = getYearFromDate;
+  protected readonly Array = Array;
+  protected readonly isLoading: Signal<boolean> = this.mediaDetails.isLoading;
+  protected readonly isError: Signal<boolean> = computed(
+    () => this.mediaDetails.error() !== undefined,
+  );
+  protected readonly error: Signal<Error | undefined> = computed(() => this.mediaDetails.error());
+  protected readonly bp = breakpoints({
     sm: '(min-width: 640px)',
     md: '(min-width: 768px)',
     lg: '(min-width: 1024px)',
@@ -81,6 +107,10 @@ export class WatchMe {
     },
   });
   protected readonly movieDetails: Signal<MovieDetailsModel | undefined> = computed(() => {
+    if (this.mediaDetails.error() || this.mediaDetails.isLoading()) {
+      return undefined;
+    }
+
     const mediaType: MediaType | undefined = this.mediaDetails.value()?.media_type;
     if (!mediaType || mediaType === 'person' || mediaType === 'tv') {
       return undefined;
@@ -88,6 +118,10 @@ export class WatchMe {
     return this.mediaDetails.value() as MovieDetailsModel;
   });
   protected readonly tvDetails: Signal<TvSeriesDetailsModel | undefined> = computed(() => {
+    if (this.mediaDetails.error() || this.mediaDetails.isLoading()) {
+      return undefined;
+    }
+
     const mediaType: MediaType | undefined = this.mediaDetails.value()?.media_type;
     if (!mediaType || mediaType === 'person' || mediaType === 'movie') {
       return undefined;
@@ -96,25 +130,28 @@ export class WatchMe {
   });
 
   private readonly navFacade = inject(NavigationFacade);
+  private readonly errorWatcher: EffectRef;
 
   constructor() {
-    effect(() => {
-      console.debug(`Movie Details`, this.movieDetails());
+    this.errorWatcher = effect(() => {
+      if (this.mediaDetails.status() === 'error') {
+        this.navigator.navigateToHomePage({
+          messages: [
+            {
+              message: 'An error occurred while fetching media details. Please try again later.',
+              type: 'error',
+            },
+          ],
+        });
+      }
     });
+  }
 
-    effect(() => {
-      console.debug(`Tv Details`, this.tvDetails());
-    });
-
-    effect(() => {
-      console.debug(`Query Params`, this.queryParams.value());
-    });
+  ngOnDestroy() {
+    this.errorWatcher.destroy();
   }
 
   protected handleClick() {
     this.navFacade.navigateToHomePage();
   }
-
-  protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
-  protected readonly getYearFromDate = getYearFromDate;
 }

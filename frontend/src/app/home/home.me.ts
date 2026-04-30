@@ -105,7 +105,7 @@ export class HomeMe {
       year: 2024,
       videoSrc:
         'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
-      type: 'movie',
+      type: 'tv',
     },
   ];
   protected readonly mediaItemsBackdrop: MediaCarouselBackdropItem[] = [
