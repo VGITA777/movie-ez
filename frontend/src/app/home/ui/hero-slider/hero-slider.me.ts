@@ -31,7 +31,7 @@ export interface HomeHeroSliderItem {
   readonly type: MediaType;
   readonly description: string;
   readonly year: number;
-  readonly tag: string;
+  readonly genres: string[];
   readonly videoSrc?: string;
 }
 

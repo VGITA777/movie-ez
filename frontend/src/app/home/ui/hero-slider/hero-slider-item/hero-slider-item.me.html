@@ -5,6 +5,8 @@
   [style.background-image]="'url(' + item().imgSrc + ')'"
   class="carousel-item__container relative w-full h-full bg-cover bg-center">
 
+  @let itemData = item();
+
   <!-- If the image has been on the screen for some time and playing video is allowed and video source is present -->
   @if (startVideo() && playVideo() && item().videoSrc) {
     <iframe
@@ -33,10 +35,22 @@
         <span class="text-md text-white">{{ item().rating.toFixed(1) }}</span>
       </div>
       <span class="rating__year text-md text-white">{{ item().year }}</span>
-      <span
-        class="rating__tag inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-sm font-medium tracking-wide text-white backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.25)]">
-                  <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>{{ item().tag.trim() }}
-                </span>
+
+      <!-- Genres Container -->
+      @let genresToUse = itemData.genres.slice(0, 2);
+      <div
+        class="rating__tag inline-flex items-center gap-2 rounded-full border
+        border-white/25 bg-white/10 px-3 py-1 text-sm font-medium tracking-wide
+        text-white backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.25)]"
+      >
+        <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>
+        @for (genre of genresToUse; track `${genre}-${$index}-${item().id}`) {
+          <span>{{ genre }}</span>
+          @if ($index < genresToUse.length - 1) {
+            <span class="opacity-50">|</span>
+          }
+        }
+      </div>
     </div>
 
     <!-- Play Now & add to Playlist Container -->

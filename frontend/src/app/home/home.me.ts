@@ -41,7 +41,7 @@ export class HomeMe {
         'The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the' +
         ' limitations on human space travel and conquer the vast distances involved in an interstellar voyage.',
       year: 2024,
-      tag: 'Sci-Fi / Adventure',
+      genres: ['Sci-Fi', 'Adventure'],
       videoSrc:
         'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
     },
@@ -55,9 +55,22 @@ export class HomeMe {
         'When a Category 5 hurricane decimates a coastal town, the storm surge brings devastation, chaos, and' +
         ' something far more frightening onto shore: hungry sharks.',
       year: 2026,
-      tag: 'Adventure / Drama',
+      genres: ['Adventure', 'Drama'],
       videoSrc:
         'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
+    },
+    {
+      id: 76479,
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/bq28ajZaoMyzEIm6REelqyqtEDZ.jpg`,
+      title: 'The Boys',
+      rating: 8.4,
+      type: 'tv',
+      description:
+        'A group of vigilantes known informally as “The Boys” set out to take down corrupt superheroes with no more than blue-collar grit and a willingness to fight dirty.',
+      year: 2024,
+      videoSrc:
+        'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
+      genres: ['Action', 'Crime'],
     },
   ];
   protected readonly mediaItemsPoster: MediaCarouselItem[] = [
@@ -81,6 +94,17 @@ export class HomeMe {
       year: 2026,
       videoSrc:
         'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
+      type: 'movie',
+    },
+    {
+      id: 76479,
+      title: 'The Boys',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/fRNBdaCZMM3DPGTtqdg6Zf1XwX5.jpg`,
+      rating: 6.8,
+      genre: 'Action / Crime',
+      year: 2024,
+      videoSrc:
+        'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
       type: 'movie',
     },
   ];
@@ -108,6 +132,18 @@ export class HomeMe {
       videoSrc:
         'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
       type: 'movie',
+    },
+    {
+      id: 76479,
+      title: 'The Boys',
+      imgSrc: `${environment.tmdb.imageBaseUrl}original/6ZZKGi2UyYFtUIkyWAnoMZhcjpz.jpg`,
+      rating: 6.8,
+      genre: 'Action',
+      year: 2024,
+      videoSrc:
+        'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
+      type: 'tv',
+      runtime: 4,
     },
   ];
   protected readonly mediaItemsRanking: MediaCarouselTopItem[] = [
