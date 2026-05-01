@@ -36,29 +36,50 @@
   </div>
 
   <!-- Episodes Container -->
-  <ng-scrollbar hlm class="h-[50vh] max-h[500px] rounded-xl" appearance="compact">
-    <div class="episode-picker__list flex flex-col gap-4">
-      @for (ep of episodes(); track ep.id; let isLast = $last) {
-        @let cardData = {
-          episodeNumber: ep.episode_number,
-          imgSrc       : `${environment.tmdb.imageBaseUrl}original${ep.still_path}`,
-          name         : ep.name,
-          overview     : ep.overview,
-        };
-        @if (isLast) {
-          <me-episode-card [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
-        } @else {
-          @defer (on viewport) {
-            <me-episode-card [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
-          } @placeholder (minimum 500ms) {
-            <div>
-              <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
-            </div>
-          }
+  @if (!bp.md()) {
+    <ng-scrollbar hlm class="h-[50vh] max-h[500px] rounded-xl" appearance="compact">
+      <div class="episode-picker__list flex flex-col gap-4">
+        @for (ep of episodes(); track ep.id; let isLast = $last) {
+          <ng-container
+            *ngTemplateOutlet="episodeCard; context: { $implicit: ep, isLast: isLast }"></ng-container>
         }
-      }
-    </div>
-  </ng-scrollbar>
+      </div>
+    </ng-scrollbar>
+  } @else {
+    <!-- TODO: Use Carousel Here -->
+    <hlm-carousel class="episode-picker__carousel">
+      <hlm-carousel-content>
+        @for (ep of episodes(); track ep.id; let isLast = $last) {
+          <hlm-carousel-item class="h-full min-w-[450px] max-w-[450px]">
+            <ng-container
+              *ngTemplateOutlet="episodeCard; context: { $implicit: ep, isLast: isLast }"></ng-container>
+          </hlm-carousel-item>
+        }
+      </hlm-carousel-content>
+    </hlm-carousel>
+  }
+</ng-template>
+
+<!-- Episode Cards -->
+<ng-template #episodeCard let-ep let-isLast>
+  @let cardData = {
+    episodeNumber: ep.episode_number,
+    imgSrc       : `${environment.tmdb.imageBaseUrl}original${ep.still_path}`,
+    name         : ep.name,
+    overview     : ep.overview,
+  };
+  @if (isLast) {
+    <me-episode-card class="w-full h-full" [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
+  } @else {
+    @defer (on viewport) {
+      <me-episode-card
+        class="w-full h-full" [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
+    } @placeholder (minimum 500ms) {
+      <div class="episode-picker__card">
+        <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
+      </div>
+    }
+  }
 </ng-template>
 
 <!-- Page Skeleton -->

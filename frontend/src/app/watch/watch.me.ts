@@ -36,6 +36,7 @@ import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
 import { EpisodePickerMe } from '@watch/features/episode-picker/episode-picker.me';
+import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
 
 export type MediaData = MovieData | TvData;
 
@@ -106,13 +107,7 @@ export class WatchMe implements OnDestroy {
     () => this.mediaDetails.error() !== undefined,
   );
   protected readonly error: Signal<Error | undefined> = computed(() => this.mediaDetails.error());
-  protected readonly bp = breakpoints({
-    sm: '(min-width: 640px)',
-    md: '(min-width: 768px)',
-    lg: '(min-width: 1024px)',
-    xl: '(min-width: 1280px)',
-    '2xl': '(min-width: 1536px)',
-  });
+  protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly mediaVideos: ResourceRef<VideosModel | undefined> = rxResource({
     params: (): MediaData | undefined => this.mediaObject(),
     stream: (data): Observable<VideosModel | undefined> => {

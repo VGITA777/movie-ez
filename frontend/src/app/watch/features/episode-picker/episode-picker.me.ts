@@ -22,12 +22,14 @@ import { environment } from '@environments/environment';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { watchPageQueryParams } from '@watch/watch.me';
-import { queryParams } from '@signality/core';
+import { breakpoints, queryParams } from '@signality/core';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { FormsModule } from '@angular/forms';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
+import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
+import { HlmCarouselImports } from '@spartan-ng/helm/carousel';
 
 @Component({
   selector: 'me-episode-picker',
@@ -40,6 +42,7 @@ import { NgTemplateOutlet } from '@angular/common';
     HlmSelectImports,
     HlmSkeletonImports,
     NgTemplateOutlet,
+    HlmCarouselImports,
   ],
   templateUrl: './episode-picker.me.html',
   styleUrl: './episode-picker.me.css',
@@ -73,6 +76,7 @@ export class EpisodePickerMe implements OnDestroy {
     );
   });
   protected readonly isLoading: Signal<boolean> = this.seasonDetails.isLoading;
+  protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
 
   public readonly item: InputSignal<TvSeriesDetailsModel & { id: number }> = input.required();
   public readonly onEpisodeClicked: OutputEmitterRef<TvSeasonDetailsEpisode> = output();
