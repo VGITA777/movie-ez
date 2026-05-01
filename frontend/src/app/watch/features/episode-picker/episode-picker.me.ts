@@ -27,9 +27,10 @@ import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { FormsModule } from '@angular/forms';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
-import { NgTemplateOutlet } from '@angular/common';
+import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
 import { HlmCarouselImports } from '@spartan-ng/helm/carousel';
+import { HlmCard } from '@spartan-ng/helm/card';
 
 @Component({
   selector: 'me-episode-picker',
@@ -43,6 +44,7 @@ import { HlmCarouselImports } from '@spartan-ng/helm/carousel';
     HlmSkeletonImports,
     NgTemplateOutlet,
     HlmCarouselImports,
+    HlmCard,
   ],
   templateUrl: './episode-picker.me.html',
   styleUrl: './episode-picker.me.css',

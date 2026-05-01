@@ -21,10 +21,4 @@ export class EpisodeCardMe {
   public readonly item: InputSignal<EpisodeCardMeInput> = input.required();
 
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
-
-  constructor() {
-    effect(() => {
-      console.debug(`Breakpoints Is Sm:`, this.bp.sm());
-    });
-  }
 }

@@ -1,13 +1,13 @@
 <div class="episode-picker flex flex-col gap-4">
   @if (isLoading()) {
-    <ng-container *ngTemplateOutlet="pickerSkeleton"></ng-container>
+    <ng-container *ngTemplateOutlet="mainSkeleton"></ng-container>
   } @else {
-    <ng-container *ngTemplateOutlet="picker"></ng-container>
+    <ng-container *ngTemplateOutlet="main"></ng-container>
   }
 </div>
 
 <!-- Page Contents -->
-<ng-template #picker>
+<ng-template #main>
   <!-- Header Of the Picker -->
   <div class="episode-picker__header flex flex-row justify-between">
     <h3 class="text-2xl font-bold">Episodes</h3>
@@ -16,7 +16,7 @@
     @let labelConverter = (s) => s ? 'Season ' + s : '';
     <hlm-select
       [value]="selectedSeason()" (valueChange)="handleSeasonChange($event)"
-      [itemToString]="labelConverter" class="w-full max-w-[125px]">
+      [itemToString]="labelConverter" class="w-[20%] min-w-[125px] max-w-[200px]">
       <hlm-select-trigger>
         <hlm-select-value placeholder="Select Season" />
       </hlm-select-trigger>
@@ -46,18 +46,26 @@
       </div>
     </ng-scrollbar>
   } @else {
-    <!-- TODO: Use Carousel Here -->
-    <hlm-carousel class="episode-picker__carousel">
-      <hlm-carousel-content>
-        @for (ep of episodes(); track ep.id; let isLast = $last) {
-          <hlm-carousel-item class="h-full min-w-[450px] max-w-[450px]">
-            <ng-container
-              *ngTemplateOutlet="episodeCard; context: { $implicit: ep, isLast: isLast }"></ng-container>
-          </hlm-carousel-item>
-        }
-      </hlm-carousel-content>
-    </hlm-carousel>
+    <ng-container
+      *ngTemplateOutlet="carousel; context: { card: episodeCard, data: episodes() }"></ng-container>
   }
+</ng-template>
+
+<!-- Carousel -->
+<ng-template #carousel let-card="card" let-data="data">
+  <hlm-carousel class="episode-picker__carousel" [options]="{dragFree: true}">
+    <hlm-carousel-content>
+      @for (ep of data; track ep.id; let isLast = $last) {
+        <hlm-carousel-item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4 self-stretch">
+          <ng-container
+            *ngTemplateOutlet="card; context: { $implicit: ep, isLast: isLast }"></ng-container>
+        </hlm-carousel-item>
+      }
+    </hlm-carousel-content>
+
+    <button hlm-carousel-next></button>
+    <button hlm-carousel-previous></button>
+  </hlm-carousel>
 </ng-template>
 
 <!-- Episode Cards -->
@@ -83,7 +91,7 @@
 </ng-template>
 
 <!-- Page Skeleton -->
-<ng-template #pickerSkeleton>
+<ng-template #mainSkeleton>
   <!-- Header Of the Picker -->
   <div class="episode-picker__header flex flex-row justify-between">
     <hlm-skeleton class="w-40 h-10" />
@@ -93,16 +101,22 @@
   </div>
 
   <!-- Episodes Container -->
-  <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
-    <div class="episode-picker__list flex flex-col gap-4">
-      @for (i of [1, 2, 3, 4, 5, 6, 7]; track $index) {
-        <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
-      }
-    </div>
-  </ng-scrollbar>
+  @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
+  @if (!bp.md()) {
+    <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
+      <div class="episode-picker__list flex flex-col gap-4">
+        @for (_ of episodeSkeletonCount; track $index) {
+          <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
+        }
+      </div>
+    </ng-scrollbar>
+  } @else {
+    <ng-container
+      *ngTemplateOutlet="carousel; context: { card: episodeCardSkeletonDesktop, data: episodeSkeletonCount }"></ng-container>
+  }
 </ng-template>
 
-<!-- Episode Entry Skeleton -->
+<!-- Episode Entry Skeleton (Mobile) -->
 <ng-template #episodeCardSkeleton>
   <div class="flex flex-row gap-4 items-center">
     <hlm-skeleton class="h-21 rounded-md aspect-video" />
@@ -110,6 +124,21 @@
       <hlm-skeleton class="w-full h-6" />
       <hlm-skeleton class="w-full h-4" />
       <hlm-skeleton class="w-[60%] h-4" />
+    </div>
+  </div>
+</ng-template>
+
+<!-- Episode Entry Skeleton (Desktop) -->
+<ng-template #episodeCardSkeletonDesktop>
+  <div hlmCard class="container flex flex-col gap-4 w-full h-full p-3">
+    <!-- Image -->
+    <hlm-skeleton
+      class="relative aspect-video w-full object-cover rounded-md overflow-hidden" />
+
+    <!-- Descriptions -->
+    <div class="episode-card__info flex flex-col gap-1 text-start">
+      <hlm-skeleton class="h-5 w-32" />
+      <hlm-skeleton class="h-12 w-full" />
     </div>
   </div>
 </ng-template>
