@@ -18,12 +18,12 @@ import { MediaTvSeriesSeasonService } from '@shared/services/media-tv-series-sea
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { EpisodeCardMe } from '@watch/features/episode-picker/episode-card/episode-card.me';
-import { environment } from '../../../../environments/environment';
+import { environment } from '@environments/environment';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { watchPageQueryParams } from '@watch/watch.me';
 import { queryParams } from '@signality/core';
-import { NavigationFacade } from '../../../shared/services/navigation-facade.service';
+import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { FormsModule } from '@angular/forms';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';

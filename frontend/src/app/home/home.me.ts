@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { HeroSliderMe, HomeHeroSliderItem } from '@home/ui/hero-slider/hero-slider.me';
-import { environment } from '../../environments/environment';
+import { environment } from '@environments/environment';
 import {
   MediaCarouselItem,
   MediaCarouselMe,
@@ -15,7 +15,7 @@ import {
   MediaCarouselTopItem,
   MediaCarouselTopItemMe,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
-import { NavigationFacade } from '../shared/services/navigation-facade.service';
+import { NavigationFacade } from '@shared/services/navigation-facade.service';
 
 @Component({
   selector: 'me-home',

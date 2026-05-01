@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { environment } from '@environments/environment';
 import { AbstractMediaBackendService } from './abstract-media-backend-service';
 import { ID } from '@shared/shared-types';
 import {

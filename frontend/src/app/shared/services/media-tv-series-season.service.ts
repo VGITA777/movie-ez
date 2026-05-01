@@ -1,5 +1,5 @@
 import { AbstractMediaBackendService } from '@shared/services/abstract-media-backend-service';
-import { environment } from '../../../environments/environment';
+import { environment } from '@environments/environment';
 import { TvSeasonDetailsInput, TvSeasonDetailsModel } from '@shared/models';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';

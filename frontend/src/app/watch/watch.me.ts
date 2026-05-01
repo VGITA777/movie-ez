@@ -26,7 +26,7 @@ import { Observable, of } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TvData } from '@shared/tv-data';
 import { MovieData } from '@shared/movie-data';
-import { NavigationFacade } from '../shared/services/navigation-facade.service';
+import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { convertRuntimeToHoursAndMinutes, getYearFromDate } from '@shared/utils';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
