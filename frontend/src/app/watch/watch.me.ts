@@ -1,37 +1,31 @@
-import {
-  Component,
-  computed,
-  effect,
-  EffectRef,
-  inject,
-  OnDestroy,
-  ResourceRef,
-  Signal,
-} from '@angular/core';
-import { z } from 'zod';
+import {Component, computed, effect, EffectRef, inject, OnDestroy, ResourceRef, Signal,} from '@angular/core';
+import {z} from 'zod';
 import {
   MEDIA_TYPES,
   MediaType,
   MovieDetailsModel,
+  MovieSimilarModel,
   TvSeriesDetailsModel,
+  TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
-import { breakpoints, queryParams } from '@signality/core';
-import { MediaMovieService } from '@shared/services/media-movie.service';
-import { MediaTvSeries } from '@shared/services/media-tv-series';
-import { Observable, of } from 'rxjs';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { TvData } from '@shared/tv-data';
-import { MovieData } from '@shared/movie-data';
-import { NavigationFacade } from '@shared/navigation-facade.service';
-import { convertRuntimeToHoursAndMinutes, getYearFromDate } from '@shared/utils';
-import { HlmIconImports } from '@spartan-ng/helm/icon';
-import { provideIcons } from '@ng-icons/core';
-import { lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
-import { HlmButtonImports } from '@spartan-ng/helm/button';
-import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
-import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
-import { NgTemplateOutlet } from '@angular/common';
+import {breakpoints, queryParams} from '@signality/core';
+import {MediaMovieService} from '@shared/services/media-movie.service';
+import {MediaTvSeries} from '@shared/services/media-tv-series';
+import {Observable, of} from 'rxjs';
+import {rxResource} from '@angular/core/rxjs-interop';
+import {TvData} from '@shared/tv-data';
+import {MovieData} from '@shared/movie-data';
+import {NavigationFacade} from '@shared/navigation-facade.service';
+import {convertRuntimeToHoursAndMinutes, getYearFromDate} from '@shared/utils';
+import {HlmIconImports} from '@spartan-ng/helm/icon';
+import {provideIcons} from '@ng-icons/core';
+import {lucidePlus, lucideShare, lucideStar} from '@ng-icons/lucide';
+import {HlmButtonImports} from '@spartan-ng/helm/button';
+import {HlmTooltipImports} from '@spartan-ng/helm/tooltip';
+import {HlmSkeletonImports} from '@spartan-ng/helm/skeleton';
+import {NgTemplateOutlet} from '@angular/common';
+import {EpisodePickerMe} from "@watch/ui/episode-picker/episode-picker.me";
 
 export type MediaData = MovieData | TvData;
 
@@ -50,6 +44,7 @@ export const watchPageQueryParams = z.object({
     HlmTooltipImports,
     HlmSkeletonImports,
     NgTemplateOutlet,
+    EpisodePickerMe,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
@@ -81,6 +76,16 @@ export class WatchMe implements OnDestroy {
         return data.params.getDetails().pipe();
       },
     });
+  private readonly similarMedia: ResourceRef<MovieSimilarModel | TvSeriesSimilarModel | undefined> =
+    rxResource({
+      params: (): MediaData | undefined => this.mediaObject(),
+      stream: (data): Observable<MovieSimilarModel | TvSeriesSimilarModel | undefined> => {
+        if (data === undefined) {
+          return of(undefined);
+        }
+        return data.params.getSimilar();
+      },
+    });
 
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly getYearFromDate = getYearFromDate;
@@ -107,7 +112,7 @@ export class WatchMe implements OnDestroy {
     },
   });
   protected readonly movieDetails: Signal<MovieDetailsModel | undefined> = computed(() => {
-    if (this.mediaDetails.error() || this.mediaDetails.isLoading()) {
+    if (this.checkIfErrorOrLoading()) {
       return undefined;
     }
 
@@ -118,7 +123,7 @@ export class WatchMe implements OnDestroy {
     return this.mediaDetails.value() as MovieDetailsModel;
   });
   protected readonly tvDetails: Signal<TvSeriesDetailsModel | undefined> = computed(() => {
-    if (this.mediaDetails.error() || this.mediaDetails.isLoading()) {
+    if (this.checkIfErrorOrLoading()) {
       return undefined;
     }
 
@@ -127,6 +132,28 @@ export class WatchMe implements OnDestroy {
       return undefined;
     }
     return this.mediaDetails.value() as TvSeriesDetailsModel;
+  });
+  protected readonly movieSimilar: Signal<MovieSimilarModel | undefined> = computed(() => {
+    if (this.checkIfErrorOrLoading()) {
+      return undefined;
+    }
+
+    const mediaType: MediaType | undefined = this.similarMedia.value()?.results?.[0]?.media_type;
+    if (!mediaType || mediaType === 'person' || mediaType === 'tv') {
+      return undefined;
+    }
+    return this.similarMedia.value() as MovieSimilarModel;
+  });
+  protected readonly tvSimilar: Signal<TvSeriesSimilarModel | undefined> = computed(() => {
+    if (this.checkIfErrorOrLoading()) {
+      return undefined;
+    }
+
+    const mediaType: MediaType | undefined = this.similarMedia.value()?.results?.[0]?.media_type;
+    if (!mediaType || mediaType === 'person' || mediaType === 'movie') {
+      return undefined;
+    }
+    return this.similarMedia.value() as TvSeriesSimilarModel;
   });
 
   private readonly navFacade = inject(NavigationFacade);
@@ -153,5 +180,9 @@ export class WatchMe implements OnDestroy {
 
   protected handleClick() {
     this.navFacade.navigateToHomePage();
+  }
+
+  private checkIfErrorOrLoading(): boolean {
+    return this.mediaDetails.isLoading() || this.mediaDetails.error() !== undefined;
   }
 }
