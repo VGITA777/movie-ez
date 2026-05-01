@@ -15,7 +15,7 @@ import {
   MediaCarouselTopItem,
   MediaCarouselTopItemMe,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
-import { NavigationFacade } from '@shared/navigation-facade.service';
+import { NavigationFacade } from '../shared/services/navigation-facade.service';
 
 @Component({
   selector: 'me-home',

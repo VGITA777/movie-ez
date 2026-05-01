@@ -23,7 +23,7 @@ import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { watchPageQueryParams } from '@watch/watch.me';
 import { queryParams } from '@signality/core';
-import { NavigationFacade } from '@shared/navigation-facade.service';
+import { NavigationFacade } from '../../../shared/services/navigation-facade.service';
 import { FormsModule } from '@angular/forms';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';

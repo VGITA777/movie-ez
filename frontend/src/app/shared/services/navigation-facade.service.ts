@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
+import { GenericRouteData } from '../../app';
 import { MediaType } from '@shared/models';
-import { GenericRouteData } from '../app';
 
 @Injectable({
   providedIn: 'root',
