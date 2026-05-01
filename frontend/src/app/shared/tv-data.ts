@@ -9,14 +9,14 @@ import {
   TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
-import { MediaTvSeries } from '@shared/services/media-tv-series';
+import { MediaTvSeriesService } from './services/media-tv-series-series.service';
 import { Observable } from 'rxjs';
 
 export class TvData {
   private readonly id: number;
-  private readonly tvSeries: MediaTvSeries;
+  private readonly tvSeries: MediaTvSeriesService;
 
-  constructor(id: number, tvSeries: MediaTvSeries) {
+  constructor(id: number, tvSeries: MediaTvSeriesService) {
     this.id = id;
     this.tvSeries = tvSeries;
   }

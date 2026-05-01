@@ -1,5 +1,14 @@
-import {Component, computed, effect, EffectRef, inject, OnDestroy, ResourceRef, Signal,} from '@angular/core';
-import {z} from 'zod';
+import {
+  Component,
+  computed,
+  effect,
+  EffectRef,
+  inject,
+  OnDestroy,
+  ResourceRef,
+  Signal,
+} from '@angular/core';
+import { z } from 'zod';
 import {
   MEDIA_TYPES,
   MediaType,
@@ -9,23 +18,23 @@ import {
   TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
-import {breakpoints, queryParams} from '@signality/core';
-import {MediaMovieService} from '@shared/services/media-movie.service';
-import {MediaTvSeries} from '@shared/services/media-tv-series';
-import {Observable, of} from 'rxjs';
-import {rxResource} from '@angular/core/rxjs-interop';
-import {TvData} from '@shared/tv-data';
-import {MovieData} from '@shared/movie-data';
-import {NavigationFacade} from '@shared/navigation-facade.service';
-import {convertRuntimeToHoursAndMinutes, getYearFromDate} from '@shared/utils';
-import {HlmIconImports} from '@spartan-ng/helm/icon';
-import {provideIcons} from '@ng-icons/core';
-import {lucidePlus, lucideShare, lucideStar} from '@ng-icons/lucide';
-import {HlmButtonImports} from '@spartan-ng/helm/button';
-import {HlmTooltipImports} from '@spartan-ng/helm/tooltip';
-import {HlmSkeletonImports} from '@spartan-ng/helm/skeleton';
-import {NgTemplateOutlet} from '@angular/common';
-import {EpisodePickerMe} from "@watch/ui/episode-picker/episode-picker.me";
+import { breakpoints, queryParams } from '@signality/core';
+import { MediaMovieService } from '@shared/services/media-movie.service';
+import { MediaTvSeriesService } from '../shared/services/media-tv-series-series.service';
+import { Observable, of } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { TvData } from '@shared/tv-data';
+import { MovieData } from '@shared/movie-data';
+import { NavigationFacade } from '@shared/navigation-facade.service';
+import { convertRuntimeToHoursAndMinutes, getYearFromDate } from '@shared/utils';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
+import { provideIcons } from '@ng-icons/core';
+import { lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
+import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
+import { NgTemplateOutlet } from '@angular/common';
+import { EpisodePickerMe } from '@watch/features/episode-picker/episode-picker.me';
 
 export type MediaData = MovieData | TvData;
 
@@ -53,7 +62,7 @@ export const watchPageQueryParams = z.object({
 export class WatchMe implements OnDestroy {
   private readonly navigator: NavigationFacade = inject(NavigationFacade);
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
-  private readonly tvSeries: MediaTvSeries = inject(MediaTvSeries);
+  private readonly tvSeries: MediaTvSeriesService = inject(MediaTvSeriesService);
   private readonly queryParams = queryParams({ schema: watchPageQueryParams });
   private readonly mediaObject: Signal<MovieData | TvData | undefined> = computed(() => {
     const values = this.queryParams.value();
@@ -90,6 +99,7 @@ export class WatchMe implements OnDestroy {
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly getYearFromDate = getYearFromDate;
   protected readonly Array = Array;
+  protected readonly mediaId: Signal<number> = computed(() => this.mediaObject()?.getId() ?? 0);
   protected readonly isLoading: Signal<boolean> = this.mediaDetails.isLoading;
   protected readonly isError: Signal<boolean> = computed(
     () => this.mediaDetails.error() !== undefined,

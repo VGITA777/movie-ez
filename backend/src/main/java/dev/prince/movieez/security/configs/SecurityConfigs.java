@@ -44,17 +44,6 @@ public class SecurityConfigs {
         .cors(cors -> {
           cors.configurationSource(corsConfigurationSource());
         })
-        .authorizeHttpRequests(auth -> {
-          auth
-              .requestMatchers("/media/**")
-              .permitAll();
-          auth
-              .requestMatchers("/users/**")
-              .authenticated();
-          auth
-              .anyRequest()
-              .authenticated();
-        })
         .addFilterBefore(new RateLimiterFilterImpl(rateLimiterService), AuthorizationFilter.class)
         .build();
   }
@@ -64,6 +53,11 @@ public class SecurityConfigs {
   public SecurityFilterChain mediaConfigs(HttpSecurity httpSecurity) {
     return httpSecurity
         .securityMatcher("/media/**")
+        .authorizeHttpRequests(auth -> {
+          auth
+              .anyRequest()
+              .permitAll();
+        })
         .build();
   }
 
@@ -72,6 +66,11 @@ public class SecurityConfigs {
   public SecurityFilterChain userConfigs(HttpSecurity httpSecurity, UserRepository userRepository) {
     return httpSecurity
         .securityMatcher("/users/**")
+        .authorizeHttpRequests(auth -> {
+          auth
+              .anyRequest()
+              .authenticated();
+        })
         .oauth2ResourceServer(oauth2 -> {
           oauth2.jwt(jwtConfigurer -> {
             jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter());
@@ -95,7 +94,7 @@ public class SecurityConfigs {
 
     var userOption = new CorsConfiguration();
     userOption.setAllowedOrigins(allowedOrigins);
-    defaultOption.setAllowedOriginPatterns(allowedOriginsPattern);
+    userOption.setAllowedOriginPatterns(allowedOriginsPattern);
     userOption.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
     userOption.setAllowedHeaders(List.of("*"));
     userOption.setAllowCredentials(true);

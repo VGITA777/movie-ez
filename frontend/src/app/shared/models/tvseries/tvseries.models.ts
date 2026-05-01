@@ -88,3 +88,60 @@ export interface TvSeriesKeywordsModel {
 export interface TvSeriesRecommendationsModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
 
 export interface TvSeriesSimilarModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
+
+export interface TvSeasonDetailsEpisodeCrew {
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string;
+  credit_id: string;
+  department: string;
+  job: string;
+}
+
+export interface TvSeasonDetailsEpisodeGuestStar {
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string;
+  credit_id: string;
+  character: string;
+  order: number;
+}
+
+export interface TvSeasonDetailsEpisode {
+  air_date: string;
+  episode_number: number;
+  id: number;
+  name: string;
+  overview: string;
+  production_code: string;
+  runtime: number | null;
+  season_number: number;
+  still_path: string;
+  vote_average: number;
+  vote_count: number | null;
+  show_id: number;
+  crew: TvSeasonDetailsEpisodeCrew[];
+  guest_stars: TvSeasonDetailsEpisodeGuestStar[];
+}
+
+export interface TvSeasonDetailsModel {
+  _id: string;
+  air_date: string;
+  episodes: TvSeasonDetailsEpisode[];
+  name: string;
+  overview: string;
+  id: number;
+  poster_path: string;
+  season_number: number;
+  vote_average: number;
+}

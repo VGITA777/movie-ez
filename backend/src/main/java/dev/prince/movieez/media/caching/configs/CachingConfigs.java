@@ -3,6 +3,7 @@ package dev.prince.movieez.media.caching.configs;
 import dev.prince.movieez.media.caching.utils.DiscoverCacheConfigurer;
 import dev.prince.movieez.media.caching.utils.MovieCacheConfigurer;
 import dev.prince.movieez.media.caching.utils.SearchCacheConfigurer;
+import dev.prince.movieez.media.caching.utils.TvSeasonCacheConfigurer;
 import dev.prince.movieez.media.caching.utils.TvSeriesCacheConfigurer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -23,6 +24,7 @@ public class CachingConfigs {
     TvSeriesCacheConfigurer.configureTvSeriesCaches(cacheManager);
     DiscoverCacheConfigurer.configureDiscoverCaches(cacheManager);
     SearchCacheConfigurer.configureSearchCaches(cacheManager);
+    TvSeasonCacheConfigurer.configureTvSeasonsCaches(cacheManager);
     return cacheManager;
   }
 }

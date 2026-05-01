@@ -2,6 +2,10 @@
   <div class="episode-picker__header">
     <span>Episodes</span>
 
+    @for (ep of episodes(); track ep.id) {
+      <span>{{ ep.id }}</span>
+    }
+
   </div>
 
 </div>

@@ -5,32 +5,28 @@ import { ID } from '@shared/shared-types';
 import {
   CreditsModel,
   ImagesModel,
+  LanguageCode,
   TvSeriesDetailsModel,
   TvSeriesKeywordsModel,
   TvSeriesLatestModel,
   TvSeriesRecommendationsModel,
   TvSeriesSimilarModel,
   VideosModel,
-  LanguageCode,
 } from '@shared/models';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MediaTvSeries extends AbstractMediaBackendService {
+export class MediaTvSeriesService extends AbstractMediaBackendService {
   constructor() {
     super(`${environment.api.mediaBaseUrl}tv-series/`);
   }
 
-  public getTvSeriesCredits(
-    seriesId: ID,
-    language?: LanguageCode,
-  ): Observable<CreditsModel> {
-    return this.performRequest<CreditsModel, { language?: LanguageCode }>(
-      `${seriesId}/credits`,
-      { language },
-    );
+  public getTvSeriesCredits(seriesId: ID, language?: LanguageCode): Observable<CreditsModel> {
+    return this.performRequest<CreditsModel, { language?: LanguageCode }>(`${seriesId}/credits`, {
+      language,
+    });
   }
 
   public getTvSeriesDetails(
@@ -43,21 +39,14 @@ export class MediaTvSeries extends AbstractMediaBackendService {
     );
   }
 
-  public getTvSeriesImages(
-    seriesId: ID,
-    language?: LanguageCode,
-  ): Observable<ImagesModel> {
-    return this.performRequest<ImagesModel, { language?: LanguageCode }>(
-      `${seriesId}/images`,
-      { language },
-    );
+  public getTvSeriesImages(seriesId: ID, language?: LanguageCode): Observable<ImagesModel> {
+    return this.performRequest<ImagesModel, { language?: LanguageCode }>(`${seriesId}/images`, {
+      language,
+    });
   }
 
   public getTvSeriesKeywords(seriesId: ID): Observable<TvSeriesKeywordsModel> {
-    return this.performRequest<TvSeriesKeywordsModel, {}>(
-      `${seriesId}/keywords`,
-      {},
-    );
+    return this.performRequest<TvSeriesKeywordsModel, {}>(`${seriesId}/keywords`, {});
   }
 
   public getLatestTvSeries(): Observable<TvSeriesLatestModel> {
@@ -80,19 +69,15 @@ export class MediaTvSeries extends AbstractMediaBackendService {
     language?: LanguageCode,
     page?: number,
   ): Observable<TvSeriesSimilarModel> {
-    return this.performRequest<
-      TvSeriesSimilarModel,
-      { language?: LanguageCode; page?: number }
-    >(`${seriesId}/similar`, { language, page });
+    return this.performRequest<TvSeriesSimilarModel, { language?: LanguageCode; page?: number }>(
+      `${seriesId}/similar`,
+      { language, page },
+    );
   }
 
-  public getTvSeriesVideos(
-    seriesId: ID,
-    language?: LanguageCode,
-  ): Observable<VideosModel> {
-    return this.performRequest<VideosModel, { language?: LanguageCode }>(
-      `${seriesId}/videos`,
-      { language },
-    );
+  public getTvSeriesVideos(seriesId: ID, language?: LanguageCode): Observable<VideosModel> {
+    return this.performRequest<VideosModel, { language?: LanguageCode }>(`${seriesId}/videos`, {
+      language,
+    });
   }
 }

@@ -85,7 +85,7 @@
         <!-- Episode Lists -->
         @if (tvDetails()) {
           <div class="episode-list">
-            <me-episode-picker />
+            <me-episode-picker [item]="{ ...(tvDetails()!), id: mediaId() }" />
           </div>
         }
 

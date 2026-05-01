@@ -32,3 +32,9 @@ export interface DiscoverTvInput {
   page: number;
   firstAirDateYear?: number;
 }
+
+export interface TvSeasonDetailsInput {
+  seriesId: number;
+  seasonNumber: number;
+  language: LanguageCode;
+}
