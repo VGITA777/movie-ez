@@ -1,1 +1,19 @@
-<p>episode-card works!</p>
+<button hlmCard class="episode-card flex flex-row items-center w-full p-3 gap-4">
+  <div
+    class="relative aspect-video w-full min-w-[150px] max-w-[150px] object-cover rounded-md overflow-hidden">
+    <img
+      [ngSrc]="item().imgSrc"
+      alt="Episode {{ item().episodeNumber }} poster"
+      fill
+    />
+  </div>
+
+  <div class="episode-card__info flex flex-col gap-1 text-start">
+    <h3 class="text-sm font-semibold line-clamp-2">
+      Ep {{ item().episodeNumber }}: {{ item().name }}
+    </h3>
+    <p class="text-xs text-muted-foreground line-clamp-3">
+      {{ item().overview }}
+    </p>
+  </div>
+</button>

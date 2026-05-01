@@ -14,13 +14,14 @@ import {
   MediaType,
   MovieDetailsModel,
   MovieSimilarModel,
+  TvSeasonDetailsEpisode,
   TvSeriesDetailsModel,
   TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
 import { breakpoints, queryParams } from '@signality/core';
 import { MediaMovieService } from '@shared/services/media-movie.service';
-import { MediaTvSeriesService } from '../shared/services/media-tv-series-series.service';
+import { MediaTvSeriesService } from '@shared/services/media-tv-series-series.service';
 import { Observable, of } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TvData } from '@shared/tv-data';
@@ -41,8 +42,8 @@ export type MediaData = MovieData | TvData;
 export const watchPageQueryParams = z.object({
   type: z.enum(MEDIA_TYPES).readonly(),
   id: z.coerce.number().readonly(),
-  season: z.number().optional(),
-  episode: z.number().optional(),
+  season: z.coerce.number().optional(),
+  episode: z.coerce.number().optional(),
 });
 
 @Component({
@@ -194,5 +195,18 @@ export class WatchMe implements OnDestroy {
 
   private checkIfErrorOrLoading(): boolean {
     return this.mediaDetails.isLoading() || this.mediaDetails.error() !== undefined;
+  }
+
+  protected handleOnEpisodeClicked(ep: TvSeasonDetailsEpisode) {
+    const queryParams = this.queryParams.value();
+    this.navigator.navigateToWatchPage({
+      episode: ep.episode_number,
+      mediaId: queryParams.id,
+      mediaType: queryParams.type,
+      season: queryParams.season,
+      extras: {
+        replaceUrl: true,
+      },
+    });
   }
 }

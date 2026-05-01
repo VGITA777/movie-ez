@@ -1,11 +1,94 @@
-<div class="episode-picker">
-  <div class="episode-picker__header">
-    <span>Episodes</span>
+<div class="episode-picker flex flex-col gap-4">
+  @if (isLoading()) {
+    <ng-container *ngTemplateOutlet="pickerSkeleton"></ng-container>
+  } @else {
+    <ng-container *ngTemplateOutlet="picker"></ng-container>
+  }
+</div>
 
-    @for (ep of episodes(); track ep.id) {
-      <span>{{ ep.id }}</span>
-    }
+<!-- Page Contents -->
+<ng-template #picker>
+  <!-- Header Of the Picker -->
+  <div class="episode-picker__header flex flex-row justify-between">
+    <h3 class="text-2xl font-bold">Episodes</h3>
 
+    <!-- Select Seasons -->
+    @let labelConverter = (s) => s ? 'Season ' + s : '';
+    <hlm-select
+      [value]="selectedSeason()" (valueChange)="handleSeasonChange($event)"
+      [itemToString]="labelConverter" class="w-full max-w-[125px]">
+      <hlm-select-trigger>
+        <hlm-select-value placeholder="Select Season" />
+      </hlm-select-trigger>
+      <hlm-select-content *hlmSelectPortal>
+        <hlm-select-group>
+          @let seasons = item().seasons.map(s => (
+            {id: s.id, seasonNumber: s.season_number}
+          )).filter(s => s.seasonNumber > 0);
+          @for (season of seasons; track season.id) {
+            <hlm-select-item [value]="season.seasonNumber">
+              <span>Season {{ season.seasonNumber }}</span>
+            </hlm-select-item>
+          }
+        </hlm-select-group>
+      </hlm-select-content>
+    </hlm-select>
   </div>
 
-</div>
+  <!-- Episodes Container -->
+  <ng-scrollbar hlm class="h-[50vh] max-h[500px] rounded-xl" appearance="compact">
+    <div class="episode-picker__list flex flex-col gap-4">
+      @for (ep of episodes(); track ep.id; let isLast = $last) {
+        @let cardData = {
+          episodeNumber: ep.episode_number,
+          imgSrc       : `${environment.tmdb.imageBaseUrl}original${ep.still_path}`,
+          name         : ep.name,
+          overview     : ep.overview,
+        };
+        @if (isLast) {
+          <me-episode-card [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
+        } @else {
+          @defer (on viewport) {
+            <me-episode-card [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
+          } @placeholder (minimum 500ms) {
+            <div>
+              <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
+            </div>
+          }
+        }
+      }
+    </div>
+  </ng-scrollbar>
+</ng-template>
+
+<!-- Page Skeleton -->
+<ng-template #pickerSkeleton>
+  <!-- Header Of the Picker -->
+  <div class="episode-picker__header flex flex-row justify-between">
+    <hlm-skeleton class="w-40 h-10" />
+
+    <!-- Select Seasons -->
+    <hlm-skeleton class="w-31.25 h-10" />
+  </div>
+
+  <!-- Episodes Container -->
+  <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
+    <div class="episode-picker__list flex flex-col gap-4">
+      @for (i of [1, 2, 3, 4, 5, 6, 7]; track $index) {
+        <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
+      }
+    </div>
+  </ng-scrollbar>
+</ng-template>
+
+<!-- Episode Entry Skeleton -->
+<ng-template #episodeCardSkeleton>
+  <div class="flex flex-row gap-4 items-center">
+    <hlm-skeleton class="h-21 rounded-md aspect-video" />
+    <div class="flex flex-col gap-2 w-full">
+      <hlm-skeleton class="w-full h-6" />
+      <hlm-skeleton class="w-full h-4" />
+      <hlm-skeleton class="w-[60%] h-4" />
+    </div>
+  </div>
+</ng-template>

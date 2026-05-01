@@ -3,103 +3,14 @@
     @if (isLoading()) {
       <ng-container *ngTemplateOutlet="pageSkeleton"></ng-container>
     } @else {
-      <!-- Video Player -->
-      <div
-        class="video-player-container overflow-hidden relative bg-accent w-full aspect-video max-h-[50vh] md:max-h-[80vh]">
-      </div>
-
-      <div class="data__wrapper flex flex-col gap-4 w-[95vw] md:w-[90vw] lg:w-[80vw]">
-        <!-- Information Container -->
-        <div class="information flex flex-col gap-4 w-full md:w-[60%] lg:w-[50%]">
-          <!-- Title -->
-          @let title = movieDetails()?.title ?? tvDetails()?.name;
-          <h1 class="information__title text-5xl font-black">{{ title }}</h1>
-
-          <!-- Specific Information Container -->
-          <div class="information-specifics flex gap-5 items-center">
-
-            <!-- Release Year -->
-            @let releaseYear = getYearFromDate(movieDetails()?.release_date
-                                                 ?? tvDetails()?.first_air_date);
-            <span class="information-specifics__release-date text-amber-200 font-bold">{{
-                releaseYear
-              }}</span>
-
-            <!-- Tv Specific Information -->
-            @if (tvDetails()) {
-              <span class="information-specifics__total-seasons">{{
-                  tvDetails()?.number_of_seasons
-                }}
-                Seasons</span>
-            }
-
-            <!-- Movie Specific Information -->
-            @if (movieDetails()) {
-              <span class="information-specifics__duration font-thin">{{
-                  convertRuntimeToHoursAndMinutes(movieDetails()?.runtime ?? 0)
-                }}</span>
-            }
-
-            <!-- Rating -->
-            @let rating = movieDetails()?.vote_average ?? tvDetails()?.vote_average ?? 0;
-            <div class="information-specifics__rating flex gap-1 items-center">
-              <ng-icon
-                class="text-md text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
-              <span class="text-md text-white">{{ rating?.toFixed(1) }}</span>
-            </div>
-
-            <!-- Genres -->
-            @let genres = movieDetails()?.genres ?? tvDetails()?.genres ?? [];
-            @let genresToUse = (
-                                 bp.lg()
-                               ) ? genres.slice(0, 2) : genres.slice(0, 1);
-            @if (genres.length > 0) {
-              <div class="information-specifics__genres flex gap-1 items-center">
-                @for (genre of genresToUse; track genre; ) {
-                  <span class="information-specifics__genre">{{ genre.name.trim() }}</span>
-                  @if ($index < genresToUse.length - 1 && $index < 2) {
-                    <span class="information-specifics__genre-separator">&middot;</span>
-                  }
-                }
-              </div>
-            }
-          </div>
-
-          <!-- Description -->
-          @let description = movieDetails()?.overview ?? tvDetails()?.overview;
-          <p class="information__description text-justify text-md md:text-sm font-light">{{
-              description
-            }}</p>
-
-          <div class="buttons flex gap-4 justify-end md:justify-start">
-            <button hlmBtn hlmTooltip="Add to playlist" class="p-6 lg:p-4">
-              <ng-icon name="lucidePlus" class="text-lg"></ng-icon>
-            </button>
-            <button hlmBtn hlmTooltip="Share" class="p-6 lg:p-4" variant="secondary">
-              <ng-icon name="lucideShare" class="text-lg"></ng-icon>
-            </button>
-          </div>
-
-        </div>
-
-        <!-- Episode Lists -->
-        @if (tvDetails()) {
-          <div class="episode-list">
-            <me-episode-picker [item]="{ ...(tvDetails()!), id: mediaId() }" />
-          </div>
-        }
-
-        <!-- Similar Contents -->
-        <div class="similar">
-
-        </div>
-      </div>
+      <ng-container *ngTemplateOutlet="pageContents"></ng-container>
     }
 
     <button hlmBtn (click)="handleClick()">Home</button>
   </div>
 </section>
 
+<!-- Page Skeleton -->
 <ng-template #pageSkeleton>
   <!-- Video Player -->
   <hlm-skeleton
@@ -157,6 +68,103 @@
     <!-- Similar Contents -->
     <div class="similar">
       <!-- TODO -->
+    </div>
+  </div>
+</ng-template>
+
+<!-- Page Contents -->
+<ng-template #pageContents>
+  <!-- Video Player -->
+  <div
+    class="video-player-container overflow-hidden relative bg-accent w-full aspect-video max-h-[50vh] md:max-h-[80vh]">
+  </div>
+
+  <div class="data__wrapper flex flex-col gap-4 w-[95vw] md:w-[90vw] lg:w-[80vw]">
+    <!-- Information Container -->
+    <div class="information flex flex-col gap-4 w-full md:w-[60%] lg:w-[50%]">
+      <!-- Title -->
+      @let title = movieDetails()?.title ?? tvDetails()?.name;
+      <h1 class="information__title text-5xl font-black">{{ title }}</h1>
+
+      <!-- Specific Information Container -->
+      <div class="information-specifics flex gap-5 items-center">
+
+        <!-- Release Year -->
+        @let releaseYear = getYearFromDate(movieDetails()?.release_date
+                                             ?? tvDetails()?.first_air_date);
+        <span class="information-specifics__release-date text-amber-200 font-bold">{{
+            releaseYear
+          }}</span>
+
+        <!-- Tv Specific Information -->
+        @if (tvDetails()) {
+          <span class="information-specifics__total-seasons">{{
+              tvDetails()?.number_of_seasons
+            }}
+            Seasons</span>
+        }
+
+        <!-- Movie Specific Information -->
+        @if (movieDetails()) {
+          <span class="information-specifics__duration font-thin">{{
+              convertRuntimeToHoursAndMinutes(movieDetails()?.runtime ?? 0)
+            }}</span>
+        }
+
+        <!-- Rating -->
+        @let rating = movieDetails()?.vote_average ?? tvDetails()?.vote_average ?? 0;
+        <div class="information-specifics__rating flex gap-1 items-center">
+          <ng-icon
+            class="text-md text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
+          <span class="text-md text-white">{{ rating?.toFixed(1) }}</span>
+        </div>
+
+        <!-- Genres -->
+        @let genres = movieDetails()?.genres ?? tvDetails()?.genres ?? [];
+        @let genresToUse = (
+                             bp.lg()
+                           ) ? genres.slice(0, 2) : genres.slice(0, 1);
+        @if (genres.length > 0) {
+          <div class="information-specifics__genres flex gap-1 items-center">
+            @for (genre of genresToUse; track genre; ) {
+              <span class="information-specifics__genre">{{ genre.name.trim() }}</span>
+              @if ($index < genresToUse.length - 1 && $index < 2) {
+                <span class="information-specifics__genre-separator">&middot;</span>
+              }
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Description -->
+      @let description = movieDetails()?.overview ?? tvDetails()?.overview;
+      <p class="information__description text-justify text-md md:text-sm font-light">{{
+          description
+        }}</p>
+
+      <div class="buttons flex gap-4 justify-end md:justify-start">
+        <button hlmBtn hlmTooltip="Add to playlist" class="p-6 lg:p-4">
+          <ng-icon name="lucidePlus" class="text-lg"></ng-icon>
+        </button>
+        <button hlmBtn hlmTooltip="Share" class="p-6 lg:p-4" variant="secondary">
+          <ng-icon name="lucideShare" class="text-lg"></ng-icon>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Episode Lists -->
+    @if (tvDetails()) {
+      <div class="episode-list">
+        <me-episode-picker
+          (onEpisodeClicked)="handleOnEpisodeClicked($event)"
+          [item]="{ ...(tvDetails()!), id: mediaId() }" />
+      </div>
+    }
+
+    <!-- Similar Contents -->
+    <div class="similar">
+
     </div>
   </div>
 </ng-template>
