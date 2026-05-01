@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { MediaType } from '@shared/models';
 import { GenericRouteData } from '../app';
 
@@ -11,10 +11,12 @@ export class NavigationFacade {
 
   public navigateToHomePage(input?: {
     messages?: GenericRouteData[];
+    extras?: NavigationExtras;
     onNavigate?: () => void;
   }): void {
     this.router
       .navigate(['/'], {
+        ...input?.extras,
         state: {
           messages: input?.messages ?? [],
         },
@@ -28,6 +30,7 @@ export class NavigationFacade {
     messages?: GenericRouteData[];
     season?: number;
     episode?: number;
+    extras?: NavigationExtras;
     onNavigate?: () => void;
   }): void {
     const queryParams: Record<string, string | number | undefined> = {
@@ -38,6 +41,7 @@ export class NavigationFacade {
     };
     this.router
       .navigate(['/watch'], {
+        ...input?.extras,
         queryParams: queryParams,
         state: {
           messages: input?.messages ?? [],
