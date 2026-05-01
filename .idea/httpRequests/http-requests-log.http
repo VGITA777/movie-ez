@@ -1,0 +1,35 @@
+GET http://localhost:4000/media/tv-series/76479/1/details?language=en
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+Cookie: JSESSIONID=7607FE8461E065F1705C4BDC46D7B65A
+
+<> 2026-05-01T145323.500.json
+
+###
+
+GET http://localhost:4000/media/tv-series/76479/1/details?language=en
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+Cookie: JSESSIONID=7607FE8461E065F1705C4BDC46D7B65A
+
+<> 2026-05-01T145318.500.json
+
+###
+
+GET http://localhost:4000/media/tv-series/76479/1/details?language=en
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+Cookie: JSESSIONID=7607FE8461E065F1705C4BDC46D7B65A
+
+###
+
+GET http://localhost:4000/media/tv-series/76479/1/details?language=en
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+###
+
