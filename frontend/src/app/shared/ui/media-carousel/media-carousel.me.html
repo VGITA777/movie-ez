@@ -8,7 +8,8 @@
     }
   </div>
 
-  <div class="media-carousel relative group/carousel active:cursor-grabbing">
+  <div
+    class="media-carousel relative group/carousel active:cursor-grabbing  overflow-hidden rounded-xl">
     <hlm-carousel #carousel [options]="carouselOptions()">
       <hlm-carousel-content>
         @for (item of items(); track item) {
