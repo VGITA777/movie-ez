@@ -43,7 +43,7 @@ export type MediaCarouselOutput =
   providers: [provideIcons({ lucideChevronLeft, lucideChevronRight })],
 })
 export class MediaCarouselMe {
-  public readonly items: InputSignal<MediaCarouselItem[]> = input.required();
+  public readonly items: InputSignal<MediaCarouselItem[] | unknown[]> = input.required();
   public readonly template: InputSignal<TemplateRef<unknown>> = input.required();
   public readonly carouselOptions: InputSignal<Partial<EmblaOptionsType>> = input<
     Partial<EmblaOptionsType>
