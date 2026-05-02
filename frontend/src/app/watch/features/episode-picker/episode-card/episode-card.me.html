@@ -1,5 +1,5 @@
-<a class="episode-card">
-  @if (!bp.md()) {
+<a class="episode-card w-full">
+  @if (!bp.sm()) {
     <ng-container *ngTemplateOutlet="mobile" />
   } @else {
     <ng-container *ngTemplateOutlet="desktop" />

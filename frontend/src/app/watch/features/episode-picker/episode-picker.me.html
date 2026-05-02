@@ -36,7 +36,7 @@
   </div>
 
   <!-- Episodes Container -->
-  @if (!bp.md()) {
+  @if (!bp.sm()) {
     <ng-scrollbar hlm class="h-[50vh] max-h[500px] rounded-xl" appearance="compact">
       <div class="episode-picker__list flex flex-col gap-4">
         @for (ep of episodes(); track ep.id; let isLast = $last) {
@@ -46,26 +46,8 @@
       </div>
     </ng-scrollbar>
   } @else {
-    <ng-container
-      *ngTemplateOutlet="carousel; context: { card: episodeCard, data: episodes() }"></ng-container>
+    <me-media-carousel [items]="episodes()" [template]="episodeCard" />
   }
-</ng-template>
-
-<!-- Carousel -->
-<ng-template #carousel let-card="card" let-data="data">
-  <hlm-carousel class="episode-picker__carousel" [options]="{dragFree: true}">
-    <hlm-carousel-content>
-      @for (ep of data; track ep.id; let isLast = $last) {
-        <hlm-carousel-item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4 self-stretch">
-          <ng-container
-            *ngTemplateOutlet="card; context: { $implicit: ep, isLast: isLast }"></ng-container>
-        </hlm-carousel-item>
-      }
-    </hlm-carousel-content>
-
-    <button hlm-carousel-next></button>
-    <button hlm-carousel-previous></button>
-  </hlm-carousel>
 </ng-template>
 
 <!-- Episode Cards -->
@@ -76,14 +58,19 @@
     name         : ep.name,
     overview     : ep.overview,
   };
+  <!-- There is a bug that sometimes does not render the last item -->
+  @let classes = "sm:self-stretch sm:shrink-0 sm:basis-[325px] ml-4";
   @if (isLast) {
-    <me-episode-card class="w-full h-full" [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
+    <me-episode-card
+      [class]="classes"
+      [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
   } @else {
     @defer (on viewport) {
       <me-episode-card
-        class="w-full h-full" [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
+        [class]="classes"
+        [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
     } @placeholder (minimum 500ms) {
-      <div class="episode-picker__card">
+      <div class="episode-picker__card" [class]="classes">
         <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
       </div>
     }
@@ -102,7 +89,7 @@
 
   <!-- Episodes Container -->
   @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
-  @if (!bp.md()) {
+  @if (!bp.sm()) {
     <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
       <div class="episode-picker__list flex flex-col gap-4">
         @for (_ of episodeSkeletonCount; track $index) {
@@ -111,8 +98,7 @@
       </div>
     </ng-scrollbar>
   } @else {
-    <ng-container
-      *ngTemplateOutlet="carousel; context: { card: episodeCardSkeletonDesktop, data: episodeSkeletonCount }"></ng-container>
+    <me-media-carousel [items]="episodeSkeletonCount" [template]="episodeCardSkeletonDesktop" />
   }
 </ng-template>
 
@@ -130,7 +116,9 @@
 
 <!-- Episode Entry Skeleton (Desktop) -->
 <ng-template #episodeCardSkeletonDesktop>
-  <div hlmCard class="container flex flex-col gap-4 w-full h-full p-3">
+  <div
+    hlmCard
+    class="container flex flex-col gap-4 w-full h-full p-3 self-stretch shrink-0 basis-[325px] ml-4">
     <!-- Image -->
     <hlm-skeleton
       class="relative aspect-video w-full object-cover rounded-md overflow-hidden" />

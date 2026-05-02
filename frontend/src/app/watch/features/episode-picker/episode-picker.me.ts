@@ -10,7 +10,7 @@ import {
   output,
   OutputEmitterRef,
   ResourceRef,
-  Signal,
+  Signal
 } from '@angular/core';
 import { TvSeasonDetailsEpisode, TvSeasonDetailsModel, TvSeriesDetailsModel } from '@shared/models';
 import { TvSeasonData } from '@shared/tv-season-data';
@@ -27,10 +27,10 @@ import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { FormsModule } from '@angular/forms';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
-import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
-import { HlmCarouselImports } from '@spartan-ng/helm/carousel';
 import { HlmCard } from '@spartan-ng/helm/card';
+import { MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
 
 @Component({
   selector: 'me-episode-picker',
@@ -43,8 +43,8 @@ import { HlmCard } from '@spartan-ng/helm/card';
     HlmSelectImports,
     HlmSkeletonImports,
     NgTemplateOutlet,
-    HlmCarouselImports,
     HlmCard,
+    MediaCarouselMe,
   ],
   templateUrl: './episode-picker.me.html',
   styleUrl: './episode-picker.me.css',

@@ -62,7 +62,18 @@
 
     <!-- Episode Lists -->
     @if (tvDetails()) {
-      <!-- TODO -->
+      @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
+      @if (!bp.sm()) {
+        <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
+          <div class="episode-picker__list flex flex-col gap-4">
+            @for (_ of episodeSkeletonCount; track $index) {
+              <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
+            }
+          </div>
+        </ng-scrollbar>
+      } @else {
+        <me-media-carousel [items]="episodeSkeletonCount" [template]="episodeCardSkeletonDesktop" />
+      }
     }
 
     <!-- Similar Contents -->
@@ -165,6 +176,35 @@
     <!-- Similar Contents -->
     <div class="similar">
 
+    </div>
+  </div>
+</ng-template>
+
+<!-- Episode Entry Skeleton (Mobile) -->
+<ng-template #episodeCardSkeleton>
+  <div class="flex flex-row gap-4 items-center">
+    <hlm-skeleton class="h-21 rounded-md aspect-video" />
+    <div class="flex flex-col gap-2 w-full">
+      <hlm-skeleton class="w-full h-6" />
+      <hlm-skeleton class="w-full h-4" />
+      <hlm-skeleton class="w-[60%] h-4" />
+    </div>
+  </div>
+</ng-template>
+
+<!-- Episode Entry Skeleton (Desktop) -->
+<ng-template #episodeCardSkeletonDesktop>
+  <div
+    hlmCard
+    class="container flex flex-col gap-4 w-full h-full p-3 self-stretch shrink-0 basis-[325px] ml-4">
+    <!-- Image -->
+    <hlm-skeleton
+      class="relative aspect-video w-full object-cover rounded-md overflow-hidden" />
+
+    <!-- Descriptions -->
+    <div class="episode-card__info flex flex-col gap-1 text-start">
+      <hlm-skeleton class="h-5 w-32" />
+      <hlm-skeleton class="h-12 w-full" />
     </div>
   </div>
 </ng-template>

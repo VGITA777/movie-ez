@@ -37,6 +37,10 @@ import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
 import { EpisodePickerMe } from '@watch/features/episode-picker/episode-picker.me';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
+import { HlmScrollArea } from '@spartan-ng/helm/scroll-area';
+import { MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { HlmCard } from '@spartan-ng/helm/card';
 
 export type MediaData = MovieData | TvData;
 
@@ -56,6 +60,10 @@ export const watchPageQueryParams = z.object({
     HlmSkeletonImports,
     NgTemplateOutlet,
     EpisodePickerMe,
+    HlmScrollArea,
+    MediaCarouselMe,
+    NgScrollbar,
+    HlmCard,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
