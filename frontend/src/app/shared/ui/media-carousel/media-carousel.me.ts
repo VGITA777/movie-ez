@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ID } from '@shared/shared-types';
 import { HlmCarousel, HlmCarouselImports } from '@spartan-ng/helm/carousel';
-import { NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { EmblaOptionsType } from 'embla-carousel-angular';
 import { MediaCarouselTopItem } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { MediaCarouselBackdropItem } from '@shared/ui/media-carousel/media-carousel-backdrop-item/media-carousel-backdrop-item.me';
@@ -37,7 +37,7 @@ export type MediaCarouselOutput =
 
 @Component({
   selector: 'me-media-carousel',
-  imports: [HlmCarouselImports, NgTemplateOutlet, HlmIconImports],
+  imports: [HlmCarouselImports, NgTemplateOutlet, HlmIconImports, NgClass],
   templateUrl: './media-carousel.me.html',
   styleUrl: './media-carousel.me.css',
   providers: [provideIcons({ lucideChevronLeft, lucideChevronRight })],
@@ -68,4 +68,6 @@ export class MediaCarouselMe {
     }
     this.carousel().scrollPrev();
   }
+
+  protected readonly Array = Array;
 }

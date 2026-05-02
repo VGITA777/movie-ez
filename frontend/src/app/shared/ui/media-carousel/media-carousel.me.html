@@ -1,27 +1,38 @@
-<div class="media-carousel relative group/carousel active:cursor-grabbing">
-  <hlm-carousel #carousel [options]="carouselOptions()">
-    <hlm-carousel-content>
-      @for (item of items(); track item) {
-        <ng-container
-          [ngTemplateOutletContext]="{$implicit: item}"
-          [ngTemplateOutlet]="template()"></ng-container>
-      }
-    </hlm-carousel-content>
-  </hlm-carousel>
+<div class="carousel__wrapper w-fulll h-full flex flex-col gap-4">
+  @let slideArray = Array.from({length: carousel.slideCount()}, (_, i) => i);
+  <div class="carousel-progress-indicator w-full flex flex-row gap-1 justify-end px-4">
+    @for (i of slideArray; track i) {
+      <div
+        class="w-3 h-1 rounded-full bg-accent transition duration-150 ease-in-out"
+        [ngClass]="{ 'bg-accent-foreground': (i) === carousel.currentSlide() }"></div>
+    }
+  </div>
 
-  <button
-    (click)="prevSlide()"
-    class="hidden md:inline prev pointer-events-none opacity-0 absolute left-0 top-0 bottom-0 px-0.5
+  <div class="media-carousel relative group/carousel active:cursor-grabbing">
+    <hlm-carousel #carousel [options]="carouselOptions()">
+      <hlm-carousel-content>
+        @for (item of items(); track item) {
+          <ng-container
+            [ngTemplateOutletContext]="{$implicit: item}"
+            [ngTemplateOutlet]="template()"></ng-container>
+        }
+      </hlm-carousel-content>
+    </hlm-carousel>
+
+    <button
+      (click)="prevSlide()"
+      class="hidden md:inline prev pointer-events-none opacity-0 absolute left-0 top-0 bottom-0 px-0.5
          group-hover/carousel:opacity-100 group-hover/carousel:pointer-events-auto
          transition duration-300 ease-in-out hover:bg-accent/25">
-    <ng-icon class="text-3xl" name="lucideChevronLeft" />
-  </button>
+      <ng-icon class="text-3xl" name="lucideChevronLeft" />
+    </button>
 
-  <button
-    (click)="nextSlide()"
-    class="hidden md:inline next pointer-events-none opacity-0 absolute right-0 top-0 bottom-0 px-0.5
+    <button
+      (click)="nextSlide()"
+      class="hidden md:inline next pointer-events-none opacity-0 absolute right-0 top-0 bottom-0 px-0.5
          group-hover/carousel:opacity-100 group-hover/carousel:pointer-events-auto
          transition duration-300 ease-in-out hover:bg-accent/25">
-    <ng-icon class="text-3xl" name="lucideChevronRight" />
-  </button>
+      <ng-icon class="text-3xl" name="lucideChevronRight" />
+    </button>
+  </div>
 </div>
