@@ -40,13 +40,13 @@ export interface TvSeasonDetailsInput {
 }
 
 export interface MovieListsInput {
+  page: number;
   language?: LanguageCode;
-  page?: number;
   region?: string;
 }
 
 export interface TvSeriesListsInput {
+  page: number;
   language?: LanguageCode;
-  page?: number;
   timezone?: string;
 }

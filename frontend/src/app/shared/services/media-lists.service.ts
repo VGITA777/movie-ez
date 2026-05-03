@@ -23,27 +23,29 @@ export class MediaListsService extends AbstractMediaBackendService {
     super(environment.api.mediaBaseUrl);
   }
 
-  public getMovieNowPlaying(input: MovieListsInput = {}): Observable<MovieNowPlayingModel> {
+  public getMovieNowPlaying(
+    input: MovieListsInput = { page: 1 },
+  ): Observable<MovieNowPlayingModel> {
     return this.performRequest<MovieNowPlayingModel, MovieListsInput>(
       'movie/lists/now-playing',
       input,
     );
   }
 
-  public getMoviePopular(input: MovieListsInput = {}): Observable<MoviePopularModel> {
+  public getMoviePopular(input: MovieListsInput = { page: 1 }): Observable<MoviePopularModel> {
     return this.performRequest<MoviePopularModel, MovieListsInput>('movie/lists/popular', input);
   }
 
-  public getMovieTopRated(input: MovieListsInput = {}): Observable<MovieTopRatedModel> {
+  public getMovieTopRated(input: MovieListsInput = { page: 1 }): Observable<MovieTopRatedModel> {
     return this.performRequest<MovieTopRatedModel, MovieListsInput>('movie/lists/top-rated', input);
   }
 
-  public getMovieUpcoming(input: MovieListsInput = {}): Observable<MovieUpcomingModel> {
+  public getMovieUpcoming(input: MovieListsInput = { page: 1 }): Observable<MovieUpcomingModel> {
     return this.performRequest<MovieUpcomingModel, MovieListsInput>('movie/lists/upcoming', input);
   }
 
   public getTvSeriesAiringToday(
-    input: TvSeriesListsInput = {},
+    input: TvSeriesListsInput = { page: 1 },
   ): Observable<TvSeriesAiringTodayModel> {
     return this.performRequest<TvSeriesAiringTodayModel, TvSeriesListsInput>(
       'tv-series/lists/airing-today',
@@ -52,7 +54,7 @@ export class MediaListsService extends AbstractMediaBackendService {
   }
 
   public getTvSeriesOnTheAir(
-    input: TvSeriesListsInput = {},
+    input: TvSeriesListsInput = { page: 1 },
   ): Observable<TvSeriesOnTheAirModel> {
     return this.performRequest<TvSeriesOnTheAirModel, TvSeriesListsInput>(
       'tv-series/lists/on-the-air',
@@ -61,7 +63,7 @@ export class MediaListsService extends AbstractMediaBackendService {
   }
 
   public getTvSeriesPopular(
-    input: TvSeriesListsInput = {},
+    input: TvSeriesListsInput = { page: 1 },
   ): Observable<TvSeriesPopularModel> {
     return this.performRequest<TvSeriesPopularModel, TvSeriesListsInput>(
       'tv-series/lists/popular',
@@ -70,7 +72,7 @@ export class MediaListsService extends AbstractMediaBackendService {
   }
 
   public getTvSeriesTopRated(
-    input: TvSeriesListsInput = {},
+    input: TvSeriesListsInput = { page: 1 },
   ): Observable<TvSeriesTopRatedModel> {
     return this.performRequest<TvSeriesTopRatedModel, TvSeriesListsInput>(
       'tv-series/lists/top-rated',
@@ -78,4 +80,3 @@ export class MediaListsService extends AbstractMediaBackendService {
     );
   }
 }
-

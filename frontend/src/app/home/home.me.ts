@@ -18,10 +18,11 @@ import {
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { MediaDiscoverService } from '@shared/services/media-discover.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { first, map } from 'rxjs';
 import { DiscoverMovieModel, DiscoverTvModel } from '@shared/models';
 import { toGenres } from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
+import { MediaListsService } from '@shared/services/media-lists.service';
 
 @Component({
   selector: 'me-home',
@@ -38,6 +39,8 @@ import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 })
 export class HomeMe {
   private readonly discoverService: MediaDiscoverService = inject(MediaDiscoverService);
+  private readonly mediaListService: MediaListsService = inject(MediaListsService);
+
   protected readonly items: HomeHeroSliderItem[] = [
     {
       id: 157336,
@@ -184,6 +187,13 @@ export class HomeMe {
     ),
     { initialValue: [] },
   );
+  protected readonly topMovies = toSignal(
+    this.mediaListService.getMovieTopRated()
+    .pipe(
+      first(),
+      map(d => d.results)
+    )
+  )
 
   private readonly navFacade: NavigationFacade = inject(NavigationFacade);
 
