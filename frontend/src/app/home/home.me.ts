@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Signal } from '@angular/core';
 import { HeroSliderMe, HomeHeroSliderItem } from '@home/ui/hero-slider/hero-slider.me';
 import { environment } from '@environments/environment';
 import {
@@ -16,6 +16,12 @@ import {
   MediaCarouselTopItemMe,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
+import { MediaDiscoverService } from '@shared/services/media-discover.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+import { DiscoverMovieModel, DiscoverTvModel } from '@shared/models';
+import { toGenres } from '@shared/utils';
+import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 
 @Component({
   selector: 'me-home',
@@ -25,11 +31,13 @@ import { NavigationFacade } from '@shared/services/navigation-facade.service';
     MediaCarouselCoverItemMe,
     MediaCarouselBackdropItemMe,
     MediaCarouselTopItemMe,
+    HlmSeparatorImports,
   ],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',
 })
 export class HomeMe {
+  private readonly discoverService: MediaDiscoverService = inject(MediaDiscoverService);
   protected readonly items: HomeHeroSliderItem[] = [
     {
       id: 157336,
@@ -73,48 +81,13 @@ export class HomeMe {
       genres: ['Action', 'Crime'],
     },
   ];
-  protected readonly mediaItemsPoster: MediaCarouselItem[] = [
-    {
-      id: 157336,
-      title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
-      rating: 9.8,
-      genre: 'Sci-Fi',
-      year: 2024,
-      videoSrc:
-        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
-      type: 'movie',
-    },
-    {
-      id: 1290417,
-      title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
-      rating: 6.8,
-      genre: 'Adventure',
-      year: 2026,
-      videoSrc:
-        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
-      type: 'movie',
-    },
-    {
-      id: 76479,
-      title: 'The Boys',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/fRNBdaCZMM3DPGTtqdg6Zf1XwX5.jpg`,
-      rating: 6.8,
-      genre: 'Action / Crime',
-      year: 2024,
-      videoSrc:
-        'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
-      type: 'tv',
-    },
-  ];
   protected readonly mediaItemsBackdrop: MediaCarouselBackdropItem[] = [
     {
       id: 157336,
       title: 'Interstellar',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/rFvnZYcJzLoC2l6cTFLQRUgYSgL.jpg`,
       rating: 9.8,
-      genre: 'Sci-Fi',
+      genres: ['Sci-Fi'],
       year: 2024,
       runtime: 160,
       videoSrc:
@@ -126,7 +99,7 @@ export class HomeMe {
       title: 'Thrash',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/4HIJS1btE2XvKoC0nqOr91uCcHE.jpg`,
       rating: 6.8,
-      genre: 'Adventure',
+      genres: ['Adventure'],
       year: 2026,
       runtime: 90,
       videoSrc:
@@ -138,7 +111,7 @@ export class HomeMe {
       title: 'The Boys',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/6ZZKGi2UyYFtUIkyWAnoMZhcjpz.jpg`,
       rating: 6.8,
-      genre: 'Action',
+      genres: ['Action'],
       year: 2024,
       videoSrc:
         'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
@@ -152,7 +125,7 @@ export class HomeMe {
       title: 'Interstellar',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
       rating: 9.8,
-      genre: 'Sci-Fi',
+      genres: ['Sci-Fi'],
       year: 2024,
       ranking: 1,
       videoSrc:
@@ -164,7 +137,7 @@ export class HomeMe {
       title: 'Thrash',
       imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
       rating: 6.8,
-      genre: 'Adventure',
+      genres: ['Adventure'],
       year: 2026,
       ranking: 2,
       videoSrc:
@@ -172,6 +145,45 @@ export class HomeMe {
       type: 'movie',
     },
   ];
+
+  protected readonly discoverMovies: Signal<MediaCarouselItem[]> = toSignal(
+    this.discoverService.discoverMovies({ page: 1 }).pipe(
+      map((response) => response.results),
+      map((movies: DiscoverMovieModel[]) => {
+        return movies.map(
+          (movie): MediaCarouselItem => ({
+            id: movie.id,
+            title: movie.title,
+            imgSrc: `${environment.tmdb.imageBaseUrl}original${movie.poster_path}`,
+            rating: movie.vote_average,
+            genres: toGenres(movie.genre_ids),
+            year: new Date(movie.release_date).getFullYear(),
+            videoSrc: '',
+            type: 'movie',
+          }),
+        );
+      }),
+    ),
+    { initialValue: [] },
+  );
+  protected readonly discoverTvShows: Signal<MediaCarouselItem[]> = toSignal(
+    this.discoverService.discoverTvShows({ page: 1 }).pipe(
+      map((response) => response.results),
+      map((tvShows: DiscoverTvModel[]) => {
+        return tvShows.map((tvShow) => ({
+          id: tvShow.id,
+          title: tvShow.name,
+          imgSrc: `${environment.tmdb.imageBaseUrl}original${tvShow.poster_path}`,
+          rating: tvShow.vote_average,
+          genres: toGenres(tvShow.genre_ids),
+          year: new Date(tvShow.first_air_date).getFullYear(),
+          videoSrc: '',
+          type: 'tv',
+        }));
+      }),
+    ),
+    { initialValue: [] },
+  );
 
   private readonly navFacade: NavigationFacade = inject(NavigationFacade);
 
