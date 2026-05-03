@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TvSeriesAiringTodayModel extends Page<TvSeriesShortDetailsModel> {
+public class TvSeriesAiringTodayModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {
 
 }
 
