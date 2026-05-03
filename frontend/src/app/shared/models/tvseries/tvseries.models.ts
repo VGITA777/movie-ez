@@ -89,6 +89,14 @@ export interface TvSeriesRecommendationsModel extends Page<TvSeriesShortDetailsM
 
 export interface TvSeriesSimilarModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
 
+export interface TvSeriesAiringTodayModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
+
+export interface TvSeriesOnTheAirModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
+
+export interface TvSeriesPopularModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
+
+export interface TvSeriesTopRatedModel extends Page<TvSeriesShortDetailsModel> {}
+
 export interface TvSeasonDetailsEpisodeCrew {
   adult: boolean;
   gender: number;

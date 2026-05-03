@@ -56,3 +56,11 @@ export interface MovieKeywordsModel extends Keywords {}
 export interface MovieRecommendationsModel extends Page<MovieShortDetailsWithMediaTypeModel> {}
 
 export interface MovieSimilarModel extends Page<MovieShortDetailsWithMediaTypeModel> {}
+
+export interface MovieNowPlayingModel extends Page<MovieShortDetailsWithMediaTypeModel> {}
+
+export interface MoviePopularModel extends Page<MovieShortDetailsWithMediaTypeModel> {}
+
+export interface MovieTopRatedModel extends Page<MovieShortDetailsWithMediaTypeModel> {}
+
+export interface MovieUpcomingModel extends Page<MovieShortDetailsWithMediaTypeModel> {}

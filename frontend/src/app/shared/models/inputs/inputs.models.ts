@@ -38,3 +38,15 @@ export interface TvSeasonDetailsInput {
   seasonNumber: number;
   language?: LanguageCode;
 }
+
+export interface MovieListsInput {
+  language?: LanguageCode;
+  page?: number;
+  region?: string;
+}
+
+export interface TvSeriesListsInput {
+  language?: LanguageCode;
+  page?: number;
+  timezone?: string;
+}
