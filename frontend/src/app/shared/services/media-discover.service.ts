@@ -15,7 +15,7 @@ import { AbstractMediaBackendService } from './abstract-media-backend-service';
 })
 export class MediaDiscoverService extends AbstractMediaBackendService {
   constructor() {
-    super(`${environment.api.mediaBaseUrl}discover`);
+    super(`${environment.api.mediaBaseUrl}discover/`);
   }
 
   public discoverMovies(input: DiscoverMoviesInput): Observable<Page<DiscoverMovieModel>> {
