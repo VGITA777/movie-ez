@@ -1,96 +1,23 @@
 <section class="watch w-full flex justify-center">
   <div class="watch-contents__wrapper watch flex flex-col gap-4 w-full items-center">
     @if (isLoading()) {
-      <ng-container *ngTemplateOutlet="pageSkeleton"></ng-container>
+      <ng-container *ngTemplateOutlet="skeleton"></ng-container>
     } @else {
-      <ng-container *ngTemplateOutlet="pageContents"></ng-container>
+      <ng-container *ngTemplateOutlet="main"></ng-container>
     }
 
     <button hlmBtn (click)="handleClick()">Home</button>
   </div>
 </section>
 
-<!-- Page Skeleton -->
-<ng-template #pageSkeleton>
-  <!-- Video Player -->
-  <hlm-skeleton
-    class="w-full aspect-video max-h-[50vh] md:max-h-[80vh]">
-  </hlm-skeleton>
-
-  <div class="data__wrapper flex flex-col gap-4 w-[95vw] md:w-[90vw] lg:w-[80vw]">
-    <!-- Information Container -->
-    <div class="information flex flex-col gap-4 w-full md:w-[60%] lg:w-[50%]">
-      <!-- Title -->
-      <hlm-skeleton class="w-1/2 max-w-50 h-10 rounded-md"></hlm-skeleton>
-
-      <!-- Specific Information Container -->
-      <div class="information-specifics flex gap-5 items-center">
-
-        <!-- Release Year -->
-        <hlm-skeleton class="w-16 h-6 rounded-md"></hlm-skeleton>
-
-        <!-- Tv Specific Information -->
-        <hlm-skeleton class="w-24 h-6 rounded-md"></hlm-skeleton>
-
-        <!-- Rating -->
-        <hlm-skeleton class="w-16 h-6 rounded-md"></hlm-skeleton>
-
-        <!-- Genres -->
-        @let genreCount = (
-                            bp.md()
-                          ) ? 3 : 1;
-        @let genres = Array.from({length: genreCount}, (value, index) => index);
-        <div class="information-specifics__genres flex gap-1 items-center">
-          @for (genre of genres; track genre) {
-            <hlm-skeleton class="w-10 h-6 rounded-md"></hlm-skeleton>
-            @if ($index < genres.length - 1 && $index < 2) {
-              <span class="information-specifics__genre-separator">&middot;</span>
-            }
-          }
-        </div>
-      </div>
-
-      <!-- Description -->
-      <hlm-skeleton class="w-full h-20 rounded-md"></hlm-skeleton>
-
-      <div class="buttons flex gap-4 justify-end md:justify-start">
-        <hlm-skeleton class="w-16 h-12 rounded-md"></hlm-skeleton>
-        <hlm-skeleton class="w-16 h-12 rounded-md"></hlm-skeleton>
-      </div>
-
-    </div>
-
-    <!-- Episode Lists -->
-    @if (tvDetails()) {
-      @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
-      @if (!bp.sm()) {
-        <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
-          <div class="episode-picker__list flex flex-col gap-4">
-            @for (_ of episodeSkeletonCount; track $index) {
-              <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
-            }
-          </div>
-        </ng-scrollbar>
-      } @else {
-        <me-media-carousel [items]="episodeSkeletonCount" [template]="episodeCardSkeletonDesktop" />
-      }
-    }
-
-    <!-- Similar Contents -->
-    <div class="similar">
-      <!-- TODO -->
-    </div>
-  </div>
-</ng-template>
-
 <!-- Page Contents -->
-<ng-template #pageContents>
+<ng-template #main>
   <!-- Video Player -->
   <div
     class="video-player-container overflow-hidden relative bg-accent w-full aspect-video max-h-[50vh] md:max-h-[80vh]">
   </div>
 
-  <div class="data__wrapper flex flex-col gap-4 w-[95vw] md:w-[90vw] lg:w-[80vw]">
+  <div class="data__wrapper flex flex-col gap-24 w-[95vw] md:w-[90vw] lg:w-[80vw]">
     <!-- Information Container -->
     <div class="information flex flex-col gap-4 w-full md:w-[60%] lg:w-[50%]">
       <!-- Title -->
@@ -174,8 +101,89 @@
     }
 
     <!-- Similar Contents -->
-    <div class="similar">
+    <div class="similar flex flex-col gap-4">
+      <h3 class="font-bold text-2xl">Similar</h3>
+      <me-media-carousel [items]="similarMediaCarouselItems()" [template]="similarCarouselItem" />
+    </div>
+  </div>
+</ng-template>
 
+<!-- Similar Carousel -->
+<ng-template #similarCarouselItem let-item>
+  <me-media-carousel-cover-item
+    class="ml-4 self-stretch basis-[200px] md:basis-[225px] shrink-0" [item]="item"
+    (itemClick)="navigateToWatchPage($event)" />
+</ng-template>
+
+<!-- Page Skeleton -->
+<ng-template #skeleton>
+  <!-- Video Player -->
+  <hlm-skeleton
+    class="w-full aspect-video max-h-[50vh] md:max-h-[80vh]">
+  </hlm-skeleton>
+
+  <div class="data__wrapper flex flex-col gap-4 w-[95vw] md:w-[90vw] lg:w-[80vw]">
+    <!-- Information Container -->
+    <div class="information flex flex-col gap-4 w-full md:w-[60%] lg:w-[50%]">
+      <!-- Title -->
+      <hlm-skeleton class="w-1/2 max-w-50 h-10 rounded-md"></hlm-skeleton>
+
+      <!-- Specific Information Container -->
+      <div class="information-specifics flex gap-5 items-center">
+
+        <!-- Release Year -->
+        <hlm-skeleton class="w-16 h-6 rounded-md"></hlm-skeleton>
+
+        <!-- Tv Specific Information -->
+        <hlm-skeleton class="w-24 h-6 rounded-md"></hlm-skeleton>
+
+        <!-- Rating -->
+        <hlm-skeleton class="w-16 h-6 rounded-md"></hlm-skeleton>
+
+        <!-- Genres -->
+        @let genreCount = (
+                            bp.md()
+                          ) ? 3 : 1;
+        @let genres = Array.from({length: genreCount}, (value, index) => index);
+        <div class="information-specifics__genres flex gap-1 items-center">
+          @for (genre of genres; track genre) {
+            <hlm-skeleton class="w-10 h-6 rounded-md"></hlm-skeleton>
+            @if ($index < genres.length - 1 && $index < 2) {
+              <span class="information-specifics__genre-separator">&middot;</span>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Description -->
+      <hlm-skeleton class="w-full h-20 rounded-md"></hlm-skeleton>
+
+      <div class="buttons flex gap-4 justify-end md:justify-start">
+        <hlm-skeleton class="w-16 h-12 rounded-md"></hlm-skeleton>
+        <hlm-skeleton class="w-16 h-12 rounded-md"></hlm-skeleton>
+      </div>
+
+    </div>
+
+    <!-- Episode Lists -->
+    @if (tvDetails()) {
+      @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
+      @if (!bp.sm()) {
+        <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
+          <div class="episode-picker__list flex flex-col gap-4">
+            @for (_ of episodeSkeletonCount; track $index) {
+              <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
+            }
+          </div>
+        </ng-scrollbar>
+      } @else {
+        <me-media-carousel [items]="episodeSkeletonCount" [template]="episodeCardSkeletonDesktop" />
+      }
+    }
+
+    <!-- Similar Contents -->
+    <div class="similar">
+      <!-- TODO -->
     </div>
   </div>
 </ng-template>

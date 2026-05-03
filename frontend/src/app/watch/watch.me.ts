@@ -13,9 +13,11 @@ import {
   MEDIA_TYPES,
   MediaType,
   MovieDetailsModel,
+  MovieShortDetailsWithMediaTypeModel,
   MovieSimilarModel,
   TvSeasonDetailsEpisode,
   TvSeriesDetailsModel,
+  TvSeriesShortDetailsModelWithMediaTypeModel,
   TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
@@ -38,9 +40,11 @@ import { NgTemplateOutlet } from '@angular/common';
 import { EpisodePickerMe } from '@watch/features/episode-picker/episode-picker.me';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
 import { HlmScrollArea } from '@spartan-ng/helm/scroll-area';
-import { MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
+import { MediaCarouselItem, MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmCard } from '@spartan-ng/helm/card';
+import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
+import { environment } from '@environments/environment';
 
 export type MediaData = MovieData | TvData;
 
@@ -64,6 +68,7 @@ export const watchPageQueryParams = z.object({
     MediaCarouselMe,
     NgScrollbar,
     HlmCard,
+    MediaCarouselCoverItemMe,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
@@ -93,16 +98,6 @@ export class WatchMe implements OnDestroy {
           return of(undefined);
         }
         return data.params.getDetails().pipe();
-      },
-    });
-  private readonly similarMedia: ResourceRef<MovieSimilarModel | TvSeriesSimilarModel | undefined> =
-    rxResource({
-      params: (): MediaData | undefined => this.mediaObject(),
-      stream: (data): Observable<MovieSimilarModel | TvSeriesSimilarModel | undefined> => {
-        if (data === undefined) {
-          return of(undefined);
-        }
-        return data.params.getSimilar();
       },
     });
 
@@ -147,7 +142,49 @@ export class WatchMe implements OnDestroy {
     }
     return this.mediaDetails.value() as TvSeriesDetailsModel;
   });
-  protected readonly movieSimilar: Signal<MovieSimilarModel | undefined> = computed(() => {
+  protected readonly similarMedia: ResourceRef<
+    MovieSimilarModel | TvSeriesSimilarModel | undefined
+  > = rxResource({
+    params: (): MediaData | undefined => this.mediaObject(),
+    stream: (data): Observable<MovieSimilarModel | TvSeriesSimilarModel | undefined> => {
+      if (data === undefined) {
+        return of(undefined);
+      }
+      return data.params.getSimilar();
+    },
+  });
+  protected readonly similarMediaCarouselItems: Signal<MediaCarouselItem[]> = computed(() => {
+    const items: MovieSimilarModel | TvSeriesSimilarModel | undefined = this.similarMedia.value();
+    if (!items || !items.results) {
+      return [];
+    }
+
+    const extractYear = (
+      item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
+    ): number => {
+      const dateStr =
+        (item as MovieShortDetailsWithMediaTypeModel).release_date ??
+        (item as TvSeriesShortDetailsModelWithMediaTypeModel).first_air_date;
+      return Number(getYearFromDate(dateStr)) ?? 0;
+    };
+
+    return items.results.map(
+      (
+        item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
+      ): MediaCarouselItem => ({
+        id: item.id,
+        title:
+          (item as MovieShortDetailsWithMediaTypeModel).title ??
+          (item as TvSeriesShortDetailsModelWithMediaTypeModel).name ??
+          '',
+        imgSrc: `${environment.tmdb.imageBaseUrl}original/${item.poster_path}`,
+        rating: item.vote_average,
+        year: extractYear(item),
+        type: item.media_type,
+      }),
+    );
+  });
+  protected readonly similarMovies: Signal<MovieSimilarModel | undefined> = computed(() => {
     if (this.checkIfErrorOrLoading()) {
       return undefined;
     }
@@ -158,7 +195,7 @@ export class WatchMe implements OnDestroy {
     }
     return this.similarMedia.value() as MovieSimilarModel;
   });
-  protected readonly tvSimilar: Signal<TvSeriesSimilarModel | undefined> = computed(() => {
+  protected readonly similarTvSeries: Signal<TvSeriesSimilarModel | undefined> = computed(() => {
     if (this.checkIfErrorOrLoading()) {
       return undefined;
     }
@@ -212,4 +249,6 @@ export class WatchMe implements OnDestroy {
       },
     });
   }
+
+  protected navigateToWatchPage(event: MediaCarouselItem) {}
 }

@@ -23,14 +23,21 @@
     <h3 class="media-item-specific-info__title font-bold leading-none">{{ itemData.title }}</h3>
     <!-- Rating, Genre, Year -->
     <div class="media-item-specific-info__container flex items-center gap-2 w-full ">
+      <!-- Rating -->
       <div class="media-item-specific-info__rating flex gap-1 items-center">
         <ng-icon
           class="text-xs text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
         <span class="text-sm font-thin">{{ itemData.rating.toFixed(1) }}</span>
       </div>
       <span>&middot;</span>
-      <span class="media-item-specific-info__genre text-sm font-thin">{{ itemData.genre }}</span>
-      <span>&middot;</span>
+
+      <!-- Genre -->
+      @if (itemData.genre) {
+        <span class="media-item-specific-info__genre text-sm font-thin">{{ itemData.genre }}</span>
+        <span>&middot;</span>
+      }
+
+      <!-- Year -->
       <span class="media-item-specific-info__year text-sm font-thin">{{ itemData.year }}</span>
     </div>
   </div>
