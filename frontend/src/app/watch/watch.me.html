@@ -17,7 +17,7 @@
     class="video-player-container overflow-hidden relative bg-accent w-full aspect-video max-h-[50vh] md:max-h-[80vh]">
   </div>
 
-  <div class="data__wrapper flex flex-col gap-24 w-[95vw] md:w-[90vw] lg:w-[80vw]">
+  <div class="data__wrapper flex flex-col gap-12 w-[95vw] md:w-[90vw] lg:w-[80vw]">
     <!-- Information Container -->
     <div class="information flex flex-col gap-4 w-full md:w-[60%] lg:w-[50%]">
       <!-- Title -->
@@ -59,10 +59,10 @@
 
         <!-- Genres -->
         @let genres = movieDetails()?.genres ?? tvDetails()?.genres ?? [];
-        @let genresToUse = (
-                             bp.lg()
-                           ) ? genres.slice(0, 2) : genres.slice(0, 1);
         @if (genres.length > 0) {
+          @let genresToUse = (
+                               bp.lg()
+                             ) ? genres.slice(0, 2) : genres.slice(0, 1);
           <div class="information-specifics__genres flex gap-1 items-center">
             @for (genre of genresToUse; track genre; ) {
               <span class="information-specifics__genre">{{ genre.name.trim() }}</span>
@@ -93,12 +93,15 @@
 
     <!-- Episode Lists -->
     @if (tvDetails()) {
+      <hlm-separator />
       <div class="episode-list">
         <me-episode-picker
           (onEpisodeClicked)="handleOnEpisodeClicked($event)"
           [item]="{ ...(tvDetails()!), id: mediaId() }" />
       </div>
     }
+
+    <hlm-separator />
 
     <!-- Similar Contents -->
     <div class="similar flex flex-col gap-4">
@@ -182,8 +185,10 @@
     }
 
     <!-- Similar Contents -->
-    <div class="similar">
-      <!-- TODO -->
+    <div class="similar flex flex-col gap-4">
+      @let similarSkeletonCount = Array.from({length: 10}, (_, index) => index);
+      <hlm-skeleton class="font-bold text-2xl" />
+      <me-media-carousel [items]="similarSkeletonCount" [template]="similarCarouselItemSkeleton" />
     </div>
   </div>
 </ng-template>
@@ -213,6 +218,16 @@
     <div class="episode-card__info flex flex-col gap-1 text-start">
       <hlm-skeleton class="h-5 w-32" />
       <hlm-skeleton class="h-12 w-full" />
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #similarCarouselItemSkeleton>
+  <div class="ml-4 self-stretch basis-[175px] md:basis-[200px] shrink-0">
+    <hlm-skeleton class="w-full aspect-2/3 rounded-xl" />
+    <div class="flex flex-col gap-1 mt-2">
+      <hlm-skeleton class="w-full h-4" />
+      <hlm-skeleton class="w-1/2 h-4" />
     </div>
   </div>
 </ng-template>

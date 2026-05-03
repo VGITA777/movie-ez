@@ -45,6 +45,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmCard } from '@spartan-ng/helm/card';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import { environment } from '@environments/environment';
+import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 
 export type MediaData = MovieData | TvData;
 
@@ -69,6 +70,7 @@ export const watchPageQueryParams = z.object({
     NgScrollbar,
     HlmCard,
     MediaCarouselCoverItemMe,
+    HlmSeparatorImports,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
