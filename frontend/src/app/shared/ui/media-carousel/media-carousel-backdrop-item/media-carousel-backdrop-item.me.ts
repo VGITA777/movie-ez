@@ -21,4 +21,6 @@ export class MediaCarouselBackdropItemMe {
   public readonly item: InputSignal<MediaCarouselBackdropItem> = input.required();
   public readonly itemClick: OutputEmitterRef<MediaCarouselBackdropItem> = output();
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
+
+  constructor() {}
 }

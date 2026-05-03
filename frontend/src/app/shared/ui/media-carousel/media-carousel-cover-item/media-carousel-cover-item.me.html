@@ -25,9 +25,13 @@
       </div>
 
       <!-- Genre -->
-      @if (itemData.genre) {
+      @if (itemData.genres !== undefined && itemData.genres.length > 0) {
         <span>&middot;</span>
-        <span class="media-item-specific-info__genre text-sm font-thin">{{ itemData.genre }}</span>
+        <div class="genres-container flex flex-row gap-1 items-center">
+          @for (genre of itemData.genres.slice(0, 1); track genre) {
+            <span class="media-item-specific-info__genre text-sm font-thin">{{ genre }}</span>
+          }
+        </div>
       }
 
       <!-- Year -->

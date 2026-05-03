@@ -27,7 +27,7 @@ export interface MediaCarouselItem extends InteractiveMediaCardItem {
   readonly rating: number;
   readonly year: number;
   readonly type: MediaType;
-  readonly genre?: string;
+  readonly genres?: string[];
 }
 
 export type MediaCarouselOutput =
