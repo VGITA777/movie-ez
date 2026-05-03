@@ -15,7 +15,7 @@ import { NgOptimizedImage } from '@angular/common';
 export interface InteractiveMediaCardItem {
   title: string;
   imgSrc: string;
-  videoSrc: string;
+  videoSrc?: string;
 }
 
 @Component({
@@ -32,6 +32,9 @@ export class InteractiveMediaCardMe {
   protected readonly startVideo: WritableSignal<boolean> = signal(false);
   protected readonly sanitizedVideoSrc: Signal<SafeResourceUrl | null> = computed(() => {
     const videoSrc = this.item().videoSrc;
+    if (!videoSrc) {
+      return null;
+    }
     return videoSrc ? this.domSanitizer.bypassSecurityTrustResourceUrl(videoSrc) : null;
   });
 
