@@ -2,7 +2,7 @@ import { Component, input, InputSignal, output, OutputEmitterRef } from '@angula
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucideClock } from '@ng-icons/lucide';
+import { lucideClock, lucideStar } from '@ng-icons/lucide';
 import { InteractiveMediaCardMe } from '@shared/ui/interactive-media-card/interactive-media-card.me';
 import { convertRuntimeToHoursAndMinutes } from '@shared/utils';
 
@@ -15,7 +15,7 @@ export interface MediaCarouselBackdropItem extends MediaCarouselItem {
   imports: [HlmIconImports, InteractiveMediaCardMe],
   templateUrl: './media-carousel-backdrop-item.me.html',
   styleUrl: './media-carousel-backdrop-item.me.css',
-  providers: [provideIcons({ lucideClock })],
+  providers: [provideIcons({ lucideClock, lucideStar })],
 })
 export class MediaCarouselBackdropItemMe {
   public readonly item: InputSignal<MediaCarouselBackdropItem> = input.required();

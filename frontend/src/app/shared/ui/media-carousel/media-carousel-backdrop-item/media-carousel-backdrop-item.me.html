@@ -29,9 +29,13 @@
         }
       </div>
     }
+
     <!-- Rating -->
-    <span class="media-item-specific-info__rating text-sm font-thin">{{
-        itemData.rating.toFixed(1)
-      }}</span>
+    <span>&middot;</span>
+    <div class="media-item-specific-info__rating flex gap-1 items-center">
+      <ng-icon
+        class="text-xs text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
+      <span class="text-sm font-thin">{{ itemData.rating.toFixed(1) }}</span>
+    </div>
   </div>
 </div>
