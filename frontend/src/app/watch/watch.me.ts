@@ -250,5 +250,10 @@ export class WatchMe implements OnDestroy {
     });
   }
 
-  protected navigateToWatchPage(event: MediaCarouselItem) {}
+  protected navigateToWatchPage(event: MediaCarouselItem) {
+    this.navigator.navigateToWatchPage({
+      mediaId: event.id,
+      mediaType: event.type,
+    });
+  }
 }

@@ -102,7 +102,7 @@
 
     <!-- Similar Contents -->
     <div class="similar flex flex-col gap-4">
-      <h3 class="font-bold text-2xl">Similar</h3>
+      <h3 class="font-bold text-2xl">More Like This</h3>
       <me-media-carousel [items]="similarMediaCarouselItems()" [template]="similarCarouselItem" />
     </div>
   </div>
@@ -111,7 +111,7 @@
 <!-- Similar Carousel -->
 <ng-template #similarCarouselItem let-item>
   <me-media-carousel-cover-item
-    class="ml-4 self-stretch basis-[200px] md:basis-[225px] shrink-0" [item]="item"
+    class="ml-4 self-stretch basis-[175px] md:basis-[200px] shrink-0" [item]="item"
     (itemClick)="navigateToWatchPage($event)" />
 </ng-template>
 
