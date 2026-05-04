@@ -1,6 +1,5 @@
 # TODO
-- [ ] Finish the Homepage.
-- [ ] Fetch the Videos of Media Items for the Interactive Media Card Component if no video url is provided (Only use YouTube videos).
+- [X] Finish the Homepage.
 - [ ] Create a Navigation System.
 - [ ] Implement the Search Functionality.
 - [ ] Implement the Video Fetching Service.
