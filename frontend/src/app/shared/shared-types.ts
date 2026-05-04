@@ -1,3 +1,5 @@
+import { MediaType } from '@shared/models';
+
 export type ID = number;
 
 export const DEFAULT_BREAKPOINTS = {
@@ -42,3 +44,7 @@ export const GENRE_MAP: Record<number, string> = {
   10767: 'Talk',
   10768: 'War & Politics',
 };
+
+export interface CuratedContents {
+  homeHeroSlider: { id: number; mediaType: MediaType }[];
+}

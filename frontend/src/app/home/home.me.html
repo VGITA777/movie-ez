@@ -1,7 +1,12 @@
 <section class="home flex flex-col items-center gap-24">
-  <me-hero-slider
-    [items]="items"
-    class="w-full accent-background" />
+  @let heroItemsEntries = heroItems();
+  @if (heroItemsEntries.length === 0) {
+    <ng-container *ngTemplateOutlet="heroSkeletonCarousel"></ng-container>
+  } @else {
+    <me-hero-slider
+      [items]="heroItems()"
+      class="w-full accent-background" />
+  }
 
   <div
     class="sliders-container flex flex-col gap-16 max-w-[1750px] w-[95%] md:w-[90%] lg:w-[85%] -mt-28">
@@ -9,7 +14,12 @@
     <!-- Top Movies (Cover Carousel)-->
     <div class="discover-movie flex flex-col gap-4">
       <h2 class="text-2xl font-bold">Top Rated Movies</h2>
-      <me-media-carousel [items]="topMovies()" [template]="mediaRankingItem" />
+      @let topMoviesEntries = topMovies();
+      @if (topMoviesEntries.length === 0) {
+        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
+      } @else {
+        <me-media-carousel [items]="topMoviesEntries" [template]="mediaRankingItem" />
+      }
     </div>
 
     <hlm-separator />
@@ -17,7 +27,12 @@
     <!-- Popular Movies (Backdrop Carousel) -->
     <div class="discover-movie flex flex-col gap-4">
       <h2 class="text-2xl font-bold">Popular Movies</h2>
-      <me-media-carousel [items]="popularMovies()" [template]="mediaBackdropItem" />
+      @let popularMoviesEntries = popularMovies();
+      @if (popularMoviesEntries.length === 0) {
+        <ng-container *ngTemplateOutlet="mediaBackdropCarouselSkeleton"></ng-container>
+      } @else {
+        <me-media-carousel [items]="popularMoviesEntries" [template]="mediaBackdropItem" />
+      }
     </div>
 
     <hlm-separator />
@@ -25,7 +40,12 @@
     <!-- Discover Movies (Cover Carousel) -->
     <div class="discover-movie flex flex-col gap-4">
       <h2 class="text-2xl font-bold">Discover Movies</h2>
-      <me-media-carousel [items]="discoverMovies()" [template]="mediaCoverItem" />
+      @let discoverMoviesEntries = discoverMovies();
+      @if (discoverMoviesEntries.length === 0) {
+        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
+      } @else {
+        <me-media-carousel [items]="discoverMoviesEntries" [template]="mediaCoverItem" />
+      }
     </div>
 
     <hlm-separator />
@@ -33,7 +53,12 @@
     <!-- Top TV Shows (Cover Carousel)-->
     <div class="discover-movie flex flex-col gap-4">
       <h2 class="text-2xl font-bold">Top Rated Tv Shows</h2>
-      <me-media-carousel [items]="topTvShows()" [template]="mediaRankingItem" />
+      @let topTvShowsEntries = topTvShows();
+      @if (topTvShowsEntries.length === 0) {
+        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
+      } @else {
+        <me-media-carousel [items]="topTvShows()" [template]="mediaRankingItem" />
+      }
     </div>
 
     <hlm-separator />
@@ -41,7 +66,12 @@
     <!-- Popular Tv Shows (Backdrop Carousel) -->
     <div class="discover-movie flex flex-col gap-4">
       <h2 class="text-2xl font-bold">Popular Tv Shows</h2>
-      <me-media-carousel [items]="popularTvShows()" [template]="mediaBackdropItem" />
+      @let popularTvShowsEntries = popularTvShows();
+      @if (popularTvShowsEntries.length === 0) {
+        <ng-container *ngTemplateOutlet="mediaBackdropCarouselSkeleton"></ng-container>
+      } @else {
+        <me-media-carousel [items]="popularTvShows()" [template]="mediaBackdropItem" />
+      }
     </div>
 
     <hlm-separator />
@@ -49,7 +79,12 @@
     <!-- Discover TV Shows (Cover Carousel) -->
     <div class="discover-tv flex flex-col gap-4">
       <h2 class="text-2xl font-bold">Discover TV Shows</h2>
-      <me-media-carousel [items]="discoverTvShows()" [template]="mediaCoverItem" />
+      @let discoverTvShowsEntries = discoverTvShows();
+      @if (discoverTvShowsEntries.length === 0) {
+        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
+      } @else {
+        <me-media-carousel [items]="discoverTvShows()" [template]="mediaCoverItem" />
+      }
     </div>
   </div>
 </section>
@@ -72,4 +107,45 @@
     class="ml-24 self-stretch basis-[200px] md:basis-[225px] shrink-0"
     [item]="item"
     (itemClick)="handleItemClick($event)" />
+</ng-template>
+
+<ng-template #mediaCoverCarouselSkeleton>
+  <me-media-carousel
+    [items]="[1, 2, 3, 4, 5, 6 ,7, 8, 9, 10]" [template]="mediaCoverItemSkeleton" />
+</ng-template>
+
+<ng-template #mediaBackdropCarouselSkeleton>
+  <me-media-carousel
+    [items]="[1, 2, 3, 4, 5, 6 ,7, 8, 9, 10]" [template]="mediaBackdropItemSkeleton" />
+</ng-template>
+
+<ng-template #heroSkeletonCarousel>
+  <me-media-carousel
+    [items]="[1]" [template]="heroSkeleton" [includeControls]="false"
+    [includeProgressDots]="false" />
+</ng-template>
+
+<ng-template #mediaCoverItemSkeleton>
+  <div class="ml-4 self-stretch basis-[200px] md:basis-[225px] shrink-0">
+    <hlm-skeleton class="w-full aspect-2/3 rounded-xl" />
+    <div class="flex flex-col gap-1 mt-2">
+      <hlm-skeleton class="w-full h-4" />
+      <hlm-skeleton class="w-1/2 h-4" />
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #mediaBackdropItemSkeleton>
+  <div class="self-stretch basis-[325px] md:basis-[375px] ml-4 shrink-0">
+    <hlm-skeleton class="w-full aspect-video rounded-xl" />
+    <div class="flex flex-col gap-1 mt-2">
+      <hlm-skeleton class="w-[70%] h-4" />
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #heroSkeleton>
+  <div class="h-[90vh] w-screen max-w-screen relative aspect-video mask-[linear-gradient(to_bottom,var(--background)_80%,transparent_95%)]">
+    <hlm-skeleton class="absolute inset-0 w-full h-full" />
+  </div>
 </ng-template>

@@ -1,4 +1,5 @@
 import { GENRE_MAP } from '@shared/shared-types';
+import { Video, VideosModel } from '@shared/models';
 
 export function convertRuntimeToHoursAndMinutes(runtime: number): string {
   const hours: number = Math.floor(runtime / 60);
@@ -20,4 +21,48 @@ export function toGenres(genreIds: number[] | undefined): string[] {
   }
 
   return genreIds.map((genreId) => GENRE_MAP[genreId] ?? '').filter((genre) => genre !== '');
+}
+
+export async function loadFile<T>(filePath: string): Promise<T> {
+  const response: Response = await fetch(filePath);
+
+  if (!response.ok) {
+    throw new Error(`Failed to load file: ${response.statusText}`);
+  }
+
+  return (await response.json()) as Promise<T>;
+}
+
+export function getYoutubeEmbedUrl(data: {
+  videoKey: string;
+  muted: boolean;
+  loop: boolean;
+}): string {
+  const { videoKey, muted, loop } = data;
+
+  const params = new URLSearchParams({
+    autoplay: '1',
+    mute: muted ? '1' : '0',
+    controls: '0',
+    loop: loop ? '1' : '0',
+    disablekb: '1',
+  });
+
+  if (loop) {
+    params.set('playlist', videoKey);
+  }
+
+  return `https://www.youtube.com/embed/${videoKey}?${params.toString()}`;
+}
+
+export function pickYoutubeTrailer(videos: VideosModel): Video | undefined {
+  const candidates = videos.results.filter(
+    (video) => video.site === 'YouTube' && video.type === 'Trailer',
+  );
+  return candidates.find((video) => video.official) ?? candidates[0];
+}
+
+export function pickYoutubeTrailerFromArray(videos: Video[]): Video | undefined {
+  const candidates = videos.filter((video) => video.site === 'YouTube' && video.type === 'Trailer');
+  return candidates.find((video) => video.official) ?? candidates[0];
 }

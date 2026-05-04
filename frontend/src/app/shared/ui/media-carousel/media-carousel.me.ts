@@ -44,6 +44,8 @@ export type MediaCarouselOutput =
 })
 export class MediaCarouselMe {
   public readonly items: InputSignal<MediaCarouselItem[] | unknown[]> = input.required();
+  public readonly includeControls: InputSignal<boolean> = input(true);
+  public readonly includeProgressDots: InputSignal<boolean> = input(true);
   public readonly template: InputSignal<TemplateRef<unknown>> = input.required();
   public readonly carouselOptions: InputSignal<Partial<EmblaOptionsType>> = input<
     Partial<EmblaOptionsType>

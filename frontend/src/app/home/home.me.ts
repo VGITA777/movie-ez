@@ -16,18 +16,31 @@ import {
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { MediaDiscoverService } from '@shared/services/media-discover.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { first, forkJoin, map, mergeMap, of, switchMap } from 'rxjs';
+import { first, forkJoin, from, map, mergeMap, of, switchMap } from 'rxjs';
 import {
   DiscoverMovieModel,
   DiscoverTvModel,
+  MovieDetailsModel,
   MovieShortDetailsWithMediaTypeModel,
+  TvSeriesDetailsModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
+  Video,
 } from '@shared/models';
-import { getYearFromDate, toGenres } from '@shared/utils';
+import {
+  getYearFromDate,
+  loadFile,
+  pickYoutubeTrailer,
+  pickYoutubeTrailerFromArray,
+  toGenres,
+} from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { MediaListsService } from '@shared/services/media-lists.service';
 import { MediaTvSeriesService } from '@shared/services/media-tv-series-series.service';
 import { MediaMovieService } from '@shared/services/media-movie.service';
+import { CuratedContents } from '@shared/shared-types';
+import { YoutubeEmbedService } from '@shared/services/youtube-embed-service';
+import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'me-home',
@@ -38,6 +51,8 @@ import { MediaMovieService } from '@shared/services/media-movie.service';
     MediaCarouselBackdropItemMe,
     MediaCarouselTopItemMe,
     HlmSeparatorImports,
+    HlmSkeleton,
+    NgTemplateOutlet,
   ],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',
@@ -47,53 +62,69 @@ export class HomeMe {
   private readonly mediaListService: MediaListsService = inject(MediaListsService);
   private readonly mediaTvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
   private readonly mediaMovieService: MediaMovieService = inject(MediaMovieService);
+  private readonly youtubeEmbedService: YoutubeEmbedService = inject(YoutubeEmbedService);
 
-  protected readonly items: HomeHeroSliderItem[] = [
-    {
-      id: 157336,
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/2ssWTSVklAEc98frZUQhgtGHx7s.jpg`,
-      title: 'Interstellar',
-      rating: 9.8,
-      type: 'movie',
-      description:
-        'The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the' +
-        ' limitations on human space travel and conquer the vast distances involved in an interstellar voyage.',
-      year: 2024,
-      genres: ['Sci-Fi', 'Adventure'],
-      videoSrc:
-        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=0&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
-    },
-    {
-      id: 378064,
-      title: 'A Silent Voice',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/5lAMQMWpXMsirvtLLvW7cJgEPkU.jpg`,
-      rating: 8.4,
-      type: 'movie',
-      description:
-        'Shouya Ishida starts bullying the new girl in class, Shouko Nishimiya, because she is deaf. But as the teasing ' +
-        'continues, the rest of the class starts to turn on Shouya for his lack of compassion. When they leave elementary ' +
-        'school, Shouko and Shouya do not speak to each other again... until an older, wiser Shouya, ' +
-        'tormented by his past behaviour, decides he must see Shouko once more. He wants to atone for his ' +
-        'sins, but is it already too late...?',
-      year: 2016,
-      genres: ['Animation', 'Drama'],
-      videoSrc:
-        'https://www.youtube.com/embed/nfK6UgLra7g?autoplay=1&mute=0&controls=0&loop=1&disablekb=1?playlist=nfK6UgLra7g',
-    },
-    {
-      id: 76479,
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/bq28ajZaoMyzEIm6REelqyqtEDZ.jpg`,
-      title: 'The Boys',
-      rating: 8.4,
-      type: 'tv',
-      description:
-        'A group of vigilantes known informally as “The Boys” set out to take down corrupt superheroes with no more than blue-collar grit and a willingness to fight dirty.',
-      year: 2024,
-      videoSrc:
-        'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=0&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
-      genres: ['Action', 'Crime'],
-    },
-  ];
+  protected readonly heroItems: Signal<HomeHeroSliderItem[]> = toSignal(
+    from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(
+      map((contents) => contents.homeHeroSlider),
+      // Get details
+      switchMap((entries) => {
+        const getDetails = entries.map((data) => {
+          return data.mediaType === 'movie'
+            ? this.mediaMovieService.getMovieDetails(data.id)
+            : this.mediaTvSeriesService.getTvSeriesDetails(data.id);
+        });
+        return forkJoin(getDetails);
+      }),
+      // Get Videos
+      switchMap((entries) => {
+        const getVideos = entries.map((entry) => {
+          const videos$ =
+            entry.media_type === 'movie'
+              ? this.mediaMovieService.getMovieVideos(entry.id)
+              : this.mediaTvSeriesService.getTvSeriesVideos(entry.id);
+          return videos$.pipe(
+            first(),
+            map((videos) => ({ details: entry, videos: videos })),
+          );
+        });
+        return forkJoin(getVideos);
+      }),
+      // Map to HomeHeroSliderItem
+      map((entries) => {
+        return entries.map((entry): HomeHeroSliderItem => {
+          const details: MovieDetailsModel | TvSeriesDetailsModel = entry.details as
+            | MovieDetailsModel
+            | TvSeriesDetailsModel;
+          const trailer: Video | undefined = pickYoutubeTrailer(entry.videos);
+          const title =
+            entry.details.media_type === 'movie'
+              ? (details as MovieDetailsModel).title
+              : (details as TvSeriesDetailsModel).name;
+          const date =
+            entry.details.media_type === 'movie'
+              ? (details as MovieDetailsModel).release_date
+              : (details as TvSeriesDetailsModel).first_air_date;
+          const imgPath = details.backdrop_path || details.poster_path || '';
+
+          return {
+            id: details.id,
+            imgSrc: `${environment.tmdb.imageBaseUrl}original${imgPath}`,
+            title,
+            rating: details.vote_average,
+            type: entry.details.media_type,
+            description: details.overview,
+            year: getYearFromDate(date) ?? 0,
+            genres: details.genres.map((genre) => genre.name),
+            videoSrc: trailer
+              ? this.youtubeEmbedService.getYoutubeEmbedUrl(trailer.key)
+              : undefined,
+          };
+        });
+      }),
+    ),
+    { initialValue: [] },
+  );
 
   protected readonly discoverMovies: Signal<MediaCarouselItem[]> = toSignal(
     this.discoverService.discoverMovies({ page: 1 }).pipe(
@@ -169,6 +200,7 @@ export class HomeMe {
     this.mediaListService.getMoviePopular().pipe(
       first(),
       map((movies) => movies.results),
+      // Get Details
       switchMap((movieShow) => {
         const requests = movieShow.map((movieShow) => {
           return this.mediaMovieService.getMovieImages(movieShow.id).pipe(
@@ -186,9 +218,22 @@ export class HomeMe {
         });
         return forkJoin(requests);
       }),
+      // Get Videos
+      switchMap((movies) => {
+        const videos$ = movies.map((movie) => {
+          return this.mediaMovieService.getMovieVideos(movie.id).pipe(
+            first(),
+            map((videos) => ({ details: movie, videos: videos })),
+          );
+        });
+
+        return forkJoin(videos$);
+      }),
+      // Map to MediaCarouselItem
       map((movies) => {
-        return movies.map((movie) => {
-          return this.convertToCarouselItem(movie, 'backdrop');
+        return movies.map(({ details, videos }) => {
+          const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videos.results);
+          return this.convertToCarouselItem({ ...details, videoSrc }, 'backdrop');
         });
       }),
     ),
@@ -200,6 +245,7 @@ export class HomeMe {
     this.mediaListService.getTvSeriesPopular().pipe(
       first(),
       map((tvShows) => tvShows.results),
+      // Get Details
       switchMap((tvShow) => {
         const requests = tvShow.map((tvShow) => {
           return this.mediaTvSeriesService.getTvSeriesImages(tvShow.id).pipe(
@@ -217,9 +263,21 @@ export class HomeMe {
         });
         return forkJoin(requests);
       }),
+      // Get Videos
+      switchMap((tvShows) => {
+        const videos$ = tvShows.map((tvShow) => {
+          return this.mediaTvSeriesService.getTvSeriesVideos(tvShow.id).pipe(
+            first(),
+            map((videos) => ({ details: tvShow, videos: videos })),
+          );
+        });
+        return forkJoin(videos$);
+      }),
+      // Map to MediaCarouselItem
       map((tvShows) => {
-        return tvShows.map((tvShow) => {
-          return this.convertToCarouselItem(tvShow, 'backdrop');
+        return tvShows.map(({ details, videos }) => {
+          const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videos.results);
+          return this.convertToCarouselItem({ ...details, videoSrc }, 'backdrop');
         });
       }),
     ),
@@ -237,8 +295,21 @@ export class HomeMe {
     });
   }
 
+  private getYoutubeEmbedTrailer(videos: Video[]): string | undefined {
+    if (!videos || videos.length === 0) {
+      return undefined;
+    }
+    const trailer: Video | undefined = pickYoutubeTrailerFromArray(videos);
+    if (trailer) {
+      return this.youtubeEmbedService.getYoutubeEmbedUrl(trailer.key);
+    }
+    return undefined;
+  }
+
   private convertToCarouselItem(
-    item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
+    item: (MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel) & {
+      videoSrc?: string;
+    },
     imgToUse: 'poster' | 'backdrop' = 'poster',
   ): MediaCarouselItem {
     const title: string =
@@ -259,7 +330,7 @@ export class HomeMe {
       genres: toGenres(item.genre_ids),
       imgSrc: `${environment.tmdb.imageBaseUrl}original${imgPath}`,
       rating: item.vote_average,
-      videoSrc: '',
+      videoSrc: item.videoSrc ?? '',
       year: year,
     };
   }

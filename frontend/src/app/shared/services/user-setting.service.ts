@@ -4,11 +4,15 @@ import { storage } from '@signality/core';
 
 export interface UserSettings {
   includeAdult: boolean;
+  mutedTrailers: boolean;
+  loopTrailers: boolean;
   preferredLanguage: LanguageCode;
 }
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   includeAdult: false,
+  mutedTrailers: true,
+  loopTrailers: true,
   preferredLanguage: 'en',
 };
 
