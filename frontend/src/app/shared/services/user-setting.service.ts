@@ -1,11 +1,18 @@
 import { Injectable, WritableSignal } from '@angular/core';
-import {
-  DEFAULT_USER_SETTINGS,
-  USER_SETTINGS_STORAGE_KEY,
-  UserSettings,
-} from '@shared/shared-types';
 import { storage } from '@signality/core';
-import { isValidLanguageCode } from '@shared/models';
+import { isValidLanguageCode, LanguageCode } from '@shared/models';
+
+export interface UserSettings {
+  includeAdult: boolean;
+  preferredLanguage: LanguageCode;
+}
+
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+  includeAdult: false,
+  preferredLanguage: 'en',
+};
+
+export const USER_SETTINGS_STORAGE_KEY = 'user-settings';
 
 @Injectable({
   providedIn: 'root',

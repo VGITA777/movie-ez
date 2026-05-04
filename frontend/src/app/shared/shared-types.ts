@@ -1,5 +1,3 @@
-import { LanguageCode } from '@shared/models';
-
 export type ID = number;
 
 export const DEFAULT_BREAKPOINTS = {
@@ -11,18 +9,6 @@ export const DEFAULT_BREAKPOINTS = {
 } as const;
 
 export type DefaultBreakPoints = typeof DEFAULT_BREAKPOINTS;
-
-export interface UserSettings {
-  includeAdult: boolean;
-  preferredLanguage: LanguageCode;
-}
-
-export const DEFAULT_USER_SETTINGS: UserSettings = {
-  includeAdult: true,
-  preferredLanguage: 'en',
-};
-
-export const USER_SETTINGS_STORAGE_KEY = 'user-settings';
 
 export const GENRE_MAP: Record<number, string> = {
   // Movie genres
