@@ -26,13 +26,7 @@ import {
   TvSeriesShortDetailsModelWithMediaTypeModel,
   Video,
 } from '@shared/models';
-import {
-  getYearFromDate,
-  loadFile,
-  pickYoutubeTrailer,
-  pickYoutubeTrailerFromArray,
-  toGenres,
-} from '@shared/utils';
+import { getYearFromDate, loadFile, pickYoutubeTrailerFromArray, toGenres } from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { MediaListsService } from '@shared/services/media-lists.service';
 import { MediaTvSeriesService } from '@shared/services/media-tv-series-series.service';
@@ -67,58 +61,51 @@ export class HomeMe {
   protected readonly heroItems: Signal<HomeHeroSliderItem[]> = toSignal(
     from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(
       map((contents) => contents.homeHeroSlider),
-      // Get details
       switchMap((entries) => {
-        const getDetails = entries.map((data) => {
-          return data.mediaType === 'movie'
-            ? this.mediaMovieService.getMovieDetails(data.id)
-            : this.mediaTvSeriesService.getTvSeriesDetails(data.id);
+        const detailsRequests$ = entries.map((entry) => {
+          return entry.mediaType === 'movie'
+            ? this.mediaMovieService.getMovieDetails(entry.id).pipe(first())
+            : this.mediaTvSeriesService.getTvSeriesDetails(entry.id).pipe(first());
         });
-        return forkJoin(getDetails);
-      }),
-      // Get Videos
-      switchMap((entries) => {
-        const getVideos = entries.map((entry) => {
-          const videos$ =
-            entry.media_type === 'movie'
-              ? this.mediaMovieService.getMovieVideos(entry.id)
-              : this.mediaTvSeriesService.getTvSeriesVideos(entry.id);
-          return videos$.pipe(
-            first(),
-            map((videos) => ({ details: entry, videos: videos })),
-          );
+
+        const videosRequests$ = entries.map((entry) => {
+          return entry.mediaType === 'movie'
+            ? this.mediaMovieService.getMovieVideos(entry.id).pipe(first())
+            : this.mediaTvSeriesService.getTvSeriesVideos(entry.id).pipe(first());
         });
-        return forkJoin(getVideos);
+
+        return forkJoin({
+          details: forkJoin(detailsRequests$),
+          videos: forkJoin(videosRequests$),
+        });
       }),
       // Map to HomeHeroSliderItem
-      map((entries) => {
-        return entries.map((entry): HomeHeroSliderItem => {
-          const details: MovieDetailsModel | TvSeriesDetailsModel = entry.details as
-            | MovieDetailsModel
-            | TvSeriesDetailsModel;
-          const trailer: Video | undefined = pickYoutubeTrailer(entry.videos);
-          const title =
-            entry.details.media_type === 'movie'
-              ? (details as MovieDetailsModel).title
-              : (details as TvSeriesDetailsModel).name;
-          const date =
-            entry.details.media_type === 'movie'
-              ? (details as MovieDetailsModel).release_date
-              : (details as TvSeriesDetailsModel).first_air_date;
-          const imgPath = details.backdrop_path || details.poster_path || '';
-
+      map(({ details, videos }) => {
+        return details.map((item, index): HomeHeroSliderItem => {
+          const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videos[index].results);
+          const title: string =
+            item.media_type === 'movie'
+              ? (item as MovieDetailsModel).title
+              : (item as TvSeriesDetailsModel).name;
+          const imgSrc: string =
+            item.media_type === 'movie'
+              ? (item as MovieDetailsModel).backdrop_path
+              : (item as TvSeriesDetailsModel).backdrop_path;
+          const year: number =
+            item.media_type === 'movie'
+              ? (getYearFromDate((item as MovieDetailsModel).release_date) ?? 0)
+              : (getYearFromDate((item as TvSeriesDetailsModel).first_air_date) ?? 0);
+          const genres: string[] = toGenres(item.genres.map((genre) => genre.id));
           return {
-            id: details.id,
-            imgSrc: `${environment.tmdb.imageBaseUrl}original${imgPath}`,
-            title,
-            rating: details.vote_average,
-            type: entry.details.media_type,
-            description: details.overview,
-            year: getYearFromDate(date) ?? 0,
-            genres: details.genres.map((genre) => genre.name),
-            videoSrc: trailer
-              ? this.youtubeEmbedService.getYoutubeEmbedUrl(trailer.key)
-              : undefined,
+            description: item.overview,
+            genres: genres,
+            id: item.id,
+            imgSrc: `${environment.tmdb.imageBaseUrl}original${imgSrc}`,
+            rating: item.vote_average,
+            title: title,
+            type: item.media_type,
+            videoSrc: videoSrc,
+            year: year,
           };
         });
       }),
