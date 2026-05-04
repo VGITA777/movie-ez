@@ -5,10 +5,11 @@ import { ID } from '@shared/shared-types';
 import {
   CountryCode,
   CreditsModel,
+  ImagesModel,
   LanguageCode,
-  MovieAlternativeTitle,
   MovieAlternativeTitlesModel,
   MovieDetailsModel,
+  MovieKeywordsModel,
   MovieLatestModel,
   MovieRecommendationsModel,
   MovieSimilarModel,
@@ -46,14 +47,14 @@ export class MediaMovieService extends AbstractMediaBackendService {
     });
   }
 
-  public getMovieImages(id: ID, language?: LanguageCode): Observable<MovieAlternativeTitle> {
-    return this.performRequest<MovieAlternativeTitle, { language?: LanguageCode }>(`${id}/images`, {
+  public getMovieImages(id: ID, language?: LanguageCode): Observable<ImagesModel> {
+    return this.performRequest<ImagesModel, { language?: LanguageCode }>(`${id}/images`, {
       language,
     });
   }
 
-  public getMovieKeywords(id: ID): Observable<MovieAlternativeTitle> {
-    return this.performRequest<MovieAlternativeTitle, {}>(`${id}/keywords`, {});
+  public getMovieKeywords(id: ID): Observable<MovieKeywordsModel> {
+    return this.performRequest<MovieKeywordsModel, {}>(`${id}/keywords`, {});
   }
 
   public getLatest(): Observable<MovieLatestModel> {

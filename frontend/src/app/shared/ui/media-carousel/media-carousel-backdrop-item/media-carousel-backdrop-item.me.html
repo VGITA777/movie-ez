@@ -9,29 +9,30 @@
 
   <div class="media-item-info flex flex-row gap-2 items-center">
     <!-- Runtime -->
-    <div class="media-item-specific-info__runtime__container flex items-center gap-1">
-      <ng-icon name="lucideClock" class="text-sm" />
-      <span class="media-item-specific-info__runtime text-sm font-thin">
+    @if (itemData.runtime) {
+      <div class="media-item-specific-info__runtime__container flex items-center gap-1">
+        <ng-icon name="lucideClock" class="text-sm" />
+        <span class="media-item-specific-info__runtime text-sm font-thin">
         @if (itemData.type === 'movie') {
           {{ convertRuntimeToHoursAndMinutes(itemData.runtime) }}
         } @else {
           {{ itemData.runtime }} Seasons
-        }
-      </span>
-    </div>
+        }</span>
+      </div>
+      <span>&middot;</span>
+    }
 
     <!-- Genre -->
     @if (itemData.genres !== undefined && itemData.genres.length > 0) {
-      <span>&middot;</span>
       <div class="genres-container flex flex-row gap-1 items-center">
         @for (genre of itemData.genres.slice(0, 2); track genre) {
           <span class="media-item-specific-info__genre text-sm font-thin">{{ genre }}</span>
         }
       </div>
+      <span>&middot;</span>
     }
 
     <!-- Rating -->
-    <span>&middot;</span>
     <div class="media-item-specific-info__rating flex gap-1 items-center">
       <ng-icon
         class="text-xs text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />

@@ -1,10 +1,11 @@
 import {
   CountryCode,
   CreditsModel,
+  ImagesModel,
   LanguageCode,
-  MovieAlternativeTitle,
   MovieAlternativeTitlesModel,
   MovieDetailsModel,
+  MovieKeywordsModel,
   MovieRecommendationsModel,
   MovieSimilarModel,
   VideosModel,
@@ -37,11 +38,11 @@ export class MovieData {
     return this.movieService.getMovieDetails(this.id, language);
   }
 
-  public getImages(language?: LanguageCode): Observable<MovieAlternativeTitle> {
+  public getImages(language?: LanguageCode): Observable<ImagesModel> {
     return this.movieService.getMovieImages(this.id, language);
   }
 
-  public getKeywords(): Observable<MovieAlternativeTitle> {
+  public getKeywords(): Observable<MovieKeywordsModel> {
     return this.movieService.getMovieKeywords(this.id);
   }
 
