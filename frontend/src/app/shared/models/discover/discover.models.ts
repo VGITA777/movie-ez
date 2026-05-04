@@ -1,5 +1,8 @@
-import { MovieShortDetailsModel, TvSeriesShortDetailsModel } from '@shared/models';
+import {
+  MovieShortDetailsWithMediaTypeModel,
+  TvSeriesShortDetailsModelWithMediaTypeModel,
+} from '@shared/models';
 
-export interface DiscoverMovieModel extends MovieShortDetailsModel {}
+export interface DiscoverMovieModel extends MovieShortDetailsWithMediaTypeModel {}
 
-export interface DiscoverTvModel extends TvSeriesShortDetailsModel {}
+export interface DiscoverTvModel extends TvSeriesShortDetailsModelWithMediaTypeModel {}

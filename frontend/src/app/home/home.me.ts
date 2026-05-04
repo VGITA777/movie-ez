@@ -14,13 +14,19 @@ import {
 import {
   MediaCarouselTopItem,
   MediaCarouselTopItemMe,
+  TopRanking,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { MediaDiscoverService } from '@shared/services/media-discover.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { first, map } from 'rxjs';
-import { DiscoverMovieModel, DiscoverTvModel } from '@shared/models';
-import { toGenres } from '@shared/utils';
+import {
+  DiscoverMovieModel,
+  DiscoverTvModel,
+  MovieShortDetailsWithMediaTypeModel,
+  TvSeriesShortDetailsModelWithMediaTypeModel,
+} from '@shared/models';
+import { getYearFromDate, toGenres } from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { MediaListsService } from '@shared/services/media-lists.service';
 
@@ -122,49 +128,14 @@ export class HomeMe {
       runtime: 4,
     },
   ];
-  protected readonly mediaItemsRanking: MediaCarouselTopItem[] = [
-    {
-      id: 157336,
-      title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
-      rating: 9.8,
-      genres: ['Sci-Fi'],
-      year: 2024,
-      ranking: 1,
-      videoSrc:
-        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
-      type: 'movie',
-    },
-    {
-      id: 1290417,
-      title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
-      rating: 6.8,
-      genres: ['Adventure'],
-      year: 2026,
-      ranking: 2,
-      videoSrc:
-        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
-      type: 'movie',
-    },
-  ];
 
   protected readonly discoverMovies: Signal<MediaCarouselItem[]> = toSignal(
     this.discoverService.discoverMovies({ page: 1 }).pipe(
       map((response) => response.results),
       map((movies: DiscoverMovieModel[]) => {
-        return movies.map(
-          (movie): MediaCarouselItem => ({
-            id: movie.id,
-            title: movie.title,
-            imgSrc: `${environment.tmdb.imageBaseUrl}original${movie.poster_path}`,
-            rating: movie.vote_average,
-            genres: toGenres(movie.genre_ids),
-            year: new Date(movie.release_date).getFullYear(),
-            videoSrc: '',
-            type: 'movie',
-          }),
-        );
+        return movies.map((movie): MediaCarouselItem => {
+          return this.convertToCarouselItem(movie);
+        });
       }),
     ),
     { initialValue: [] },
@@ -173,27 +144,62 @@ export class HomeMe {
     this.discoverService.discoverTvShows({ page: 1 }).pipe(
       map((response) => response.results),
       map((tvShows: DiscoverTvModel[]) => {
-        return tvShows.map((tvShow) => ({
-          id: tvShow.id,
-          title: tvShow.name,
-          imgSrc: `${environment.tmdb.imageBaseUrl}original${tvShow.poster_path}`,
-          rating: tvShow.vote_average,
-          genres: toGenres(tvShow.genre_ids),
-          year: new Date(tvShow.first_air_date).getFullYear(),
-          videoSrc: '',
-          type: 'tv',
-        }));
+        return tvShows.map((tvShow) => {
+          return this.convertToCarouselItem(tvShow);
+        });
       }),
     ),
     { initialValue: [] },
   );
-  protected readonly topMovies = toSignal(
-    this.mediaListService.getMovieTopRated()
-    .pipe(
+  protected readonly topMovies: Signal<MediaCarouselTopItem[]> = toSignal(
+    this.mediaListService.getMovieTopRated().pipe(
       first(),
-      map(d => d.results)
-    )
-  )
+      map((movies) => movies.results),
+      map((movies) => {
+        return movies.map((movie) => {
+          return this.convertToCarouselItem(movie);
+        });
+      }),
+      map((movies) => {
+        return movies
+          .map((movie: MediaCarouselItem, index: number): MediaCarouselTopItem => {
+            return {
+              ...movie,
+              ranking: (index + 1) as TopRanking,
+            };
+          })
+          .slice(0, 10);
+      }),
+    ),
+    {
+      initialValue: [],
+    },
+  );
+
+  protected readonly topTvShows: Signal<MediaCarouselTopItem[]> = toSignal(
+    this.mediaListService.getTvSeriesTopRated().pipe(
+      first(),
+      map((tvShows) => tvShows.results),
+      map((tvShows) => {
+        return tvShows.map((tvShow) => {
+          return this.convertToCarouselItem(tvShow);
+        });
+      }),
+      map((tvShows) => {
+        return tvShows
+          .map((tvShow: MediaCarouselItem, index: number): MediaCarouselTopItem => {
+            return {
+              ...tvShow,
+              ranking: (index + 1) as TopRanking,
+            };
+          })
+          .slice(0, 10);
+      }),
+    ),
+    {
+      initialValue: [],
+    },
+  );
 
   private readonly navFacade: NavigationFacade = inject(NavigationFacade);
 
@@ -202,5 +208,30 @@ export class HomeMe {
       mediaId: event.id,
       mediaType: event.type,
     });
+  }
+
+  private convertToCarouselItem(
+    item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
+  ): MediaCarouselItem {
+    const title: string =
+      item.media_type === 'movie'
+        ? (item as MovieShortDetailsWithMediaTypeModel).title
+        : (item as TvSeriesShortDetailsModelWithMediaTypeModel).name;
+    const year: number =
+      getYearFromDate(
+        item.media_type === 'movie'
+          ? (item as MovieShortDetailsWithMediaTypeModel).release_date
+          : (item as TvSeriesShortDetailsModelWithMediaTypeModel).first_air_date,
+      ) ?? 0;
+    return {
+      id: item.id,
+      title: title,
+      type: item.media_type,
+      genres: toGenres(item.genre_ids),
+      imgSrc: `${environment.tmdb.imageBaseUrl}original${item.poster_path}`,
+      rating: item.vote_average,
+      videoSrc: '',
+      year: year,
+    };
   }
 }

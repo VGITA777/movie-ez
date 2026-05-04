@@ -167,7 +167,7 @@ export class WatchMe implements OnDestroy {
       const dateStr =
         (item as MovieShortDetailsWithMediaTypeModel).release_date ??
         (item as TvSeriesShortDetailsModelWithMediaTypeModel).first_air_date;
-      return Number(getYearFromDate(dateStr)) ?? 0;
+      return getYearFromDate(dateStr) ?? 0;
     };
 
     return items.results.map(

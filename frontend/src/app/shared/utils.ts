@@ -6,12 +6,12 @@ export function convertRuntimeToHoursAndMinutes(runtime: number): string {
   return `${hours}h ${minutes.toFixed(0)}m`;
 }
 
-export function getYearFromDate(date?: string): string {
+export function getYearFromDate(date?: string): number | undefined {
   if (!date) {
-    return '';
+    return undefined;
   }
 
-  return new Date(date).getFullYear().toString();
+  return new Date(date).getFullYear();
 }
 
 export function toGenres(genreIds: number[] | undefined): string[] {

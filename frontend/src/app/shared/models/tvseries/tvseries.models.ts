@@ -95,7 +95,7 @@ export interface TvSeriesOnTheAirModel extends Page<TvSeriesShortDetailsModelWit
 
 export interface TvSeriesPopularModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
 
-export interface TvSeriesTopRatedModel extends Page<TvSeriesShortDetailsModel> {}
+export interface TvSeriesTopRatedModel extends Page<TvSeriesShortDetailsModelWithMediaTypeModel> {}
 
 export interface TvSeasonDetailsEpisodeCrew {
   adult: boolean;
