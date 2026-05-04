@@ -1,6 +1,6 @@
-import { Injectable, WritableSignal } from '@angular/core';
-import { storage } from '@signality/core';
+import { Injectable, Signal, WritableSignal } from '@angular/core';
 import { isValidLanguageCode, LanguageCode } from '@shared/models';
+import { storage } from '@signality/core';
 
 export interface UserSettings {
   includeAdult: boolean;
@@ -18,34 +18,30 @@ export const USER_SETTINGS_STORAGE_KEY = 'user-settings';
   providedIn: 'root',
 })
 export class UserSettingService {
-  private readonly userSettings: WritableSignal<UserSettings> = storage(
+  private _userSettings: WritableSignal<UserSettings> = storage(
     USER_SETTINGS_STORAGE_KEY,
     DEFAULT_USER_SETTINGS,
   );
+  public userSettings: Signal<UserSettings> = this._userSettings.asReadonly();
 
   public getUserSettings(): UserSettings {
     const settings: UserSettings = this.userSettings();
-    if (this.isUserSettingsValid(settings)) {
+    if (UserSettingService.isUserSettingsValid(settings)) {
       return settings;
     }
-
-    console.warn('User settings are invalid. Resetting to default settings.');
-
-    const verifiedSettings: UserSettings = this.createVerifiedUserSettings();
-    this.updateUserSettings(verifiedSettings);
-    return verifiedSettings;
+    return this.createVerifiedUserSettings();
   }
 
   public updateUserSettings(newSettings: Partial<UserSettings>): void {
     const currentSettings: UserSettings = this.userSettings();
     const updatedSettings: UserSettings = { ...currentSettings, ...newSettings };
 
-    if (!this.isUserSettingsValid(updatedSettings)) {
+    if (!UserSettingService.isUserSettingsValid(updatedSettings)) {
       console.warn('Attempted to update user settings with invalid values. Update aborted.');
       return;
     }
 
-    this.userSettings.set(updatedSettings);
+    this._userSettings.set(updatedSettings);
   }
 
   private createVerifiedUserSettings(): UserSettings {
@@ -66,10 +62,11 @@ export class UserSettingService {
       verifiedSettings.includeAdult = false;
     }
 
+    this.updateUserSettings(verifiedSettings);
     return verifiedSettings;
   }
 
-  private isUserSettingsValid(settings: UserSettings): boolean {
+  private static isUserSettingsValid(settings: UserSettings): boolean {
     if (!isValidLanguageCode(settings.preferredLanguage)) {
       return false;
     }

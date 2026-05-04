@@ -1,11 +1,7 @@
-import { HttpInterceptorFn, HttpParams } from '@angular/common/http';
-import {
-  DEFAULT_USER_SETTINGS,
-  USER_SETTINGS_STORAGE_KEY,
-  UserSettings,
-} from '@shared/shared-types';
-import { storage } from '@signality/core';
+import { HttpInterceptorFn } from '@angular/common/http';
 import { environment } from '@environments/environment';
+import { UserSettings, UserSettingService } from '@shared/services/user-setting.service';
+import { inject } from '@angular/core';
 
 export const mediaRequestUserSettingsInterceptor: HttpInterceptorFn = (req, next) => {
   // Only include if it's contacting the /media endpoint
@@ -13,11 +9,13 @@ export const mediaRequestUserSettingsInterceptor: HttpInterceptorFn = (req, next
     return next(req);
   }
 
-  const settings: UserSettings = storage(USER_SETTINGS_STORAGE_KEY, DEFAULT_USER_SETTINGS)();
-  const params: HttpParams = req.params;
+  const userSettingsService: UserSettingService = inject(UserSettingService);
+  const settings: UserSettings = userSettingsService.getUserSettings();
 
-  params.set('include_adult', String(settings.includeAdult));
-  params.set('language', settings.preferredLanguage);
+  const params = req.params
+    .set('includeAdult', String(settings.includeAdult))
+    .set('language', settings.preferredLanguage);
 
-  return next(req);
+  const newRequests = req.clone({ params });
+  return next(newRequests);
 };
