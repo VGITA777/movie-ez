@@ -16,7 +16,7 @@ import tools.jackson.databind.annotation.JsonSerialize;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TvSeriesShortDetailsModelWithMediaTypeModel extends TvSeriesShortDetailsModel {
+public class TvSeriesShortDetailsWithMediaTypeModel extends TvSeriesShortDetailsModel {
 
   @JsonDeserialize(using = StringToMediaTypeDeserializer.class)
   @JsonSerialize(using = MediaTypeToStringSerializer.class)
