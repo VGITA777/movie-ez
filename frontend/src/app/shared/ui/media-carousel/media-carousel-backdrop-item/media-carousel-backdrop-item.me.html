@@ -27,6 +27,9 @@
       <div class="genres-container flex flex-row gap-1 items-center">
         @for (genre of itemData.genres.slice(0, 2); track genre) {
           <span class="media-item-specific-info__genre text-sm font-thin">{{ genre }}</span>
+          @if ($index >= 0 && !$last) {
+            <span>&middot;</span>
+          }
         }
       </div>
       <span>&middot;</span>
