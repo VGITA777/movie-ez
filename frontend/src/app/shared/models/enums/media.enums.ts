@@ -184,7 +184,12 @@ export const LANGUAGE_CODES = [
   'zh',
   'xx',
 ] as const;
+export const LANGUAGE_CODE_SET = new Set(LANGUAGE_CODES);
 export type LanguageCode = (typeof LANGUAGE_CODES)[number];
+
+export function isValidLanguageCode(code: string): boolean {
+  return LANGUAGE_CODE_SET.has(code as LanguageCode);
+}
 
 export const COUNTRY_CODES = [
   'AD',
