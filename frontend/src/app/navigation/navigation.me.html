@@ -1,0 +1,53 @@
+<nav
+  #nav
+  class="fixed top-0 left-0 right-0 w-screen z-50 flex flex-row items-center justify-between py-4 px-6 transition ease duration-500 "
+  [ngClass]="{ 'bg-background/95': showBg(), 'border-b': showBg() }"
+>
+  <h3 class="brand font-bold text-2xl text-primary">
+    MovieEz
+  </h3>
+
+
+  <hlm-dialog class="w-[40%] max-w-[400px]">
+    <button
+      hlmDialogTrigger
+      hlmInputGroup
+      class="search !bg-background/90 cursor-pointer text-muted-foreground hover:bg-accent/50 transition-colors">
+      <span
+        class="font-[Quicksand] flex-1 text-left text-sm bg-transparent px-3 py-2 pointer-events-none">
+      Search...
+    </span>
+      <div hlmInputGroupAddon class="pointer-events-none" align="inline-start">
+        <ng-icon name="lucideSearch" />
+      </div>
+    </button>
+
+    <!-- 4. The Dialog Content -->
+    <hlm-dialog-content *hlmDialogPortal="let ctx" class="max-w-[95vw]! sm:max-w-[90vw] lg:max-w-[80vw]">
+      <hlm-dialog-header>
+        <h3 hlmDialogTitle>SearchHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH</h3>
+        <p hlmDialogDescription>
+          Find what you are looking for.
+        </p>
+      </hlm-dialog-header>
+
+      <button hlmBtn variant="outline" hlmDialogClose>Cancel</button>
+
+    </hlm-dialog-content>
+  </hlm-dialog>
+
+  <div class="settings-container">
+    <hlm-avatar size="lg" class="bg-accent" role="button">
+      <span hlmAvatarFallback>ME</span>
+    </hlm-avatar>
+  </div>
+</nav>
+
+<ng-content>
+</ng-content>
+
+<ng-template #test>
+  <div class="min-w-[60vw] min-h-[80vh]">
+    <p>Hello World. Im inside a dialog!</p>
+  </div>
+</ng-template>
