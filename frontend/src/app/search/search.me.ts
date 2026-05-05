@@ -37,6 +37,7 @@ import {
 import { getYearFromDate, toGenres } from '@shared/utils';
 import { HlmEmptyImports } from '@spartan-ng/helm/empty';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
+import { NavigationFacade } from '@shared/services/navigation-facade.service';
 
 export type SearchType = 'mixed' | 'movie' | 'tv';
 
@@ -62,10 +63,10 @@ export type SearchType = 'mixed' | 'movie' | 'tv';
 })
 export class SearchMe {
   private readonly searchService: MediaSearchService = inject(MediaSearchService);
+  private readonly navigationFacade: NavigationFacade = inject(NavigationFacade);
 
   protected readonly searchQuery: ModelSignal<string> = model('');
-  private readonly debouncedSearch: Signal<string> = debounced(this.searchQuery, 500);
-
+  protected readonly debouncedSearch: Signal<string> = debounced(this.searchQuery, 500);
   protected readonly selectedType: WritableSignal<SearchType> = signal<SearchType>('mixed');
   protected readonly searchedItems: ResourceRef<MediaCarouselItem[]> = rxResource({
     defaultValue: [],
@@ -79,11 +80,8 @@ export class SearchMe {
           const trimmedQuery: string = query.trim();
 
           if (trimmedQuery === '') {
-            this.isLoading.set(false);
             return of([]);
           }
-
-          this.isLoading.set(true);
 
           let request$: Observable<MediaCarouselItem[]> = of([]);
 
@@ -95,18 +93,16 @@ export class SearchMe {
             request$ = this.performTvSearch(trimmedQuery);
           }
 
-          return request$.pipe(
-            finalize(() => {
-              this.isLoading.set(false);
-            }),
-          );
+          return request$;
         }),
       );
     },
   });
-  protected readonly isLoading: WritableSignal<boolean> = signal(false);
+  protected readonly isLoading: Signal<boolean> = computed(() => {
+    return this.searchedItems.isLoading() && this.searchedItems.error === undefined;
+  });
 
-  public onCloseClick: OutputEmitterRef<void> = output();
+  public onNavigateToWatchPage: OutputEmitterRef<void> = output();
 
   constructor() {
     effect(() => {
@@ -204,5 +200,13 @@ export class SearchMe {
         });
       }),
     );
+  }
+
+  protected navigateToWatchPage(item: MediaCarouselItem) {
+    this.navigationFacade.navigateToWatchPage({
+      mediaId: item.id,
+      mediaType: item.type,
+      onNavigate: () => this.onNavigateToWatchPage.emit(),
+    });
   }
 }

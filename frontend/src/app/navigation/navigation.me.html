@@ -3,12 +3,12 @@
   class="fixed top-0 left-0 right-0 w-screen z-50 flex flex-row items-center justify-between py-4 px-6 transition ease duration-500 "
   [ngClass]="{ 'bg-background/85': showBg(), 'border-b': showBg() }"
 >
-  <h3 class="brand font-bold text-2xl text-primary">
+  <a class="brand font-bold text-2xl text-primary" [routerLink]="['/']">
     MovieEz
-  </h3>
+  </a>
 
 
-  <hlm-dialog class="w-[40%] max-w-[400px]">
+  <hlm-dialog #searchDialog class="w-[40%] max-w-[400px]">
     <button
       hlmDialogTrigger
       hlmInputGroup
@@ -25,7 +25,9 @@
     <hlm-dialog-content
       *hlmDialogPortal="let ctx"
       class="p-0 max-w-[unset]! max-h-[unset]! overflow-hidden">
-      <me-search class="w-[90vw] md:w-[80vw] lg:w-[70vw] max-w-[1250px] h-[80vh]" />
+      <me-search
+        class="w-[90vw] md:w-[80vw] lg:w-[70vw] max-w-[1250px] h-[80vh]"
+        (onNavigateToWatchPage)="closeSearchDialog()" />
     </hlm-dialog-content>
   </hlm-dialog>
 

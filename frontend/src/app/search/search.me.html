@@ -36,19 +36,21 @@
         <div
           class="results h-full p-1 grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(175px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]">
           @if (isLoading()) {
+            <!-- Loading Items Skeletong -->
             @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track item) {
               <ng-container *ngTemplateOutlet="mediaCoverItemSkeleton"></ng-container>
             }
           } @else {
+            <!-- Searched Items -->
             @for (item of items; track item.id) {
               <ng-container
                 *ngTemplateOutlet="mediaCoverItem; context: { $implicit: item }"></ng-container>
             }
           }
-
         </div>
       </ng-scrollbar>
-    } @else if (items.length === 0 && searchQuery().length > 0) {
+    } @else if (items.length === 0 && debouncedSearch().length > 0) {
+      <!-- No Results in Search -->
       @let context = {
         title  : 'Nothing Found',
         message: 'No results found for your search query.',
@@ -57,6 +59,7 @@
       <ng-container
         *ngTemplateOutlet="emptyState; context: context"></ng-container>
     } @else {
+      <!-- Start Searching -->
       @let context = {
         title  : 'Search Anything',
         message: 'Start typing to search for Movies and TV shows.',
@@ -69,11 +72,14 @@
 
 </section>
 
+<!-- Searched Item -->
 <ng-template #mediaCoverItem let-item>
   <me-media-carousel-cover-item
+    (click)="navigateToWatchPage(item)"
     class="w-full" [item]="item" />
 </ng-template>
 
+<!-- Searched Item Skeleton -->
 <ng-template #mediaCoverItemSkeleton>
   <div class="w-full">
     <hlm-skeleton class="w-full aspect-2/3 rounded-xl" />
@@ -84,6 +90,7 @@
   </div>
 </ng-template>
 
+<!-- Empty State -->
 <ng-template #emptyState let-title="title" let-message="message" let-icon="icon">
   <div hlmEmpty>
     <div hlmEmptyHeader>
