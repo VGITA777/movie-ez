@@ -4,7 +4,7 @@
 
     <div class="search__container flex flex-row gap-2">
       <div hlmInputGroup class="rounded-full">
-        <input hlmInputGroupInput type="text" placeholder="Search..." />
+        <input [(ngModel)]="searchQuery" hlmInputGroupInput type="text" placeholder="Search..." />
         <div hlmInputGroupAddon>
           <ng-icon name="lucideSearch"></ng-icon>
         </div>
@@ -14,10 +14,12 @@
       </button>
     </div>
 
-    <hlm-toggle-group variant="outline" value="mixed">
+    <hlm-toggle-group
+      [value]="selectedType()" (valueChange)="changeSelectedType($event)" variant="outline"
+      type="single">
       <button hlmToggleGroupItem class="w-18" value="mixed" aria-label="Toggle Mixed Search">Mixed
       </button>
-      <button hlmToggleGroupItem class="w-18" value="movies" aria-label="Toggle Movies Search">
+      <button hlmToggleGroupItem class="w-18" value="movie" aria-label="Toggle Movies Search">
         Movies
       </button>
       <button hlmToggleGroupItem class="w-18" value="tv" aria-label="Toggle TV Shows Search">TV
@@ -25,18 +27,45 @@
     </hlm-toggle-group>
   </div>
 
-  <ng-scrollbar hlm class="w-full h-full rounded-2xl border" appearance="compact">
-    <div
-      class="results h-full p-1 grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(175px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]">
-      @for (item of items; track item.id) {
-        <ng-container
-          *ngTemplateOutlet="mediaCoverItem; context: { $implicit: item }"></ng-container>
-      }
-    </div>
-  </ng-scrollbar>
+  @let items = searchedItems.value();
+
+  <div class="results-container rounded-2xl border overflow-hidden w-full h-full">
+    @if (items.length > 0) {
+      <ng-scrollbar hlm class="w-full h-full " appearance="compact">
+        <div
+          class="results h-full p-1 grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(175px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]">
+          @for (item of items; track item.id) {
+            <ng-container
+              *ngTemplateOutlet="mediaCoverItem; context: { $implicit: item }"></ng-container>
+          }
+        </div>
+      </ng-scrollbar>
+    } @else if (items.length === 0 && searchQuery().trim().length > 0) {
+      <ng-container
+        *ngTemplateOutlet="emptyState; context: { $implicit: 'No results found for your search query.' }"></ng-container>
+    } @else {
+      <ng-container
+        *ngTemplateOutlet="emptyState; context: { $implicit: 'Start typing to search for movies and TV shows.' }"></ng-container>
+    }
+  </div>
+
 </section>
 
 <ng-template #mediaCoverItem let-item>
   <me-media-carousel-cover-item
     class="w-full" [item]="item" />
+</ng-template>
+
+<ng-template #emptyState let-message>
+  <hlm-empty class="w-full h-full">
+    <div hlmEmptyHeader>
+      <div hlmEmptyMedia variant="icon">
+        <ng-icon name="lucideArchiveX" />
+        <div hlmEmptyTitle>Can't find anything</div>
+        <div hlmEmptyDescription>
+          {{ message }}
+        </div>
+      </div>
+    </div>
+  </hlm-empty>
 </ng-template>

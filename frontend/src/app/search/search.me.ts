@@ -1,8 +1,19 @@
-import { Component, output, OutputEmitterRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  model,
+  ModelSignal,
+  output,
+  OutputEmitterRef,
+  ResourceRef,
+  signal,
+  Signal,
+  WritableSignal,
+} from '@angular/core';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucideSearch, lucideX } from '@ng-icons/lucide';
+import { lucideArchiveX, lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmToggleGroupImports } from '@spartan-ng/helm/toggle-group';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
@@ -12,6 +23,19 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
+import { MediaSearchService } from '@shared/services/media-search-service';
+import { FormsModule } from '@angular/forms';
+import { debounced } from '@signality/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { filter, map, Observable, of, switchMap } from 'rxjs';
+import {
+  MovieShortDetailsWithMediaTypeModel,
+  TvSeriesShortDetailsModelWithMediaTypeModel,
+} from '@shared/models';
+import { getYearFromDate, toGenres } from '@shared/utils';
+import { HlmEmptyImports } from '@spartan-ng/helm/empty';
+
+export type SearchType = 'mixed' | 'movie' | 'tv';
 
 @Component({
   selector: 'me-search',
@@ -25,47 +49,135 @@ import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
     HlmDialogImports,
     NgScrollbar,
     HlmScrollAreaImports,
+    FormsModule,
+    HlmEmptyImports,
   ],
   templateUrl: './search.me.html',
   styleUrl: './search.me.css',
-  providers: [provideIcons({ lucideSearch, lucideX })],
+  providers: [provideIcons({ lucideSearch, lucideX, lucideArchiveX })],
 })
 export class SearchMe {
+  private readonly searchService: MediaSearchService = inject(MediaSearchService);
+
+  protected readonly searchQuery: ModelSignal<string> = model('');
+  private readonly debouncedSearch: Signal<string> = debounced(this.searchQuery, 500);
+
+  protected readonly selectedType: WritableSignal<SearchType> = signal<SearchType>('mixed');
+  protected readonly searchedItems: ResourceRef<MediaCarouselItem[]> = rxResource({
+    defaultValue: [],
+    params: (): { type: SearchType; query: string } => ({
+      type: this.selectedType(),
+      query: this.debouncedSearch(),
+    }),
+    stream: ({ params }) => {
+      return of(params.query).pipe(
+        filter((query) => query.trim() !== ''),
+        switchMap((query: string): Observable<MediaCarouselItem[]> => {
+          if (params.type === 'mixed') {
+            return this.performMixedSearch(query);
+          } else if (params.type === 'movie') {
+            return this.performMovieSearch(query);
+          } else if (params.type === 'tv') {
+            return this.performTvSearch(query);
+          }
+
+          return of([]);
+        }),
+      );
+    },
+  });
+
   public onCloseClick: OutputEmitterRef<void> = output();
 
-  protected readonly items: MediaCarouselItem[] = [
-    {
-      id: 157336,
-      title: 'Interstellar',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg`,
-      rating: 9.8,
-      genres: ['Sci-Fi'],
-      year: 2024,
-      videoSrc:
-        'https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=zSWdZVtXT7E',
-      type: 'movie',
-    },
-    {
-      id: 1290417,
-      title: 'Thrash',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/adk8weka3O5648g3de4z3y4aE7G.jpg`,
-      rating: 6.8,
-      genres: ['Adventure'],
-      year: 2026,
-      videoSrc:
-        'https://www.youtube.com/embed/hzyOsNyDkbM?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=hzyOsNyDkbM',
-      type: 'movie',
-    },
-    {
-      id: 76479,
-      title: 'The Boys',
-      imgSrc: `${environment.tmdb.imageBaseUrl}original/fRNBdaCZMM3DPGTtqdg6Zf1XwX5.jpg`,
-      rating: 6.8,
-      genres: ['Action', 'Crime'],
-      year: 2024,
-      videoSrc:
-        'https://www.youtube.com/embed/tcrNsIaQkb4?autoplay=1&mute=1&controls=0&loop=1&disablekb=1?playlist=tcrNsIaQkb4',
-      type: 'tv',
-    },
-  ];
+  protected changeSelectedType(event: any) {
+    this.selectedType.set(event);
+  }
+
+  private performMixedSearch(query: string, page: number = 1): Observable<MediaCarouselItem[]> {
+    if (query.trim() === '') {
+      return of([]);
+    }
+
+    return this.searchService.searchMulti({ query, page }).pipe(
+      filter((response) => response.results.length > 0),
+      map((item) => item.results),
+      map((items): MediaCarouselItem[] => {
+        return items.map((item): MediaCarouselItem => {
+          const title: string =
+            item.title ?? item.name ?? item.original_title ?? item.original_name;
+          const genres: string[] = toGenres(item.genre_ids);
+          const year: number =
+            (item.media_type === 'movie'
+              ? getYearFromDate(item.release_date)
+              : getYearFromDate(item.first_air_date)) ?? 0;
+          return {
+            id: item.id,
+            title: title,
+            imgSrc: `${environment.tmdb.imageBaseUrl}original${item.poster_path}`,
+            rating: item.vote_average,
+            genres: genres,
+            year: year,
+            videoSrc: '',
+            type: item.media_type,
+          };
+        });
+      }),
+    );
+  }
+
+  private performMovieSearch(query: string, page: number = 1): Observable<MediaCarouselItem[]> {
+    if (query.trim() === '') {
+      return of([]);
+    }
+
+    return this.searchService.searchMovie({ query, page }).pipe(
+      filter((response) => response.results.length > 0),
+      map((item) => item.results),
+      map((items: MovieShortDetailsWithMediaTypeModel[]): MediaCarouselItem[] => {
+        return items.map((item): MediaCarouselItem => {
+          const title: string = item.title;
+          const genres: string[] = toGenres(item.genre_ids);
+          const year: number = getYearFromDate(item.release_date) ?? 0;
+          return {
+            id: item.id,
+            title: title,
+            imgSrc: `${environment.tmdb.imageBaseUrl}original${item.poster_path}`,
+            rating: item.vote_average,
+            genres: genres,
+            year: year,
+            videoSrc: '',
+            type: item.media_type,
+          };
+        });
+      }),
+    );
+  }
+
+  private performTvSearch(query: string, page: number = 1): Observable<MediaCarouselItem[]> {
+    if (query.trim() === '') {
+      return of([]);
+    }
+
+    return this.searchService.searchTvSeries({ query, page }).pipe(
+      filter((response) => response.results.length > 0),
+      map((item) => item.results),
+      map((items: TvSeriesShortDetailsModelWithMediaTypeModel[]): MediaCarouselItem[] => {
+        return items.map((item): MediaCarouselItem => {
+          const title: string = item.name ?? item.original_name;
+          const genres: string[] = toGenres(item.genre_ids);
+          const year: number = getYearFromDate(item.first_air_date) ?? 0;
+          return {
+            id: item.id,
+            title: title,
+            imgSrc: `${environment.tmdb.imageBaseUrl}original${item.poster_path}`,
+            rating: item.vote_average,
+            genres: genres,
+            year: year,
+            videoSrc: '',
+            type: item.media_type,
+          };
+        });
+      }),
+    );
+  }
 }
