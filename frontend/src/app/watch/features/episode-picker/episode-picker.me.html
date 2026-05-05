@@ -59,7 +59,7 @@
     overview     : ep.overview,
   };
   <!-- There is a bug that sometimes does not render the last item -->
-  @let classes = "sm:self-stretch sm:shrink-0 sm:basis-[325px] ml-4";
+  @let classes = "sm:self-stretch sm:shrink-0 sm:basis-[325px] sm:ml-4";
   @if (isLast) {
     <me-episode-card
       [class]="classes"

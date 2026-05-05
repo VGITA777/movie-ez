@@ -1,14 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, output, OutputEmitterRef } from '@angular/core';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucideSearch } from '@ng-icons/lucide';
+import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmToggleGroupImports } from '@spartan-ng/helm/toggle-group';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
 import { environment } from '@environments/environment';
 import { NgTemplateOutlet } from '@angular/common';
-import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmDialogImports } from '@spartan-ng/helm/dialog';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 
 @Component({
   selector: 'me-search',
@@ -18,13 +21,18 @@ import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
     HlmToggleGroupImports,
     MediaCarouselCoverItemMe,
     NgTemplateOutlet,
-    HlmSeparatorImports,
+    HlmButtonImports,
+    HlmDialogImports,
+    NgScrollbar,
+    HlmScrollAreaImports,
   ],
   templateUrl: './search.me.html',
   styleUrl: './search.me.css',
-  providers: [provideIcons({ lucideSearch })],
+  providers: [provideIcons({ lucideSearch, lucideX })],
 })
 export class SearchMe {
+  public onCloseClick: OutputEmitterRef<void> = output();
+
   protected readonly items: MediaCarouselItem[] = [
     {
       id: 157336,

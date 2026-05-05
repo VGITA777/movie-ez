@@ -1,4 +1,3 @@
-<!--
 <nav
   #nav
   class="fixed top-0 left-0 right-0 w-screen z-50 flex flex-row items-center justify-between py-4 px-6 transition ease duration-500 "
@@ -23,17 +22,10 @@
       </div>
     </button>
 
-    &lt;!&ndash; 4. The Dialog Content &ndash;&gt;
-    <hlm-dialog-content *hlmDialogPortal="let ctx" class="max-w-[95vw]! sm:max-w-[90vw] lg:max-w-[80vw]">
-      <hlm-dialog-header>
-        <h3 hlmDialogTitle>SearchHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH</h3>
-        <p hlmDialogDescription>
-          Find what you are looking for.
-        </p>
-      </hlm-dialog-header>
-
-      <button hlmBtn variant="outline" hlmDialogClose>Cancel</button>
-
+    <hlm-dialog-content
+      *hlmDialogPortal="let ctx"
+      class="p-0 max-w-[unset]! max-h-[unset]! overflow-hidden">
+      <me-search class="w-[90vw] md:w-[80vw] lg:w-[70vw] max-w-[1250px] h-[80vh]" />
     </hlm-dialog-content>
   </hlm-dialog>
 
@@ -43,7 +35,6 @@
     </hlm-avatar>
   </div>
 </nav>
--->
 
 <ng-content>
 </ng-content>
