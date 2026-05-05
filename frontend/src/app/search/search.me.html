@@ -29,23 +29,41 @@
 
   @let items = searchedItems.value();
 
-  <div class="results-container rounded-2xl border overflow-hidden w-full h-full">
-    @if (items.length > 0) {
+  <div
+    class="results-container rounded-2xl border overflow-hidden w-full h-full flex items-center justify-center">
+    @if (items.length > 0 || isLoading()) {
       <ng-scrollbar hlm class="w-full h-full " appearance="compact">
         <div
           class="results h-full p-1 grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(175px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]">
-          @for (item of items; track item.id) {
-            <ng-container
-              *ngTemplateOutlet="mediaCoverItem; context: { $implicit: item }"></ng-container>
+          @if (isLoading()) {
+            @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track item) {
+              <ng-container *ngTemplateOutlet="mediaCoverItemSkeleton"></ng-container>
+            }
+          } @else {
+            @for (item of items; track item.id) {
+              <ng-container
+                *ngTemplateOutlet="mediaCoverItem; context: { $implicit: item }"></ng-container>
+            }
           }
+
         </div>
       </ng-scrollbar>
-    } @else if (items.length === 0 && searchQuery().trim().length > 0) {
+    } @else if (items.length === 0 && searchQuery().length > 0) {
+      @let context = {
+        title  : 'Nothing Found',
+        message: 'No results found for your search query.',
+        icon   : 'lucideArchiveX'
+      };
       <ng-container
-        *ngTemplateOutlet="emptyState; context: { $implicit: 'No results found for your search query.' }"></ng-container>
+        *ngTemplateOutlet="emptyState; context: context"></ng-container>
     } @else {
+      @let context = {
+        title  : 'Search Anything',
+        message: 'Start typing to search for Movies and TV shows.',
+        icon   : 'lucideKeyboard'
+      };
       <ng-container
-        *ngTemplateOutlet="emptyState; context: { $implicit: 'Start typing to search for movies and TV shows.' }"></ng-container>
+        *ngTemplateOutlet="emptyState; context: context"></ng-container>
     }
   </div>
 
@@ -56,16 +74,26 @@
     class="w-full" [item]="item" />
 </ng-template>
 
-<ng-template #emptyState let-message>
-  <hlm-empty class="w-full h-full">
+<ng-template #mediaCoverItemSkeleton>
+  <div class="w-full">
+    <hlm-skeleton class="w-full aspect-2/3 rounded-xl" />
+    <div class="flex flex-col gap-1 mt-2">
+      <hlm-skeleton class="w-full h-4" />
+      <hlm-skeleton class="w-1/2 h-4" />
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #emptyState let-title="title" let-message="message" let-icon="icon">
+  <div hlmEmpty>
     <div hlmEmptyHeader>
       <div hlmEmptyMedia variant="icon">
-        <ng-icon name="lucideArchiveX" />
-        <div hlmEmptyTitle>Can't find anything</div>
-        <div hlmEmptyDescription>
-          {{ message }}
-        </div>
+        <ng-icon [name]="icon" />
       </div>
+      <div hlmEmptyTitle>{{ title }}</div>
+      <div hlmEmptyDescription>{{ message }}</div>
     </div>
-  </hlm-empty>
+    <div hlmEmptyContent>
+    </div>
+  </div>
 </ng-template>

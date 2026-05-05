@@ -1,5 +1,7 @@
 import {
   Component,
+  computed,
+  effect,
   inject,
   model,
   ModelSignal,
@@ -13,7 +15,7 @@ import {
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucideArchiveX, lucideSearch, lucideX } from '@ng-icons/lucide';
+import { lucideArchiveX, lucideKeyboard, lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmToggleGroupImports } from '@spartan-ng/helm/toggle-group';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
@@ -27,13 +29,14 @@ import { MediaSearchService } from '@shared/services/media-search-service';
 import { FormsModule } from '@angular/forms';
 import { debounced } from '@signality/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { filter, map, Observable, of, switchMap } from 'rxjs';
+import { filter, finalize, map, Observable, of, switchMap } from 'rxjs';
 import {
   MovieShortDetailsWithMediaTypeModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
 } from '@shared/models';
 import { getYearFromDate, toGenres } from '@shared/utils';
 import { HlmEmptyImports } from '@spartan-ng/helm/empty';
+import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 
 export type SearchType = 'mixed' | 'movie' | 'tv';
 
@@ -51,10 +54,11 @@ export type SearchType = 'mixed' | 'movie' | 'tv';
     HlmScrollAreaImports,
     FormsModule,
     HlmEmptyImports,
+    HlmSkeleton,
   ],
   templateUrl: './search.me.html',
   styleUrl: './search.me.css',
-  providers: [provideIcons({ lucideSearch, lucideX, lucideArchiveX })],
+  providers: [provideIcons({ lucideSearch, lucideX, lucideArchiveX, lucideKeyboard })],
 })
 export class SearchMe {
   private readonly searchService: MediaSearchService = inject(MediaSearchService);
@@ -71,23 +75,44 @@ export class SearchMe {
     }),
     stream: ({ params }) => {
       return of(params.query).pipe(
-        filter((query) => query.trim() !== ''),
         switchMap((query: string): Observable<MediaCarouselItem[]> => {
-          if (params.type === 'mixed') {
-            return this.performMixedSearch(query);
-          } else if (params.type === 'movie') {
-            return this.performMovieSearch(query);
-          } else if (params.type === 'tv') {
-            return this.performTvSearch(query);
+          const trimmedQuery: string = query.trim();
+
+          if (trimmedQuery === '') {
+            this.isLoading.set(false);
+            return of([]);
           }
 
-          return of([]);
+          this.isLoading.set(true);
+
+          let request$: Observable<MediaCarouselItem[]> = of([]);
+
+          if (params.type === 'mixed') {
+            request$ = this.performMixedSearch(trimmedQuery);
+          } else if (params.type === 'movie') {
+            request$ = this.performMovieSearch(trimmedQuery);
+          } else if (params.type === 'tv') {
+            request$ = this.performTvSearch(trimmedQuery);
+          }
+
+          return request$.pipe(
+            finalize(() => {
+              this.isLoading.set(false);
+            }),
+          );
         }),
       );
     },
   });
+  protected readonly isLoading: WritableSignal<boolean> = signal(false);
 
   public onCloseClick: OutputEmitterRef<void> = output();
+
+  constructor() {
+    effect(() => {
+      console.debug(`Error`, this.searchedItems.error());
+    });
+  }
 
   protected changeSelectedType(event: any) {
     this.selectedType.set(event);
