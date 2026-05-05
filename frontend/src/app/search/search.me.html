@@ -2,6 +2,7 @@
 
   <div class="search-header sticky flex flex-col gap-4 top-0 z-100 bg-background py-4">
 
+    <!-- Search Input -->
     <div class="search__container flex flex-row gap-2">
       <div hlmInputGroup class="rounded-full">
         <input [(ngModel)]="searchQuery" hlmInputGroupInput type="text" placeholder="Search..." />
@@ -14,7 +15,9 @@
       </button>
     </div>
 
+    <!-- Search Type Selection -->
     <hlm-toggle-group
+      [nullable]="false"
       [value]="selectedType()" (valueChange)="changeSelectedType($event)" variant="outline"
       type="single">
       <button hlmToggleGroupItem class="w-18" value="mixed" aria-label="Toggle Mixed Search">Mixed
@@ -29,6 +32,7 @@
 
   @let items = searchedItems.value();
 
+  <!-- Results Container -->
   <div
     class="results-container rounded-2xl border overflow-hidden w-full h-full flex items-center justify-center">
     @if (items.length > 0 || isLoading()) {
