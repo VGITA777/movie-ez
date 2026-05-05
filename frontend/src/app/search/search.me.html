@@ -1,1 +1,33 @@
-<p>search works!</p>
+<section class="search w-full h-full flex flex-col gap-2">
+  <div hlmInputGroup class="rounded-full">
+    <input hlmInputGroupInput type="text" placeholder="Search..." />
+    <div hlmInputGroupAddon>
+      <ng-icon name="lucideSearch"></ng-icon>
+    </div>
+  </div>
+
+  <hlm-separator />
+
+  <hlm-toggle-group variant="outline" value="mixed">
+    <button hlmToggleGroupItem class="w-18" value="mixed" aria-label="Toggle Mixed Search">Mixed
+    </button>
+    <button hlmToggleGroupItem class="w-18" value="movies" aria-label="Toggle Movies Search">
+      Movies
+    </button>
+    <button hlmToggleGroupItem class="w-18" value="tv" aria-label="Toggle TV Shows Search">TV
+    </button>
+  </hlm-toggle-group>
+
+  <hlm-separator />
+
+  <div class="results grid gap-4 grid-cols-[repeat(auto-fill,minmax(175px,1fr))]">
+    @for (item of items; track item.id) {
+      <ng-container *ngTemplateOutlet="mediaCoverItem; context: { $implicit: item }"></ng-container>
+    }
+  </div>
+</section>
+
+<ng-template #mediaCoverItem let-item>
+  <me-media-carousel-cover-item
+    class="w-full" [item]="item" />
+</ng-template>

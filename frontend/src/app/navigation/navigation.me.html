@@ -1,7 +1,8 @@
+<!--
 <nav
   #nav
   class="fixed top-0 left-0 right-0 w-screen z-50 flex flex-row items-center justify-between py-4 px-6 transition ease duration-500 "
-  [ngClass]="{ 'bg-background/95': showBg(), 'border-b': showBg() }"
+  [ngClass]="{ 'bg-background/85': showBg(), 'border-b': showBg() }"
 >
   <h3 class="brand font-bold text-2xl text-primary">
     MovieEz
@@ -22,7 +23,7 @@
       </div>
     </button>
 
-    <!-- 4. The Dialog Content -->
+    &lt;!&ndash; 4. The Dialog Content &ndash;&gt;
     <hlm-dialog-content *hlmDialogPortal="let ctx" class="max-w-[95vw]! sm:max-w-[90vw] lg:max-w-[80vw]">
       <hlm-dialog-header>
         <h3 hlmDialogTitle>SearchHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH</h3>
@@ -42,12 +43,7 @@
     </hlm-avatar>
   </div>
 </nav>
+-->
 
 <ng-content>
 </ng-content>
-
-<ng-template #test>
-  <div class="min-w-[60vw] min-h-[80vh]">
-    <p>Hello World. Im inside a dialog!</p>
-  </div>
-</ng-template>
