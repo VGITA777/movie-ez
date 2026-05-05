@@ -29,7 +29,7 @@ import { MediaSearchService } from '@shared/services/media-search-service';
 import { FormsModule } from '@angular/forms';
 import { debounced } from '@signality/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { filter, finalize, map, Observable, of, switchMap } from 'rxjs';
+import { filter, map, Observable, of, switchMap } from 'rxjs';
 import {
   MovieShortDetailsWithMediaTypeModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
@@ -110,8 +110,11 @@ export class SearchMe {
     });
   }
 
-  protected changeSelectedType(event: any) {
-    this.selectedType.set(event);
+  protected changeSelectedType(event: any | null | undefined) {
+    if (event === undefined || event === null || typeof event !== 'string') {
+      return;
+    }
+    this.selectedType.set(event as SearchType);
   }
 
   private performMixedSearch(query: string, page: number = 1): Observable<MediaCarouselItem[]> {
