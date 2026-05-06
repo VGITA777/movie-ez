@@ -30,15 +30,22 @@
         (onNavigateToWatchPage)="closeSearchDialog()" />
     </hlm-dialog-content>
   </hlm-dialog>
-
   <div class="settings-container">
-    <hlm-avatar size="lg" class="bg-accent" role="button" (click)="login()">
-      @let username = authService.user()?.nickname
-        ?? authService.user()?.preferred_username
-        ?? 'ME';
-      <span hlmAvatarFallback>{{ username.slice(0, 2).toUpperCase() }}</span>
-    </hlm-avatar>
+    @if (authService.isAuthenticated()) {
+      <hlm-avatar size="lg" class="bg-accent" role="button">
+        @let username = authService.user()?.nickname
+          ?? authService.user()?.preferred_username
+          ?? 'ME';
+        <span hlmAvatarFallback>{{ username.slice(0, 2).toUpperCase() }}</span>
+      </hlm-avatar>
+    } @else {
+      <button hlmBtn hlmTooltip="Login" variant="default" class="rounded-full" (click)="login()">
+        <ng-icon name="lucideLogIn" />
+      </button>
+    }
   </div>
+
+
 </nav>
 
 <ng-content>

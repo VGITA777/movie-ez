@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
+    "local-certified": "ng serve --host 0.0.0.0 --ssl true --ssl-key ./certs/cert-key.pem --ssl-cert ./certs/cert.pem",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

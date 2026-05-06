@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
-import { AuthenticatedResult, OidcSecurityService, UserDataResult } from 'angular-auth-oidc-client';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 export interface User {
   readonly iss: string;
@@ -23,11 +23,9 @@ export interface User {
 export class AuthFacadeService {
   private readonly auth: OidcSecurityService = inject(OidcSecurityService);
 
-  public readonly authResult: Signal<AuthenticatedResult> = this.auth.authenticated;
   public readonly isAuthenticated: Signal<boolean> = computed(
     () => this.auth.authenticated().isAuthenticated,
   );
-  public readonly userResult: Signal<UserDataResult> = this.auth.userData;
   public readonly user: Signal<User | undefined> = computed(() => {
     if (!this.isAuthenticated()) {
       return undefined;

@@ -46,3 +46,4 @@ Thumbs.db
 /src/environments/environment.development.ts
 
 /keys
+/certs
