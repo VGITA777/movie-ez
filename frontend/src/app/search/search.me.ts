@@ -29,7 +29,7 @@ import { MediaSearchService } from '@shared/services/media-search-service';
 import { FormsModule } from '@angular/forms';
 import { debounced } from '@signality/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { filter, map, Observable, of, switchMap } from 'rxjs';
+import { distinctUntilChanged, filter, map, Observable, of, switchMap } from 'rxjs';
 import {
   MovieShortDetailsWithMediaTypeModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
@@ -76,6 +76,7 @@ export class SearchMe {
     }),
     stream: ({ params }) => {
       return of(params.query).pipe(
+        distinctUntilChanged(),
         switchMap((query: string): Observable<MediaCarouselItem[]> => {
           const trimmedQuery: string = query.trim();
 
