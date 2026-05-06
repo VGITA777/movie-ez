@@ -1,19 +1,19 @@
 # TODO
 
-### General TODO
+### General
 
 - [X] Finish the Homepage.
 - [X] Implement the Search Functionality.
 - [X] Create a Navigation System.
 - [ ] Dockerize the Application.
 
-### Media Player TODO
+### Media Player
 - [ ] Implement the Video Fetching Service.
 
-### Security TODO
-- [ ] Create a way for the User to Logout.
+### Security
+- [X] Create a way for the User to Logout.
 
-### Playlists TODO
+### Playlists
 - [ ] Implement User Profile Page (Playlists).
 - [ ] Create an Unauthenticated User Playlist functionality (using local storage).
 - [ ] Create a way to sync user's playlists with the backend.
