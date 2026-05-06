@@ -1,0 +1,17 @@
+<section class="error h-screen w-screen flex items-center justify-center">
+  <div hlmEmpty class="from-muted/50 to-background h-full w-full bg-linear-to-b from-30%">
+    <div hlmEmptyHeader>
+      <div hlmEmptyMedia variant="icon">
+        <ng-icon name="lucideCircleAlert" />
+      </div>
+      <div hlmEmptyTitle>Not Found</div>
+      <div hlmEmptyDescription>It seems like you wondered too far...</div>
+    </div>
+    <div hlmEmptyContent>
+      <button hlmBtn variant="outline" size="default" [routerLink]="['/']">
+        <ng-icon hlm name="lucideHouse" class="text-xs" />
+        Go Home
+      </button>
+    </div>
+  </div>
+</section>
