@@ -10,4 +10,8 @@ export const environment = {
     mediaBaseUrl: '',
     userBaseUrl: '',
   },
+  auth: {
+    authority: '',
+    clientId: '',
+  },
 };

@@ -1,6 +1,7 @@
 import {
   Component,
   HostListener,
+  inject,
   input,
   InputSignal,
   signal,
@@ -17,6 +18,7 @@ import { NgClass } from '@angular/common';
 import { HlmDialog, HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { SearchMe } from '@search/search.me';
 import { RouterLink } from '@angular/router';
+import { AuthFacadeService } from '@shared/services/auth-facade-service';
 
 @Component({
   selector: 'me-navigation',
@@ -37,12 +39,17 @@ export class NavigationMe {
   private readonly _showBg: WritableSignal<boolean> = signal(false);
   private readonly searchDialog: Signal<HlmDialog> = viewChild.required('searchDialog');
 
+  protected readonly authService: AuthFacadeService = inject(AuthFacadeService);
   protected readonly showBg: Signal<boolean> = this._showBg.asReadonly();
 
   public readonly threshold: InputSignal<number> = input(250);
 
   protected closeSearchDialog(): void {
     this.searchDialog().close();
+  }
+
+  protected login(): void {
+    this.authService.login();
   }
 
   @HostListener('window:scroll')

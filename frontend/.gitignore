@@ -44,3 +44,5 @@ __screenshots__/
 Thumbs.db
 
 /src/environments/environment.development.ts
+
+/keys
