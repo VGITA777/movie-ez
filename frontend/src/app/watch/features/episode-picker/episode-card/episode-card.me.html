@@ -32,10 +32,9 @@
 </ng-template>
 
 <ng-template #desktop>
-  <div hlmCard class="container flex flex-col gap-4 w-full h-full p-3">
+  <div hlmCard class="relative container w-full h-full p-0 gap-0">
     <!-- Image -->
-    <div
-      class="relative aspect-video w-full object-cover rounded-md overflow-hidden">
+    <div class="relative z-20 aspect-video w-full object-cover">
       <img
         [ngSrc]="item().imgSrc"
         alt="Episode {{ item().episodeNumber }} poster"
@@ -43,12 +42,12 @@
       />
     </div>
 
-    <!-- Descriptions -->
-    <div class="episode-card__info flex flex-col gap-1 text-start">
-      <h3 class="text-sm font-semibold line-clamp-2">
+    <div hlmCardHeader class="p-3">
+      <!-- Descriptions -->
+      <h3 hlmCardTitle class="text-sm font-semibold line-clamp-2">
         Ep {{ item().episodeNumber }}: {{ item().name }}
       </h3>
-      <p class="text-xs text-muted-foreground line-clamp-3">
+      <p hlmCardDescription class="text-xs text-muted-foreground line-clamp-3">
         {{ item().overview }}
       </p>
     </div>

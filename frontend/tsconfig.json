@@ -43,7 +43,8 @@
       "@spartan-ng/helm/scroll-area": ["./libs/ui/scroll-area/src/index.ts"],
       "@spartan-ng/helm/avatar": ["./libs/ui/avatar/src/index.ts"],
       "@spartan-ng/helm/radio-group": ["./libs/ui/radio-group/src/index.ts"],
-      "@spartan-ng/helm/empty": ["./libs/ui/empty/src/index.ts"]
+      "@spartan-ng/helm/empty": ["./libs/ui/empty/src/index.ts"],
+      "@spartan-ng/helm/badge": ["./libs/ui/badge/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
