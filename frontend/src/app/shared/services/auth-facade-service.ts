@@ -42,6 +42,6 @@ export class AuthFacadeService {
   }
 
   public logout(): void {
-    this.auth.logoff().subscribe();
+    this.auth.logoffAndRevokeTokens().subscribe();
   }
 }

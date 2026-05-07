@@ -32,21 +32,37 @@
   </hlm-dialog>
   <div class="settings-container">
     @if (authService.isAuthenticated()) {
-      <hlm-avatar size="lg" class="bg-accent" role="button">
-        @let username = authService.user()?.nickname
-          ?? authService.user()?.preferred_username
-          ?? 'ME';
-        <span hlmAvatarFallback>{{ username.slice(0, 2).toUpperCase() }}</span>
-      </hlm-avatar>
+      <ng-container *ngTemplateOutlet="provileNavigation"></ng-container>
     } @else {
       <button hlmBtn hlmTooltip="Login" variant="default" class="rounded-full" (click)="login()">
-        <ng-icon name="lucideLogIn" />
+        <ng-icon name="lucideLogIn" class="text-sm" />
       </button>
     }
   </div>
-
-
 </nav>
 
-<ng-content>
-</ng-content>
+
+<ng-template #provileNavigation>
+  <nav hlmNavigationMenu orientation="vertical" openOn="click">
+    <ul hlmNavigationMenuList>
+      <li hlmNavigationMenuItem>
+        <button hlmNavigationMenuTrigger class="w-fit p-0 rounded-full">
+          <hlm-avatar size="lg" class="bg-accent">
+            @let username = authService.user()?.nickname
+              ?? authService.user()?.preferred_username
+              ?? 'ME';
+            <span hlmAvatarFallback>{{ username.slice(0, 2).toUpperCase() }}</span>
+          </hlm-avatar>
+        </button>
+
+        <div hlmNavigationMenuContent *hlmNavigationMenuPortal class=" min-w-[150px]">
+          <ul>
+            <li>
+              <a hlmNavigationMenuLink (click)="logout()">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</ng-template>

@@ -15,13 +15,14 @@ import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
 import { lucideLogIn, lucideSearch, lucideUser } from '@ng-icons/lucide';
 import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
-import { NgClass } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HlmDialog, HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { SearchMe } from '@search/search.me';
 import { RouterLink } from '@angular/router';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
+import { HlmNavigationMenuImports } from '@spartan-ng/helm/navigation-menu';
 
 @Component({
   selector: 'me-navigation',
@@ -35,6 +36,8 @@ import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
     RouterLink,
     HlmButtonImports,
     HlmTooltipImports,
+    HlmNavigationMenuImports,
+    NgTemplateOutlet,
   ],
   templateUrl: './navigation.me.html',
   styleUrl: './navigation.me.css',
@@ -61,6 +64,10 @@ export class NavigationMe {
 
   protected login(): void {
     this.authService.login();
+  }
+
+  protected logout(): void {
+    this.authService.logout();
   }
 
   @HostListener('window:scroll')
