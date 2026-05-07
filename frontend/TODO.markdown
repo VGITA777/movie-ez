@@ -31,3 +31,7 @@ my progress here.
 - Updated the navigation bar to show a button to login if the user is not authenticated and an icon
   if they are.
 - Updated the Episode Card in the watch page for large screens.
+
+### May 8, 2026
+- Implemented the logout functionality.
+- Updated the logout method from the auth-facade to revoke tokens on logout.
