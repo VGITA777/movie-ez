@@ -35,3 +35,4 @@ my progress here.
 ### May 8, 2026
 - Implemented the logout functionality.
 - Updated the logout method from the auth-facade to revoke tokens on logout.
+- Moved media and user services to their own packages.
