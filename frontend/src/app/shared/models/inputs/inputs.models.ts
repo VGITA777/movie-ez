@@ -50,3 +50,30 @@ export interface TvSeriesListsInput {
   language?: LanguageCode;
   timezone?: string;
 }
+
+export interface GetUserPlaylistInput {
+  name: string;
+}
+
+export interface CreateUserPlaylistInput {
+  name: string;
+}
+
+export interface AddTrackToPlaylistInput {
+  name: string;
+  trackId: string;
+}
+
+export interface AddTracksToPlaylistInput {
+  name: string;
+  trackIds: string[];
+}
+
+export interface DeletePlaylistInput {
+  name: string;
+}
+
+export interface DeleteTrackFromPlaylistInput {
+  name: string;
+  trackId: string;
+}

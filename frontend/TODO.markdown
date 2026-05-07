@@ -14,6 +14,8 @@
 - [X] Create a way for the User to Logout.
 
 ### Playlists
+- [X] Implement User Playlist and Profile Services.
+- [ ] Test if the User Playlist and Profile Services created by the AI is functioning properly.
 - [ ] Implement User Profile Page (Playlists).
 - [ ] Create an Unauthenticated User Playlist functionality (using local storage).
 - [ ] Create a way to sync user's playlists with the backend.
@@ -36,3 +38,4 @@ my progress here.
 - Implemented the logout functionality.
 - Updated the logout method from the auth-facade to revoke tokens on logout.
 - Moved media and user services to their own packages.
+- Created services and models for retrieving user playlists (Using AI).

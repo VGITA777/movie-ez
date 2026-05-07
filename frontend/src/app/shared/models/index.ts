@@ -5,3 +5,4 @@ export * from './movies/movies.models';
 export * from './search/search.models';
 export * from './shared/shared.models';
 export * from './tvseries/tvseries.models';
+export * from './user-playlist/user-playlist.models';
