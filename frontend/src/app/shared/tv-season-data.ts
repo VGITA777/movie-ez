@@ -1,4 +1,4 @@
-import { MediaTvSeriesSeasonService } from '@shared/services/media-tv-series-season.service';
+import { MediaTvSeriesSeasonService } from './services/media/media-tv-series-season.service';
 import { LanguageCode, TvSeasonDetailsModel } from '@shared/models';
 import { Observable } from 'rxjs';
 

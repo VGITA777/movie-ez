@@ -9,7 +9,7 @@ import {
   TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
-import { MediaTvSeriesService } from './services/media-tv-series-series.service';
+import { MediaTvSeriesService } from './services/media/media-tv-series-series.service';
 import { Observable } from 'rxjs';
 
 export class TvData {

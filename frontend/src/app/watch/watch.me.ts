@@ -22,8 +22,8 @@ import {
   VideosModel,
 } from '@shared/models';
 import { breakpoints, queryParams } from '@signality/core';
-import { MediaMovieService } from '@shared/services/media-movie.service';
-import { MediaTvSeriesService } from '@shared/services/media-tv-series-series.service';
+import { MediaMovieService } from '../shared/services/media/media-movie.service';
+import { MediaTvSeriesService } from '../shared/services/media/media-tv-series-series.service';
 import { Observable, of } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TvData } from '@shared/tv-data';

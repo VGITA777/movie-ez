@@ -14,7 +14,7 @@ import {
   TopRanking,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
-import { MediaDiscoverService } from '@shared/services/media-discover.service';
+import { MediaDiscoverService } from '../shared/services/media/media-discover.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { first, forkJoin, from, map, mergeMap, of, switchMap } from 'rxjs';
 import {
@@ -28,11 +28,11 @@ import {
 } from '@shared/models';
 import { getYearFromDate, loadFile, pickYoutubeTrailerFromArray, toGenres } from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
-import { MediaListsService } from '@shared/services/media-lists.service';
-import { MediaTvSeriesService } from '@shared/services/media-tv-series-series.service';
-import { MediaMovieService } from '@shared/services/media-movie.service';
+import { MediaListsService } from '../shared/services/media/media-lists.service';
+import { MediaTvSeriesService } from '../shared/services/media/media-tv-series-series.service';
+import { MediaMovieService } from '../shared/services/media/media-movie.service';
 import { CuratedContents } from '@shared/shared-types';
-import { YoutubeEmbedService } from '@shared/services/youtube-embed-service';
+import { YoutubeEmbedService } from '../shared/services/media/youtube-embed-service';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
 

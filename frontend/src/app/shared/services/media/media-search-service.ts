@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '@environments/environment';
+import { AbstractMediaBackendService } from './abstract-media-backend-service';
 import {
   SearchMovieInput,
   SearchMovieResultsModel,
@@ -9,7 +9,7 @@ import {
   SearchTvInput,
   SearchTvSeriesResultsModel,
 } from '@shared/models';
-import { AbstractMediaBackendService } from './abstract-media-backend-service';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root',

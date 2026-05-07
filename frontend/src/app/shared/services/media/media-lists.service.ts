@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '@environments/environment';
-import { AbstractMediaBackendService } from '@shared/services/abstract-media-backend-service';
 import {
   MovieListsInput,
   MovieNowPlayingModel,
@@ -14,6 +12,8 @@ import {
   TvSeriesPopularModel,
   TvSeriesTopRatedModel,
 } from '@shared/models';
+import { AbstractMediaBackendService } from '@shared/services/media/abstract-media-backend-service';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root',

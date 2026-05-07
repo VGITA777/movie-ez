@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { environment } from '@environments/environment';
 import {
   DiscoverMovieModel,
   DiscoverMoviesInput,
@@ -9,6 +8,7 @@ import {
 } from '@shared/models';
 import { Observable } from 'rxjs';
 import { AbstractMediaBackendService } from './abstract-media-backend-service';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root',

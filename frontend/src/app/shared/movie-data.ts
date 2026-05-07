@@ -10,7 +10,7 @@ import {
   MovieSimilarModel,
   VideosModel,
 } from '@shared/models';
-import { MediaMovieService } from '@shared/services/media-movie.service';
+import { MediaMovieService } from './services/media/media-movie.service';
 import { Observable } from 'rxjs';
 
 export class MovieData {

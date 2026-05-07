@@ -1,6 +1,6 @@
 import { Injectable, Signal, WritableSignal } from '@angular/core';
-import { isValidLanguageCode, LanguageCode } from '@shared/models';
 import { storage } from '@signality/core';
+import { isValidLanguageCode, LanguageCode } from '@shared/models';
 
 export interface UserSettings {
   includeAdult: boolean;

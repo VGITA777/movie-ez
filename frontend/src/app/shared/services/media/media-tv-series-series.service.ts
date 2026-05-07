@@ -1,7 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AbstractMediaBackendService } from '@shared/services/abstract-media-backend-service';
-import { environment } from '@environments/environment';
-import { ID } from '@shared/shared-types';
 import {
   CreditsModel,
   ImagesModel,
@@ -13,6 +10,9 @@ import {
   TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
+import { AbstractMediaBackendService } from './abstract-media-backend-service';
+import { environment } from '@environments/environment';
+import { ID } from '@shared/shared-types';
 import { Observable } from 'rxjs';
 
 @Injectable({

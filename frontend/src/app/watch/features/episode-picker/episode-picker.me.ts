@@ -10,11 +10,11 @@ import {
   output,
   OutputEmitterRef,
   ResourceRef,
-  Signal
+  Signal,
 } from '@angular/core';
 import { TvSeasonDetailsEpisode, TvSeasonDetailsModel, TvSeriesDetailsModel } from '@shared/models';
 import { TvSeasonData } from '@shared/tv-season-data';
-import { MediaTvSeriesSeasonService } from '@shared/services/media-tv-series-season.service';
+import { MediaTvSeriesSeasonService } from '../../../shared/services/media/media-tv-series-season.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { EpisodeCardMe } from '@watch/features/episode-picker/episode-card/episode-card.me';

@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '@environments/environment';
 import { AbstractMediaBackendService } from './abstract-media-backend-service';
-import { ID } from '@shared/shared-types';
 import {
   CountryCode,
   CreditsModel,
@@ -15,7 +13,9 @@ import {
   MovieSimilarModel,
   VideosModel,
 } from '@shared/models';
+import { environment } from '@environments/environment';
 import { Observable } from 'rxjs';
+import { ID } from '@shared/shared-types';
 
 @Injectable({
   providedIn: 'root',
