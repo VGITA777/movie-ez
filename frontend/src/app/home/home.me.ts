@@ -14,7 +14,7 @@ import {
   TopRanking,
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
-import { MediaDiscoverService } from '../shared/services/media/media-discover.service';
+import { MediaDiscoverService } from '@shared/services/media/media-discover.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { first, forkJoin, from, map, mergeMap, of, switchMap } from 'rxjs';
 import {
@@ -28,11 +28,11 @@ import {
 } from '@shared/models';
 import { getYearFromDate, loadFile, pickYoutubeTrailerFromArray, toGenres } from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
-import { MediaListsService } from '../shared/services/media/media-lists.service';
-import { MediaTvSeriesService } from '../shared/services/media/media-tv-series-series.service';
-import { MediaMovieService } from '../shared/services/media/media-movie.service';
+import { MediaListsService } from '@shared/services/media/media-lists.service';
+import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
+import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { CuratedContents } from '@shared/shared-types';
-import { YoutubeEmbedService } from '../shared/services/media/youtube-embed-service';
+import { YoutubeEmbedService } from '@shared/services/media/youtube-embed-service';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
 
@@ -57,6 +57,7 @@ export class HomeMe {
   private readonly mediaTvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
   private readonly mediaMovieService: MediaMovieService = inject(MediaMovieService);
   private readonly youtubeEmbedService: YoutubeEmbedService = inject(YoutubeEmbedService);
+  private readonly navFacade: NavigationFacade = inject(NavigationFacade);
 
   protected readonly heroItems: Signal<HomeHeroSliderItem[]> = toSignal(
     from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(
@@ -272,8 +273,6 @@ export class HomeMe {
       initialValue: [],
     },
   );
-
-  private readonly navFacade: NavigationFacade = inject(NavigationFacade);
 
   protected handleItemClick(event: MediaCarouselOutput): void {
     this.navFacade.navigateToWatchPage({

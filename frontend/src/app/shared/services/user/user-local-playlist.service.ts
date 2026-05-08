@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal } from '@angular/core';
+import { Injectable, Signal, WritableSignal } from '@angular/core';
 import {
   OfflinePlaylist,
   OfflinePlaylistContent,
@@ -6,6 +6,7 @@ import {
   PlaylistDto,
 } from '@shared/models';
 import { storage } from '@signality/core';
+import { Serializer } from '@signality/core/browser/storage';
 
 export type Playlist = OfflinePlaylist | PlaylistDto;
 export type PlaylistContent = OfflinePlaylistContent | PlaylistContentDto;
@@ -17,11 +18,55 @@ export interface PlaylistService {
   addToPlaylist(playlistName: string, trackId: string): Playlist | null;
 }
 
+class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
+  write: (value: OfflinePlaylist[]) => string = (value) => JSON.stringify(value);
+  read: (raw: string) => OfflinePlaylist[] = (raw): OfflinePlaylist[] => {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return parsed
+        .filter((playlist) => this.isValidPlaylist(playlist))
+        .map((playlist) => ({
+          name: playlist.name.trim(),
+          items: playlist.items
+            .filter((content) => this.isValidContent(content))
+            .map((content) => ({
+              trackId: content.trackId.trim(),
+            })),
+        }));
+    } catch {
+      return [];
+    }
+  };
+
+  private isValidPlaylist(playlist: any): playlist is OfflinePlaylist {
+    if (!playlist || typeof playlist.name !== 'string' || playlist.name.trim() === '') {
+      return false;
+    }
+    return Array.isArray(playlist.items);
+  }
+
+  private isValidContent(content: any): content is OfflinePlaylistContent {
+    return !!content && typeof content.trackId === 'string' && content.trackId.trim() !== '';
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class UserLocalPlaylistService implements PlaylistService {
-  private readonly userPlaylist: WritableSignal<OfflinePlaylist[]> = storage('offlinePlaylist', []);
+  private readonly userPlaylist: WritableSignal<OfflinePlaylist[]> = storage(
+    'offlinePlaylist',
+    [],
+    {
+      serializer: new LocalUserPlaylistsSerializer(),
+    },
+  );
+
+  public readonly playlists: Signal<OfflinePlaylist[]> = this.userPlaylist.asReadonly();
 
   constructor() {
     this.verifyPlaylists();
@@ -90,9 +135,12 @@ export class UserLocalPlaylistService implements PlaylistService {
         return playlists;
       }
 
-      playlists[playlistIndex] = newPlaylist;
-      return playlists;
+      const updated: OfflinePlaylist[] = [...playlists];
+      updated[playlistIndex] = newPlaylist;
+      return updated;
     });
+
+    this.verifyPlaylists();
   }
 
   private doesPlaylistExists(name: string): boolean {
