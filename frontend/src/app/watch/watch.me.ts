@@ -46,6 +46,7 @@ import { HlmCard } from '@spartan-ng/helm/card';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import { environment } from '@environments/environment';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
+import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.me';
 
 export type MediaData = MovieData | TvData;
 
@@ -71,6 +72,7 @@ export const watchPageQueryParams = z.object({
     HlmCard,
     MediaCarouselCoverItemMe,
     HlmSeparatorImports,
+    CollapsibleTextMe,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
@@ -80,7 +82,6 @@ export class WatchMe implements OnDestroy {
   private readonly navigator: NavigationFacade = inject(NavigationFacade);
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
   private readonly tvSeries: MediaTvSeriesService = inject(MediaTvSeriesService);
-  private readonly queryParams = queryParams({ schema: watchPageQueryParams });
   private readonly mediaObject: Signal<MovieData | TvData | undefined> = computed(() => {
     const values = this.queryParams.value();
     switch (values.type) {
@@ -103,14 +104,12 @@ export class WatchMe implements OnDestroy {
       },
     });
 
+  protected readonly queryParams = queryParams({ schema: watchPageQueryParams });
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly getYearFromDate = getYearFromDate;
   protected readonly Array = Array;
   protected readonly mediaId: Signal<number> = computed(() => this.mediaObject()?.getId() ?? 0);
   protected readonly isLoading: Signal<boolean> = this.mediaDetails.isLoading;
-  protected readonly isError: Signal<boolean> = computed(
-    () => this.mediaDetails.error() !== undefined,
-  );
   protected readonly error: Signal<Error | undefined> = computed(() => this.mediaDetails.error());
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly mediaVideos: ResourceRef<VideosModel | undefined> = rxResource({

@@ -39,3 +39,4 @@ my progress here.
 - Updated the logout method from the auth-facade to revoke tokens on logout.
 - Moved media and user services to their own packages.
 - Created services and models for retrieving user playlists (Using AI).
+- Created a collapsible text component and updated the loading skeleton of the watch page

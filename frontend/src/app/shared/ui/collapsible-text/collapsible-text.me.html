@@ -1,0 +1,15 @@
+<div class="collapsible-text flex flex-col gap-2 items-start">
+  <p
+    [class]="textClass()"
+    [ngClass]="!isExpanded() ? 'line-clamp-' + lines() : ''">
+    {{ text() }}
+  </p>
+
+  @let btnTxt = (
+                  !isExpanded()
+                ) ? 'Read more' : 'Read less';
+  <button hlmBtn variant="ghost" size="xs" class="self-end" (click)="toggleTextClamp()">{{
+      btnTxt
+    }}
+  </button>
+</div>
