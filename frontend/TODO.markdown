@@ -15,10 +15,10 @@
 
 ### Playlists
 - [X] Implement User Playlist and Profile Services.
-- [ ] Test if the User Playlist and Profile Services created by the AI is functioning properly.
+- [X] Create a Local User Playlist functionality (using local storage).
+- [ ] Test if the User Playlist and Profile Services created by the AI are functioning properly.
 - [ ] Implement User Profile Page (Playlists).
-- [ ] Create an Unauthenticated User Playlist functionality (using local storage).
-- [ ] Create a way to sync user's playlists with the backend.
+- [ ] Create a way to sync user's playlists with the backend
 
 ---
 
@@ -40,3 +40,6 @@ my progress here.
 - Moved media and user services to their own packages.
 - Created services and models for retrieving user playlists (Using AI).
 - Created a collapsible text component and updated the loading skeleton of the watch page
+
+### May 9, 2026
+- Created the local playlist service for users who aren't logged in.

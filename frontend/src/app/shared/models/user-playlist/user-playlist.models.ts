@@ -4,16 +4,23 @@ export interface ServerResponse<T> {
   success: boolean;
 }
 
-export interface PlaylistContentDto {
-  id: string;
-  playlistId: string;
+export interface OfflinePlaylistContent {
   trackId: string;
 }
 
-export interface PlaylistDto {
+export interface OfflinePlaylist {
+  name: string;
+  items: OfflinePlaylistContent[];
+}
+
+export interface PlaylistContentDto extends OfflinePlaylistContent {
+  id: string;
+  playlistId: string;
+}
+
+export interface PlaylistDto extends OfflinePlaylist {
   id: string;
   userId: string;
-  name: string;
   items: PlaylistContentDto[];
 }
 
@@ -29,4 +36,3 @@ export interface UserSummaryDto {
   username: string;
   email: string;
 }
-
