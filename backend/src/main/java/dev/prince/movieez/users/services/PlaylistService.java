@@ -48,6 +48,17 @@ public class PlaylistService {
   }
 
   @Transactional
+  public PlaylistModel updatePlaylistName(String oldName, String newName, UUID userId) {
+    var playlist = getPlaylist(oldName, userId);
+    if (isPlaylistExisting(newName, userId)) {
+      var msg = "Playlist with name: '" + newName + "' already exists";
+      throw new PlaylistAlreadyExistsException(msg);
+    }
+    playlist.setName(newName);
+    return playlistRepository.save(playlist);
+  }
+
+  @Transactional
   public PlaylistModel createPlaylist(PlaylistModel playlistModel, UUID userId) {
     var name = playlistModel.getName();
     if (playlistRepository.existsByNameAndUserId(name, userId)) {

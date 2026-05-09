@@ -16,6 +16,7 @@ import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -92,6 +93,22 @@ public class PlaylistController {
     var userId = SecurityUtils.getUserId();
     var saved = playlistService.createPlaylist(playlist, userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(saved));
+    return ResponseEntity.ok(response);
+  }
+
+  @PatchMapping("/{name}")
+  public ResponseEntity<ServerResponse<PlaylistDto>> updatePlaylistName(
+      @PathVariable
+      @Valid
+      @NotBlank
+      String name,
+      @RequestBody
+      @Valid
+      @NotBlank
+      String newName
+  ) {
+    var updated = playlistService.updatePlaylistName(name, newName, SecurityUtils.getUserId());
+    var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }
 

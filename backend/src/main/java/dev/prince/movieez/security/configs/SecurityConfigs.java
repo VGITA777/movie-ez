@@ -95,7 +95,7 @@ public class SecurityConfigs {
     var userOption = new CorsConfiguration();
     userOption.setAllowedOrigins(allowedOrigins);
     userOption.setAllowedOriginPatterns(allowedOriginsPattern);
-    userOption.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
+    userOption.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS", "PATCH"));
     userOption.setAllowedHeaders(List.of("*"));
     userOption.setAllowCredentials(true);
 
