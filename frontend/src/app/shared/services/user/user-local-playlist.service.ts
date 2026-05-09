@@ -16,6 +16,7 @@ export interface PlaylistService {
   getPlaylist(playlistName: string): Playlist | null;
   removeFromPlaylist(playlistName: string, trackId: string): Playlist | null;
   addToPlaylist(playlistName: string, trackId: string): Playlist | null;
+  renamePlaylist(oldName: string, newName: string): Playlist | null;
 }
 
 class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
@@ -70,6 +71,39 @@ export class UserLocalPlaylistService implements PlaylistService {
 
   constructor() {
     this.verifyPlaylists();
+  }
+
+  renamePlaylist(oldName: string, newName: string): Playlist | null {
+    const oldNameTrimmed: string = oldName.trim() ?? '';
+    const newNameTrimmed: string = newName.trim() ?? '';
+
+    if (oldNameTrimmed === '' || newNameTrimmed === '' || newNameTrimmed.length > 25) {
+      console.debug(
+        `Cannot rename playlist. Invalid name. Old name: "${oldName}", New name: "${newName}"`,
+      );
+      return null;
+    }
+
+    if (this.doesPlaylistExists(newNameTrimmed)) {
+      console.debug(
+        `Cannot rename playlist. A playlist with the new name already exists. New name: "${newNameTrimmed}"`,
+      );
+      return null;
+    }
+
+    const currentPlaylist: OfflinePlaylist | null = this.findPlaylist(oldName);
+
+    if (!currentPlaylist) {
+      return null;
+    }
+
+    const newPlaylist: OfflinePlaylist = {
+      ...currentPlaylist,
+      name: newNameTrimmed,
+    };
+
+    this.updateExistingPlaylist(oldNameTrimmed, newPlaylist);
+    return newPlaylist;
   }
 
   createPlaylist(name: string): OfflinePlaylist {
@@ -127,9 +161,9 @@ export class UserLocalPlaylistService implements PlaylistService {
     return playlist;
   }
 
-  private updateExistingPlaylist(name: string, newPlaylist: OfflinePlaylist) {
+  private updateExistingPlaylist(name: string, newPlaylist: OfflinePlaylist): void {
     this.userPlaylist.update((playlists) => {
-      const playlistIndex = playlists.findIndex((playlist) => playlist.name === name);
+      const playlistIndex: number = playlists.findIndex((playlist) => playlist.name === name);
 
       if (playlistIndex === -1) {
         return playlists;

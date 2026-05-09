@@ -7,7 +7,7 @@ export interface ShowPlaylistsDirectiveContext {
 }
 
 @Directive({
-  selector: '[meShowPlaylistsDirective]',
+  selector: '[meShowPlaylists]',
 })
 export class ShowPlaylistsDirective {
   private readonly hlmDialogService: HlmDialogService = inject(HlmDialogService);

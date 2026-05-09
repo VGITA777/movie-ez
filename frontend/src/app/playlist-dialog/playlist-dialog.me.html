@@ -10,7 +10,31 @@
         hlmItem variant="outline" size="sm" class="w-full mb-2"
         (click)="handlePlaylistButtonClick(playlist.name)">
         <hlm-item-content>
-          <hlm-item-title>{{ playlist.name }}</hlm-item-title>
+          <hlm-item-title>
+            @if (currentEditingPlaylist() === playlist.name) {
+              <hlm-input-group>
+                <input
+                  #newNameInput
+                  meAutofocus
+                  hlmInputGroupInput
+                  type="text"
+                  [value]="playlist.name"
+                  [placeholder]="playlist.name"
+                  (click)="$event.stopPropagation()"
+                  (keydown.enter)="handleSavePlaylistName($event, newNameInput.value)"
+                >
+                <hlm-input-group-addon align="inline-end">
+                  <button
+                    hlmBtn variant="outline" size="xs"
+                    (click)="handleSavePlaylistName($event, newNameInput.value)">
+                    <ng-icon name="lucideCheck" class="text-sm" />
+                  </button>
+                </hlm-input-group-addon>
+              </hlm-input-group>
+            } @else {
+              {{ playlist.name }}
+            }
+          </hlm-item-title>
           <p hlmItemDescription>{{ playlist.items.length }} items</p>
         </hlm-item-content>
         <hlm-item-actions>
@@ -40,9 +64,14 @@
 
 <ng-template #actionsMenu let-name>
   <hlm-dropdown-menu>
-    @let addRemoveBtnName = (isTrackInPlaylist(name)) ? 'Remove' : 'Add';
+    @let addRemoveBtnName = (
+                              isTrackInPlaylist(name)
+                            ) ? 'Remove' : 'Add';
 
-    <button hlmDropdownMenuItem (click)="handlePlaylistButtonClick(name)">{{ addRemoveBtnName }}</button>
+    <button hlmDropdownMenuItem (click)="handlePlaylistButtonClick(name)">{{
+        addRemoveBtnName
+      }}
+    </button>
     <button hlmDropdownMenuItem (click)="handleEditPlaylist(name)">Edit</button>
     <button hlmDropdownMenuItem (click)="handleDeletePlaylist(name)">Delete</button>
   </hlm-dropdown-menu>

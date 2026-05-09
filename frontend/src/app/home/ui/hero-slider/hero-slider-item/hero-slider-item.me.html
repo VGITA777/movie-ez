@@ -64,7 +64,7 @@
         <span class="hidden md:inline">Play Now</span>
       </button>
       <button
-        meShowPlaylistsDirective
+        meShowPlaylists
         [dialogContext]="{trackId: item().id.toString()}"
         (click)="handleAddToPlaylist.emit(item())"
         class="horizontal px-6 py-4 md:p-0 md:w-full md:max-w-40" hlmBtn

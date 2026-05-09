@@ -1,10 +1,10 @@
-import { Component, inject, OnInit, Signal } from '@angular/core';
+import { Component, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
 import { OfflinePlaylist } from '@shared/models';
 import { HlmItemImports } from '@spartan-ng/helm/item';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { provideIcons } from '@ng-icons/core';
-import { lucideMinus, lucideMoreVertical, lucidePlus } from '@ng-icons/lucide';
+import { lucideCheck, lucideMinus, lucideMoreVertical, lucidePlus } from '@ng-icons/lucide';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 import { BrnDialogRef, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
@@ -14,6 +14,8 @@ import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
+import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
+import { AutofocusDirective } from '@shared/directives/autofocus-directive';
 
 @Component({
   selector: 'me-playlist-dialog',
@@ -26,10 +28,12 @@ import { HlmIconImports } from '@spartan-ng/helm/icon';
     HlmDialogImports,
     HlmDropdownMenuImports,
     HlmIconImports,
+    HlmInputGroupImports,
+    AutofocusDirective,
   ],
   templateUrl: './playlist-dialog.me.html',
   styleUrl: './playlist-dialog.me.css',
-  providers: [provideIcons({ lucidePlus, lucideMinus, lucideMoreVertical })],
+  providers: [provideIcons({ lucidePlus, lucideMinus, lucideMoreVertical, lucideCheck })],
 })
 export class PlaylistDialogMe implements OnInit {
   private static readonly DEFAULT_PLAYLIST_NAME = 'Favorites';
@@ -44,10 +48,11 @@ export class PlaylistDialogMe implements OnInit {
 
   protected readonly localPlaylists: Signal<OfflinePlaylist[]> =
     this.localPlaylistService.playlists;
+  protected readonly currentEditingPlaylist: WritableSignal<string | undefined> = signal(undefined);
 
   public ngOnInit(): void {
     this.localPlaylistService.createPlaylist(PlaylistDialogMe.DEFAULT_PLAYLIST_NAME);
-
+    this.localPlaylistService.createPlaylist('Anime');
     console.debug(`Current dialog context:`, this.dialogContext.trackId);
   }
 
@@ -105,6 +110,44 @@ export class PlaylistDialogMe implements OnInit {
     this.dialogRef.close();
   }
 
+  protected handleEditPlaylist(name: string): void {
+    this.currentEditingPlaylist.set(name);
+  }
+
+  protected handleDeletePlaylist(name: string): void {}
+
+  protected handleSavePlaylistName(event: Event, name: string): void {
+    event.stopPropagation();
+    const newName: string = name.trim();
+
+    if (newName.length === 0) {
+      console.debug(
+        `Attempted to rename playlist to an empty name. Current editing playlist: "${this.currentEditingPlaylist()}".`,
+      );
+      toast.error(`Playlist name cannot be empty.`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
+      this.currentEditingPlaylist.set(undefined);
+      return;
+    }
+
+    if (
+      this.localPlaylistService.getPlaylist(newName) &&
+      newName !== this.currentEditingPlaylist()
+    ) {
+      console.debug(
+        `Playlist with name "${newName}" already exists. Current editing playlist: "${this.currentEditingPlaylist()}".`,
+      );
+      toast.error(
+        `A playlist with the name "${newName}" already exists. Please choose a different name.`,
+        PlaylistDialogMe.SHARED_TOAST_OPTIONS,
+      );
+      this.currentEditingPlaylist.set(undefined);
+      return;
+    }
+
+    this.localPlaylistService.renamePlaylist(this.currentEditingPlaylist()!, newName);
+    this.currentEditingPlaylist.set(undefined);
+  }
+
   private handleTrackAlreadyInPlaylist(name: string): void {
     toast.error(
       `Track is already in the playlist "${name}".`,
@@ -127,8 +170,4 @@ export class PlaylistDialogMe implements OnInit {
     toast.error(`Track is not in the playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
     this.closeDialog();
   }
-
-  protected handleEditPlaylist(name: string): void {}
-
-  protected handleDeletePlaylist(name: string): void {}
 }
