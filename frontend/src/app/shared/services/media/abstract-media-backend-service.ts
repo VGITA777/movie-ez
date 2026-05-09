@@ -10,10 +10,10 @@ export abstract class AbstractMediaBackendService {
     this.baseUrl = url;
   }
 
-  protected performRequest<T extends object, I extends object>(
-    endpoint: string,
-    input: I,
-  ): Observable<T> {
+  protected performRequest<T extends object, I>(endpoint: string, input?: I): Observable<T> {
+    if (!input) {
+      return this.client.get<T>(`${this.baseUrl}${endpoint}`);
+    }
     const convertedInput: Record<string, any> = AbstractMediaBackendService.buildHttpParams(input);
     const httpParam: HttpParams = new HttpParams({ fromObject: convertedInput });
     return this.client.get<T>(`${this.baseUrl}${endpoint}`, {
