@@ -43,3 +43,4 @@ my progress here.
 
 ### May 9, 2026
 - Created the local playlist service for users who aren't logged in.
+- Created the show playlists directive.

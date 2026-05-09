@@ -1,0 +1,25 @@
+<section class="playlists w-full">
+  <div class="playlist__container flex flex-col gap-4 ">
+    <ng-scrollbar hlm appearance="compact" class="w-full h-full">
+      @for (playlist of localPlaylists(); track playlist.name) {
+        <div hlmItem variant="outline" class="w-full">
+          <hlm-item-content>
+            <hlm-item-title>{{ playlist.name }}</hlm-item-title>
+            <p hlmItemDescription>{{ playlist.items.length }} items</p>
+          </hlm-item-content>
+          <hlm-item-actions>
+            <button
+              (click)="handlePlaylistButtonClick(playlist.name)"
+              hlmBtn size="icon-sm" variant="outline" class="rounded-full" aria-label="Invite">
+              @if (isTrackInPlaylist(playlist.name)) {
+                <ng-icon name="lucideMinus" />
+              } @else {
+                <ng-icon name="lucidePlus" />
+              }
+            </button>
+          </hlm-item-actions>
+        </div>
+      }
+    </ng-scrollbar>
+  </div>
+</section>

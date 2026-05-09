@@ -17,10 +17,11 @@ import { HomeHeroSliderItem } from '@home/ui/hero-slider/hero-slider.me';
 import { NotVisibleFor } from '@shared/directives/not-visible-for';
 import { VisibleFor } from '@shared/directives/visible-for';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
 
 @Component({
   selector: 'me-hero-slider-item',
-  imports: [HlmButton, NgIcon, NotVisibleFor, VisibleFor],
+  imports: [HlmButton, NgIcon, NotVisibleFor, VisibleFor, ShowPlaylistsDirective],
   templateUrl: './hero-slider-item.me.html',
   styleUrl: './hero-slider-item.me.css',
 })
