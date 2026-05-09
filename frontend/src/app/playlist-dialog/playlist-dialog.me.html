@@ -57,8 +57,30 @@
 
   <!-- Footer -->
   <div hlmDialogFooter class="flex flex-row gap-2 w-full">
-    <button hlmBtn class="grow" size="sm" (click)="createNewPlaylist()">New</button>
-    <button hlmBtn class="grow" size="sm" variant="secondary" (click)="closeDialog()">Close</button>
+    <button hlmBtn class="grow-3" size="sm" (click)="createNewPlaylist()">New</button>
+    <button hlmBtn class="grow-3" size="sm" variant="secondary" (click)="closeDialog()">Close
+    </button>
+    <hlm-alert-dialog>
+      <button
+        hlmAlertDialogTrigger hlmBtn id="delete-all-playlists" class="grow" size="sm"
+        variant="destructive">
+        Delete All
+      </button>
+      <hlm-alert-dialog-content *hlmAlertDialogPortal="let ctx">
+        <hlm-alert-dialog-header>
+          <h2 hlmAlertDialogTitle>Are you absolutely sure?</h2>
+          <p hlmAlertDialogDescription>
+            This action cannot be undone. This will permanently delete <strong>ALL OF YOUR
+                                                                                    PLAYLISTS</strong>
+            and <strong>ALL THE DATA ASSOCIATED WITH THEM</strong>.
+          </p>
+        </hlm-alert-dialog-header>
+        <hlm-alert-dialog-footer>
+          <button hlmAlertDialogCancel (click)="ctx.close()">Cancel</button>
+          <button hlmAlertDialogAction (click)="handleDeleteAllPlaylists(ctx)">Continue</button>
+        </hlm-alert-dialog-footer>
+      </hlm-alert-dialog-content>
+    </hlm-alert-dialog>
   </div>
 </section>
 

@@ -224,4 +224,8 @@ export class UserLocalPlaylistService implements PlaylistService {
   ): content is OfflinePlaylistContent {
     return !!content && typeof content.trackId === 'string' && content.trackId.trim() !== '';
   }
+
+  public deleteAllPlaylists(): void {
+    this.userPlaylist.set([]);
+  }
 }

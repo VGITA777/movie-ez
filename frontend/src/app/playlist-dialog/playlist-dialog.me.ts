@@ -16,6 +16,7 @@ import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { AutofocusDirective } from '@shared/directives/autofocus-directive';
+import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 
 @Component({
   selector: 'me-playlist-dialog',
@@ -30,6 +31,7 @@ import { AutofocusDirective } from '@shared/directives/autofocus-directive';
     HlmIconImports,
     HlmInputGroupImports,
     AutofocusDirective,
+    HlmAlertDialogImports,
   ],
   templateUrl: './playlist-dialog.me.html',
   styleUrl: './playlist-dialog.me.css',
@@ -52,7 +54,6 @@ export class PlaylistDialogMe implements OnInit {
 
   public ngOnInit(): void {
     this.localPlaylistService.createPlaylist(PlaylistDialogMe.DEFAULT_PLAYLIST_NAME);
-    this.localPlaylistService.createPlaylist('Anime');
     console.debug(`Current dialog context:`, this.dialogContext.trackId);
   }
 
@@ -148,6 +149,11 @@ export class PlaylistDialogMe implements OnInit {
 
     this.localPlaylistService.renamePlaylist(this.currentEditingPlaylist()!, newName);
     this.currentEditingPlaylist.set(undefined);
+  }
+
+  protected handleDeleteAllPlaylists(context: any) {
+    context.close();
+    this.localPlaylistService.deleteAllPlaylists();
   }
 
   private handleTrackAlreadyInPlaylist(name: string): void {
