@@ -111,7 +111,8 @@ export class PlaylistDialogMe implements OnInit {
     this.dialogRef.close();
   }
 
-  protected handleEditPlaylist(name: string): void {
+  protected setCurrentUpdatingPlaylist(name?: string, event?: Event): void {
+    event?.stopPropagation();
     this.currentEditingPlaylist.set(name);
   }
 

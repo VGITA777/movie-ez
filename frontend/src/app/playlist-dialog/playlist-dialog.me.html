@@ -9,7 +9,7 @@
         hlmItem variant="outline" size="sm" class="w-full mb-2"
         (click)="handlePlaylistButtonClick(playlist.name)">
         <hlm-item-content>
-          <hlm-item-title>
+          <hlm-item-title class="text-start flex flex-row gap-2 items-center">
             @if (currentEditingPlaylist() === playlist.name) {
               <hlm-input-group>
                 <input
@@ -21,6 +21,7 @@
                   [placeholder]="playlist.name"
                   (click)="$event.stopPropagation()"
                   (keydown.enter)="handleSavePlaylistName($event, newNameInput.value)"
+                  (keydown.esc)="setCurrentUpdatingPlaylist(undefined, $event)"
                 >
                 <hlm-input-group-addon align="inline-end">
                   <button
@@ -31,7 +32,10 @@
                 </hlm-input-group-addon>
               </hlm-input-group>
             } @else {
-              {{ playlist.name }}
+              <span>{{ playlist.name }}</span>
+            }
+            @if (isTrackInPlaylist(playlist.name)) {
+              <span class="w-1 h-1 rounded-full bg-lime-500 animate-pulse shadow-[0_0_8px_rgba(132,204,22,0.85)]"></span>
             }
           </hlm-item-title>
           <p hlmItemDescription>{{ playlist.items.length }} items</p>
@@ -70,13 +74,16 @@
           <h2 hlmAlertDialogTitle>Are you absolutely sure?</h2>
           <p hlmAlertDialogDescription>
             This action cannot be undone. This will permanently delete <strong>ALL OF YOUR
-                                                                                    PLAYLISTS</strong>
+                                                                               PLAYLISTS</strong>
             and <strong>ALL THE DATA ASSOCIATED WITH THEM</strong>.
           </p>
         </hlm-alert-dialog-header>
         <hlm-alert-dialog-footer>
           <button hlmAlertDialogCancel (click)="ctx.close()">Cancel</button>
-          <button hlmAlertDialogAction variant="destructive" (click)="handleDeleteAllPlaylists(ctx)">Continue</button>
+          <button
+            hlmAlertDialogAction variant="destructive" (click)="handleDeleteAllPlaylists(ctx)">
+            Continue
+          </button>
         </hlm-alert-dialog-footer>
       </hlm-alert-dialog-content>
     </hlm-alert-dialog>
@@ -93,7 +100,7 @@
         addRemoveBtnName
       }}
     </button>
-    <button hlmDropdownMenuItem (click)="handleEditPlaylist(name)">Edit</button>
+    <button hlmDropdownMenuItem (click)="setCurrentUpdatingPlaylist(name)">Edit</button>
     <button hlmDropdownMenuItem (click)="handleDeletePlaylist(name)">Delete</button>
   </hlm-dropdown-menu>
 </ng-template>
