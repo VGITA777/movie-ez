@@ -34,6 +34,7 @@ public final class PlaylistMapper {
                                   .getUser()
                                   .getId() : null,
         model.getName(),
+        model.getLastEditTimestamp(),
         PlaylistContentMapper.toDtoList(model.getItems())
     );
   }

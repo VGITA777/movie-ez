@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +46,10 @@ public class PlaylistModel {
   @NotNull
   @Column(name = "name", nullable = false, length = 100)
   private String name;
+
+  @NotNull
+  @Column(name = "last_edit_timestamp", nullable = false)
+  private Instant lastEditTimestamp;
 
   @NotNull
   @OneToMany(
