@@ -6,23 +6,26 @@
   <!-- Contents -->
   <ng-scrollbar hlm appearance="compact" class="playlist-items w-full h-full max-h-100">
     @for (playlist of localPlaylists(); track playlist.name) {
-      <div hlmItem variant="outline" size="sm" class="w-full mb-2">
+      <a
+        hlmItem variant="outline" size="sm" class="w-full mb-2"
+        (click)="handlePlaylistButtonClick(playlist.name)">
         <hlm-item-content>
           <hlm-item-title>{{ playlist.name }}</hlm-item-title>
           <p hlmItemDescription>{{ playlist.items.length }} items</p>
         </hlm-item-content>
         <hlm-item-actions>
           <button
-            (click)="handlePlaylistButtonClick(playlist.name)"
-            hlmBtn size="icon-sm" variant="outline" class="rounded-full" aria-label="Invite">
-            @if (isTrackInPlaylist(playlist.name)) {
-              <ng-icon name="lucideMinus" />
-            } @else {
-              <ng-icon name="lucidePlus" />
-            }
+            hlmBtn
+            [hlmDropdownMenuTrigger]="actionsMenu"
+            [hlmDropdownMenuTriggerData]="{$implicit: playlist.name}"
+            variant="outline"
+            class="rounded-full"
+            (click)="$event.stopPropagation()"
+          >
+            <ng-icon name="lucideMoreVertical" class="text-xs" />
           </button>
         </hlm-item-actions>
-      </div>
+      </a>
     }
   </ng-scrollbar>
 
@@ -34,3 +37,13 @@
     <button hlmBtn class="grow" size="sm" variant="secondary" (click)="closeDialog()">Close</button>
   </div>
 </section>
+
+<ng-template #actionsMenu let-name>
+  <hlm-dropdown-menu>
+    @let addRemoveBtnName = (isTrackInPlaylist(name)) ? 'Remove' : 'Add';
+
+    <button hlmDropdownMenuItem (click)="handlePlaylistButtonClick(name)">{{ addRemoveBtnName }}</button>
+    <button hlmDropdownMenuItem (click)="handleEditPlaylist(name)">Edit</button>
+    <button hlmDropdownMenuItem (click)="handleDeletePlaylist(name)">Delete</button>
+  </hlm-dropdown-menu>
+</ng-template>

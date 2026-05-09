@@ -3,9 +3,8 @@ import { UserLocalPlaylistService } from '@shared/services/user/user-local-playl
 import { OfflinePlaylist } from '@shared/models';
 import { HlmItemImports } from '@spartan-ng/helm/item';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
-import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucideMinus, lucidePlus } from '@ng-icons/lucide';
+import { lucideMinus, lucideMoreVertical, lucidePlus } from '@ng-icons/lucide';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 import { BrnDialogRef, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
@@ -13,21 +12,24 @@ import { ShowPlaylistsDirectiveContext } from '@shared/directives/show-playlists
 import { toast, ToastT } from '@spartan-ng/brain/sonner';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
+import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
 
 @Component({
   selector: 'me-playlist-dialog',
   imports: [
     HlmItemImports,
     HlmButtonImports,
-    HlmIconImports,
     NgScrollbar,
     HlmScrollAreaImports,
     HlmSeparatorImports,
     HlmDialogImports,
+    HlmDropdownMenuImports,
+    HlmIconImports,
   ],
   templateUrl: './playlist-dialog.me.html',
   styleUrl: './playlist-dialog.me.css',
-  providers: [provideIcons({ lucidePlus, lucideMinus })],
+  providers: [provideIcons({ lucidePlus, lucideMinus, lucideMoreVertical })],
 })
 export class PlaylistDialogMe implements OnInit {
   private static readonly DEFAULT_PLAYLIST_NAME = 'Favorites';
@@ -125,4 +127,8 @@ export class PlaylistDialogMe implements OnInit {
     toast.error(`Track is not in the playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
     this.closeDialog();
   }
+
+  protected handleEditPlaylist(name: string): void {}
+
+  protected handleDeletePlaylist(name: string): void {}
 }

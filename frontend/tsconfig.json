@@ -45,7 +45,8 @@
       "@spartan-ng/helm/radio-group": ["./libs/ui/radio-group/src/index.ts"],
       "@spartan-ng/helm/empty": ["./libs/ui/empty/src/index.ts"],
       "@spartan-ng/helm/badge": ["./libs/ui/badge/src/index.ts"],
-      "@spartan-ng/helm/navigation-menu": ["./libs/ui/navigation-menu/src/index.ts"]
+      "@spartan-ng/helm/navigation-menu": ["./libs/ui/navigation-menu/src/index.ts"],
+      "@spartan-ng/helm/dropdown-menu": ["./libs/ui/dropdown-menu/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
