@@ -34,6 +34,7 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
         .filter((playlist) => this.isValidPlaylist(playlist))
         .map((playlist) => ({
           name: playlist.name.trim(),
+          lastEditTimestamp: this.normalizeTimestamp(playlist.lastEditTimestamp),
           items: playlist.items
             .filter((content) => this.isValidContent(content))
             .map((content) => ({
@@ -44,6 +45,10 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
       return [];
     }
   };
+
+  private normalizeTimestamp(value: unknown): string {
+    return typeof value === 'string' && value.trim() !== '' ? value : new Date().toISOString();
+  }
 
   private isValidPlaylist(playlist: any): playlist is OfflinePlaylist {
     if (!playlist || typeof playlist.name !== 'string' || playlist.name.trim() === '') {
@@ -75,6 +80,10 @@ export class UserLocalPlaylistService implements PlaylistService {
     this.verifyPlaylists();
   }
 
+  private nowIso(): string {
+    return new Date().toISOString();
+  }
+
   renamePlaylist(oldName: string, newName: string): Observable<Playlist | null> {
     const oldNameTrimmed: string = oldName.trim() ?? '';
     const newNameTrimmed: string = newName.trim() ?? '';
@@ -101,6 +110,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     const newPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       name: newNameTrimmed,
+      lastEditTimestamp: this.nowIso(),
     };
 
     this.updateExistingPlaylist(oldNameTrimmed, newPlaylist);
@@ -116,6 +126,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     const newPlaylist: OfflinePlaylist = {
       name: name,
       items: [],
+      lastEditTimestamp: this.nowIso(),
     };
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
     return of(newPlaylist);
@@ -142,6 +153,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       items: currentPlaylist.items.filter((content) => content.trackId !== trackId),
+      lastEditTimestamp: this.nowIso(),
     };
     this.updateExistingPlaylist(playlistName, updatedPlaylist);
     return of(updatedPlaylist);
@@ -163,6 +175,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       items: [...currentPlaylist.items, newContent],
+      lastEditTimestamp: this.nowIso(),
     };
     this.updateExistingPlaylist(playlistName, updatedPlaylist);
     return of(updatedPlaylist);
@@ -189,12 +202,17 @@ export class UserLocalPlaylistService implements PlaylistService {
       const updated: OfflinePlaylist[] = [...playlists];
       updated[playlistIndex] = {
         ...newPlaylist,
+        lastEditTimestamp: this.nowIso(),
         items: [...newPlaylist.items],
       };
       return updated;
     });
 
     this.verifyPlaylists();
+  }
+
+  private normalizeTimestamp(value: string | undefined): string {
+    return value && value.trim() !== '' ? value : this.nowIso();
   }
 
   private doesPlaylistExists(name: string): boolean {
@@ -207,6 +225,7 @@ export class UserLocalPlaylistService implements PlaylistService {
       .filter((playlist) => this.isValidPlaylist(playlist))
       .map((playlist) => ({
         ...playlist,
+        lastEditTimestamp: this.normalizeTimestamp(playlist.lastEditTimestamp),
         items: playlist.items.filter((content) => this.isValidPlaylistContent(content)),
       }));
 

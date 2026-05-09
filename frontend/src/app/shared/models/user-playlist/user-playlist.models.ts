@@ -11,6 +11,7 @@ export interface OfflinePlaylistContent {
 export interface OfflinePlaylist {
   name: string;
   items: OfflinePlaylistContent[];
+  lastEditTimestamp: string;
 }
 
 export interface PlaylistContentDto extends OfflinePlaylistContent {
