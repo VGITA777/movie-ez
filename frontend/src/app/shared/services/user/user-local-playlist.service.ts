@@ -7,17 +7,18 @@ import {
 } from '@shared/models';
 import { storage } from '@signality/core';
 import { Serializer } from '@signality/core/browser/storage';
+import { Observable, of } from 'rxjs';
 
 export type Playlist = OfflinePlaylist | PlaylistDto;
 export type PlaylistContent = OfflinePlaylistContent | PlaylistContentDto;
 
 export interface PlaylistService {
-  createPlaylist(name: string): Playlist;
-  deletePlaylist(name: string): void;
-  getPlaylist(playlistName: string): Playlist | null;
-  removeFromPlaylist(playlistName: string, trackId: string): Playlist | null;
-  addToPlaylist(playlistName: string, trackId: string): Playlist | null;
-  renamePlaylist(oldName: string, newName: string): Playlist | null;
+  createPlaylist(name: string): Observable<Playlist>;
+  deletePlaylist(name: string): Observable<void>;
+  getPlaylist(playlistName: string): Observable<Playlist | null>;
+  removeFromPlaylist(playlistName: string, trackId: string): Observable<Playlist | null>;
+  addToPlaylist(playlistName: string, trackId: string): Observable<Playlist | null>;
+  renamePlaylist(oldName: string, newName: string): Observable<Playlist | null>;
 }
 
 class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
@@ -74,7 +75,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     this.verifyPlaylists();
   }
 
-  renamePlaylist(oldName: string, newName: string): Playlist | null {
+  renamePlaylist(oldName: string, newName: string): Observable<Playlist | null> {
     const oldNameTrimmed: string = oldName.trim() ?? '';
     const newNameTrimmed: string = newName.trim() ?? '';
 
@@ -82,20 +83,19 @@ export class UserLocalPlaylistService implements PlaylistService {
       console.debug(
         `Cannot rename playlist. Invalid name. Old name: "${oldName}", New name: "${newName}"`,
       );
-      return null;
+      return of(null);
     }
 
     if (this.doesPlaylistExists(newNameTrimmed)) {
       console.debug(
         `Cannot rename playlist. A playlist with the new name already exists. New name: "${newNameTrimmed}"`,
       );
-      return null;
+      return of(null);
     }
 
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylist(oldName);
-
+    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistSync(oldNameTrimmed);
     if (!currentPlaylist) {
-      return null;
+      return of(null);
     }
 
     const newPlaylist: OfflinePlaylist = {
@@ -104,68 +104,78 @@ export class UserLocalPlaylistService implements PlaylistService {
     };
 
     this.updateExistingPlaylist(oldNameTrimmed, newPlaylist);
-    return newPlaylist;
+    return of(newPlaylist);
   }
 
-  createPlaylist(name: string): OfflinePlaylist {
-    if (this.doesPlaylistExists(name)) {
-      return this.findPlaylist(name) as OfflinePlaylist;
+  createPlaylist(name: string): Observable<OfflinePlaylist> {
+    const existing: OfflinePlaylist | null = this.findPlaylistSync(name);
+    if (existing) {
+      return of(existing);
     }
+
     const newPlaylist: OfflinePlaylist = {
       name: name,
       items: [],
     };
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
-    return newPlaylist;
+    return of(newPlaylist);
   }
 
-  deletePlaylist(name: string): void {
+  deletePlaylist(name: string): Observable<void> {
     this.userPlaylist.update((playlists) => [
       ...playlists.filter((playlist) => playlist.name !== name),
     ]);
+    this.verifyPlaylists();
+    return of();
   }
 
-  getPlaylist(playlistName: string): OfflinePlaylist | null {
-    return this.findPlaylist(playlistName);
+  getPlaylist(playlistName: string): Observable<OfflinePlaylist | null> {
+    return of(this.findPlaylistSync(playlistName));
   }
 
-  removeFromPlaylist(playlistName: string, trackId: string): OfflinePlaylist | null {
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylist(playlistName);
+  removeFromPlaylist(playlistName: string, trackId: string): Observable<OfflinePlaylist | null> {
+    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistSync(playlistName);
     if (!currentPlaylist) {
-      return null;
+      return of(null);
     }
 
-    currentPlaylist.items = currentPlaylist.items.filter((content) => content.trackId !== trackId);
-    this.updateExistingPlaylist(playlistName, currentPlaylist);
-    return currentPlaylist;
+    const updatedPlaylist: OfflinePlaylist = {
+      ...currentPlaylist,
+      items: currentPlaylist.items.filter((content) => content.trackId !== trackId),
+    };
+    this.updateExistingPlaylist(playlistName, updatedPlaylist);
+    return of(updatedPlaylist);
   }
 
-  addToPlaylist(playlistName: string, trackId: string): OfflinePlaylist | null {
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylist(playlistName);
+  addToPlaylist(playlistName: string, trackId: string): Observable<OfflinePlaylist | null> {
+    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistSync(playlistName);
     if (!currentPlaylist) {
-      return null;
+      return of(null);
     }
 
     if (currentPlaylist.items.some((content) => content.trackId === trackId)) {
-      return currentPlaylist;
+      return of(currentPlaylist);
     }
 
     const newContent: OfflinePlaylistContent = {
       trackId,
     };
-    currentPlaylist.items.push(newContent);
-    this.updateExistingPlaylist(playlistName, currentPlaylist);
-    return currentPlaylist;
+    const updatedPlaylist: OfflinePlaylist = {
+      ...currentPlaylist,
+      items: [...currentPlaylist.items, newContent],
+    };
+    this.updateExistingPlaylist(playlistName, updatedPlaylist);
+    return of(updatedPlaylist);
   }
 
-  private findPlaylist(name: string): OfflinePlaylist | null {
+  private findPlaylistSync(name: string): OfflinePlaylist | null {
     const playlist: Playlist | undefined = this.userPlaylist().find(
       (playlist) => playlist.name === name,
     );
     if (!playlist) {
       return null;
     }
-    return playlist;
+    return playlist as OfflinePlaylist;
   }
 
   private updateExistingPlaylist(name: string, newPlaylist: OfflinePlaylist): void {
@@ -177,7 +187,10 @@ export class UserLocalPlaylistService implements PlaylistService {
       }
 
       const updated: OfflinePlaylist[] = [...playlists];
-      updated[playlistIndex] = newPlaylist;
+      updated[playlistIndex] = {
+        ...newPlaylist,
+        items: [...newPlaylist.items],
+      };
       return updated;
     });
 

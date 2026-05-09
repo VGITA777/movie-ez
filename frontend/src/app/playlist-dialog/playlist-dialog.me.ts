@@ -53,7 +53,7 @@ export class PlaylistDialogMe implements OnInit {
   protected readonly currentEditingPlaylist: WritableSignal<string | undefined> = signal(undefined);
 
   public ngOnInit(): void {
-    this.localPlaylistService.createPlaylist(PlaylistDialogMe.DEFAULT_PLAYLIST_NAME);
+    this.localPlaylistService.createPlaylist(PlaylistDialogMe.DEFAULT_PLAYLIST_NAME).subscribe();
     console.debug(`Current dialog context:`, this.dialogContext.trackId);
   }
 
@@ -116,7 +116,7 @@ export class PlaylistDialogMe implements OnInit {
   }
 
   protected handleDeletePlaylist(name: string): void {
-    this.localPlaylistService.deletePlaylist(name);
+    this.localPlaylistService.deletePlaylist(name).subscribe();
   }
 
   protected handleSavePlaylistName(event: Event, name: string): void {
@@ -132,10 +132,10 @@ export class PlaylistDialogMe implements OnInit {
       return;
     }
 
-    if (
-      this.localPlaylistService.getPlaylist(newName) &&
-      newName !== this.currentEditingPlaylist()
-    ) {
+    const isNameTaken: boolean =
+      this.localPlaylists().some((playlist) => playlist.name === newName) &&
+      newName !== this.currentEditingPlaylist();
+    if (isNameTaken) {
       console.debug(
         `Playlist with name "${newName}" already exists. Current editing playlist: "${this.currentEditingPlaylist()}".`,
       );
@@ -147,7 +147,7 @@ export class PlaylistDialogMe implements OnInit {
       return;
     }
 
-    this.localPlaylistService.renamePlaylist(this.currentEditingPlaylist()!, newName);
+    this.localPlaylistService.renamePlaylist(this.currentEditingPlaylist()!, newName).subscribe();
     this.currentEditingPlaylist.set(undefined);
   }
 
@@ -156,12 +156,12 @@ export class PlaylistDialogMe implements OnInit {
     let newName = baseName;
     let counter = 1;
 
-    while (this.localPlaylistService.getPlaylist(newName)) {
+    while (this.localPlaylists().some((playlist) => playlist.name === newName)) {
       newName = `${baseName} (${counter})`;
       counter++;
     }
 
-    this.localPlaylistService.createPlaylist(newName);
+    this.localPlaylistService.createPlaylist(newName).subscribe();
   }
 
   protected handleDeleteAllPlaylists(context: any) {
@@ -178,12 +178,12 @@ export class PlaylistDialogMe implements OnInit {
   }
 
   private handleAddingToPlaylist(name: string): void {
-    this.localPlaylistService.addToPlaylist(name, this.dialogContext.trackId);
+    this.localPlaylistService.addToPlaylist(name, this.dialogContext.trackId).subscribe();
     toast.success(`Track added to playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }
 
   private handleRemovingFromPlaylist(name: string): void {
-    this.localPlaylistService.removeFromPlaylist(name, this.dialogContext.trackId);
+    this.localPlaylistService.removeFromPlaylist(name, this.dialogContext.trackId).subscribe();
     toast.success(`Track removed from playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }
 
