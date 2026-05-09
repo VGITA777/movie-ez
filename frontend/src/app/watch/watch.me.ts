@@ -47,6 +47,7 @@ import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carous
 import { environment } from '@environments/environment';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.me';
+import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
 
 export type MediaData = MovieData | TvData;
 
@@ -73,6 +74,7 @@ export const watchPageQueryParams = z.object({
     MediaCarouselCoverItemMe,
     HlmSeparatorImports,
     CollapsibleTextMe,
+    ShowPlaylistsDirective,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',

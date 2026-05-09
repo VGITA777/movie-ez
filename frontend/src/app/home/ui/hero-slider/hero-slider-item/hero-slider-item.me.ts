@@ -1,7 +1,6 @@
 import {
   Component,
   computed,
-  effect,
   inject,
   input,
   InputSignal,
@@ -40,10 +39,4 @@ export class HeroSliderItemMe {
     }
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.item().videoSrc!);
   });
-
-  constructor() {
-    effect(() => {
-      console.log(`Genre for ${this.item().title}: ${this.item().genres.join(', ')}`);
-    });
-  }
 }

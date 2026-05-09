@@ -114,7 +114,9 @@ export class PlaylistDialogMe implements OnInit {
     this.currentEditingPlaylist.set(name);
   }
 
-  protected handleDeletePlaylist(name: string): void {}
+  protected handleDeletePlaylist(name: string): void {
+    this.localPlaylistService.deletePlaylist(name);
+  }
 
   protected handleSavePlaylistName(event: Event, name: string): void {
     event.stopPropagation();
@@ -169,5 +171,18 @@ export class PlaylistDialogMe implements OnInit {
   private handleTrackIsNotInPlaylist(name: string): void {
     toast.error(`Track is not in the playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
     this.closeDialog();
+  }
+
+  protected createNewPlaylist() {
+    const baseName = 'New Playlist';
+    let newName = baseName;
+    let counter = 1;
+
+    while (this.localPlaylistService.getPlaylist(newName)) {
+      newName = `${baseName} (${counter})`;
+      counter++;
+    }
+
+    this.localPlaylistService.createPlaylist(newName);
   }
 }

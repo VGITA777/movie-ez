@@ -13,6 +13,7 @@ export type PlaylistContent = OfflinePlaylistContent | PlaylistContentDto;
 
 export interface PlaylistService {
   createPlaylist(name: string): Playlist;
+  deletePlaylist(name: string): void;
   getPlaylist(playlistName: string): Playlist | null;
   removeFromPlaylist(playlistName: string, trackId: string): Playlist | null;
   addToPlaylist(playlistName: string, trackId: string): Playlist | null;
@@ -116,6 +117,12 @@ export class UserLocalPlaylistService implements PlaylistService {
     };
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
     return newPlaylist;
+  }
+
+  deletePlaylist(name: string): void {
+    this.userPlaylist.update((playlists) => [
+      ...playlists.filter((playlist) => playlist.name !== name),
+    ]);
   }
 
   getPlaylist(playlistName: string): OfflinePlaylist | null {
