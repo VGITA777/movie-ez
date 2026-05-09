@@ -1,25 +1,36 @@
-<section class="playlists w-full">
-  <div class="playlist__container flex flex-col gap-4 ">
-    <ng-scrollbar hlm appearance="compact" class="w-full h-full">
-      @for (playlist of localPlaylists(); track playlist.name) {
-        <div hlmItem variant="outline" class="w-full">
-          <hlm-item-content>
-            <hlm-item-title>{{ playlist.name }}</hlm-item-title>
-            <p hlmItemDescription>{{ playlist.items.length }} items</p>
-          </hlm-item-content>
-          <hlm-item-actions>
-            <button
-              (click)="handlePlaylistButtonClick(playlist.name)"
-              hlmBtn size="icon-sm" variant="outline" class="rounded-full" aria-label="Invite">
-              @if (isTrackInPlaylist(playlist.name)) {
-                <ng-icon name="lucideMinus" />
-              } @else {
-                <ng-icon name="lucidePlus" />
-              }
-            </button>
-          </hlm-item-actions>
-        </div>
-      }
-    </ng-scrollbar>
+<!-- TODO: Create a way for the user to delete and rename playlists -->
+<section class="playlists w-full h-full flex flex-col gap-4">
+  <!-- Header -->
+  <div hlmDialogHeader>Playlists</div>
+
+  <!-- Contents -->
+  <ng-scrollbar hlm appearance="compact" class="playlist-items w-full h-full max-h-100">
+    @for (playlist of localPlaylists(); track playlist.name) {
+      <div hlmItem variant="outline" size="sm" class="w-full mb-2">
+        <hlm-item-content>
+          <hlm-item-title>{{ playlist.name }}</hlm-item-title>
+          <p hlmItemDescription>{{ playlist.items.length }} items</p>
+        </hlm-item-content>
+        <hlm-item-actions>
+          <button
+            (click)="handlePlaylistButtonClick(playlist.name)"
+            hlmBtn size="icon-sm" variant="outline" class="rounded-full" aria-label="Invite">
+            @if (isTrackInPlaylist(playlist.name)) {
+              <ng-icon name="lucideMinus" />
+            } @else {
+              <ng-icon name="lucidePlus" />
+            }
+          </button>
+        </hlm-item-actions>
+      </div>
+    }
+  </ng-scrollbar>
+
+  <hlm-separator />
+
+  <!-- Footer -->
+  <div hlmDialogFooter class="flex flex-row gap-2 w-full">
+    <button hlmBtn class="grow" size="sm">New</button>
+    <button hlmBtn class="grow" size="sm" variant="secondary" (click)="closeDialog()">Close</button>
   </div>
 </section>

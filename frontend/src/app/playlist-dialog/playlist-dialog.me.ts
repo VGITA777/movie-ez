@@ -11,10 +11,20 @@ import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 import { BrnDialogRef, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
 import { ShowPlaylistsDirectiveContext } from '@shared/directives/show-playlists-directive';
 import { toast, ToastT } from '@spartan-ng/brain/sonner';
+import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
+import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 
 @Component({
   selector: 'me-playlist-dialog',
-  imports: [HlmItemImports, HlmButtonImports, HlmIconImports, NgScrollbar, HlmScrollAreaImports],
+  imports: [
+    HlmItemImports,
+    HlmButtonImports,
+    HlmIconImports,
+    NgScrollbar,
+    HlmScrollAreaImports,
+    HlmSeparatorImports,
+    HlmDialogImports,
+  ],
   templateUrl: './playlist-dialog.me.html',
   styleUrl: './playlist-dialog.me.css',
   providers: [provideIcons({ lucidePlus, lucideMinus })],
@@ -78,31 +88,6 @@ export class PlaylistDialogMe implements OnInit {
     this.handleRemovingFromPlaylist(name);
   }
 
-  private handleTrackAlreadyInPlaylist(name: string): void {
-    toast.error(
-      `Track is already in the playlist "${name}".`,
-      PlaylistDialogMe.SHARED_TOAST_OPTIONS,
-    );
-    this.closeDialog();
-  }
-
-  private handleAddingToPlaylist(name: string): void {
-    this.localPlaylistService.addToPlaylist(name, this.dialogContext.trackId);
-    toast.success(`Track added to playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
-    this.closeDialog();
-  }
-
-  private handleRemovingFromPlaylist(name: string): void {
-    this.localPlaylistService.removeFromPlaylist(name, this.dialogContext.trackId);
-    toast.success(`Track removed from playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
-    this.closeDialog();
-  }
-
-  private handleTrackIsNotInPlaylist(name: string): void {
-    toast.error(`Track is not in the playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
-    this.closeDialog();
-  }
-
   protected isTrackInPlaylist(name: string): boolean {
     const playlist: OfflinePlaylist | undefined = this.localPlaylists().find(
       (pl) => pl.name === name,
@@ -114,7 +99,30 @@ export class PlaylistDialogMe implements OnInit {
     return playlist.items?.some((item) => item.trackId === trackId) ?? false;
   }
 
-  private closeDialog(): void {
+  protected closeDialog(): void {
     this.dialogRef.close();
+  }
+
+  private handleTrackAlreadyInPlaylist(name: string): void {
+    toast.error(
+      `Track is already in the playlist "${name}".`,
+      PlaylistDialogMe.SHARED_TOAST_OPTIONS,
+    );
+    this.closeDialog();
+  }
+
+  private handleAddingToPlaylist(name: string): void {
+    this.localPlaylistService.addToPlaylist(name, this.dialogContext.trackId);
+    toast.success(`Track added to playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
+  }
+
+  private handleRemovingFromPlaylist(name: string): void {
+    this.localPlaylistService.removeFromPlaylist(name, this.dialogContext.trackId);
+    toast.success(`Track removed from playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
+  }
+
+  private handleTrackIsNotInPlaylist(name: string): void {
+    toast.error(`Track is not in the playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
+    this.closeDialog();
   }
 }
