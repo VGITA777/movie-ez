@@ -24,8 +24,8 @@ export const appConfig: ApplicationConfig = {
         postLogoutRedirectUri: window.location.origin,
         secureRoutes: [
           'http://localhost:4000/user/*',
-          'http://192.168.1.108:4000/user/*',
-          'http://192.168.0.117:4000/user/*',
+          'http://192.168.1.108:4000/users/*',
+          'http://192.168.0.117:4000/users/*',
         ],
       },
     }),
