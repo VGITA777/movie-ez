@@ -37,7 +37,7 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
 
   public getPlaylist(playlistName: string): Observable<PlaylistDto | null> {
     return this.getOnlinePlaylistByName({ name: playlistName }).pipe(
-      map((response) => response.details ?? null),
+      map((response) => this.unwrapOptional(response.details)),
     );
   }
 
@@ -65,9 +65,11 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
 
   public getOnlinePlaylistByName(
     input: GetUserPlaylistInput,
-  ): Observable<ServerResponse<PlaylistDto | null>> {
+  ): Observable<ServerResponse<PlaylistDto | OptionalPlaylistDto | null>> {
     const encodedName: string = encodeURIComponent(input.name);
-    return this.performRequest<ServerResponse<PlaylistDto | null>, undefined>(encodedName);
+    return this.performRequest<ServerResponse<PlaylistDto | OptionalPlaylistDto | null>, undefined>(
+      encodedName,
+    );
   }
 
   public getOnlinePlaylistContents(
@@ -127,9 +129,9 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     );
   }
 
-  public deleteOnlinePlaylist(input: DeletePlaylistInput): Observable<ServerResponse<null>> {
+  public deleteOnlinePlaylist(input: DeletePlaylistInput): Observable<ServerResponse<unknown>> {
     const encodedName: string = encodeURIComponent(input.name);
-    return this.client.delete<ServerResponse<null>>(`${this.baseUrl}${encodedName}`);
+    return this.client.delete<ServerResponse<unknown>>(`${this.baseUrl}${encodedName}`);
   }
 
   public deleteTrackFromPlaylist(
@@ -141,4 +143,23 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
       `${this.baseUrl}${encodedName}/tracks/${encodedTrackId}`,
     );
   }
+
+  private unwrapOptional(details: PlaylistDto | OptionalPlaylistDto | null): PlaylistDto | null {
+    if (!details) {
+      return null;
+    }
+
+    if (typeof details === 'object' && 'value' in details) {
+      const wrapped = details as OptionalPlaylistDto;
+      return wrapped.value ?? null;
+    }
+
+    return details as PlaylistDto;
+  }
+}
+
+interface OptionalPlaylistDto {
+  value?: PlaylistDto | null;
+  present?: boolean;
+  empty?: boolean;
 }
