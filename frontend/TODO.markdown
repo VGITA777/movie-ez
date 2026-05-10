@@ -60,3 +60,6 @@ my progress here.
 - Added a way for the user to remove all of their playlist.
 - Added an indicator in the playlist item at the Playlist Dialog if the content is already in the
   playlist.
+
+### May 11, 2026
+- Tried to implement the user playlist syncing but failed miserably.
