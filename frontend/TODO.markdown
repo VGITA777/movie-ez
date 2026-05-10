@@ -62,4 +62,7 @@ my progress here.
   playlist.
 
 ### May 11, 2026
+
 - Tried to implement the user playlist syncing but failed miserably.
+- Updated my local playlist service to use the local playlist model flags instead of directly
+  deleting playlists.
