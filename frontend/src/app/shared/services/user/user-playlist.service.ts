@@ -24,14 +24,11 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     super(`${environment.api.userBaseUrl}playlists/`);
   }
 
-  public createPlaylist(name: string): Observable<PlaylistDto> {
-    return this.createOnlinePlaylist({ name, trackIds: [] }).pipe(
-      map((response) => response.details),
-    );
-  }
-
-  public createPlaylistWithContents(name: string, trackIds: string[]): Observable<PlaylistDto> {
-    return this.createOnlinePlaylist({ name, trackIds }).pipe(map((response) => response.details));
+  public createPlaylist(name: string, items?: string[]): Observable<PlaylistDto> {
+    return this.createOnlinePlaylist({
+      name,
+      trackIds: items ?? [],
+    }).pipe(map((response) => response.details));
   }
 
   public deletePlaylist(name: string): Observable<void> {

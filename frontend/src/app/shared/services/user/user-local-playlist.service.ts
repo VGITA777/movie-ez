@@ -13,7 +13,7 @@ export type Playlist = OfflinePlaylist | PlaylistDto;
 export type PlaylistContent = OfflinePlaylistContent | PlaylistContentDto;
 
 export interface PlaylistService {
-  createPlaylist(name: string): Observable<Playlist>;
+  createPlaylist(name: string, items?: string[]): Observable<Playlist>;
   deletePlaylist(name: string): Observable<void>;
   getPlaylist(playlistName: string): Observable<Playlist | null>;
   removeFromPlaylist(playlistName: string, trackId: string): Observable<Playlist | null>;
@@ -118,7 +118,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     return of(newPlaylist);
   }
 
-  createPlaylist(name: string): Observable<OfflinePlaylist> {
+  createPlaylist(name: string, items?: string[]): Observable<OfflinePlaylist> {
     const existing: OfflinePlaylist | null = this.findPlaylistSync(name);
     if (existing) {
       return of(existing);
@@ -126,7 +126,7 @@ export class UserLocalPlaylistService implements PlaylistService {
 
     const newPlaylist: OfflinePlaylist = {
       name: name,
-      items: [],
+      items: items?.map((trackId) => ({ trackId })) ?? [],
       lastEditTimestamp: this.nowIso(),
       toBeDeleted: false,
     };
