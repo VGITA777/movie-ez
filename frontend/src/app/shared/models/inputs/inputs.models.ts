@@ -57,6 +57,7 @@ export interface GetUserPlaylistInput {
 
 export interface CreateUserPlaylistInput {
   name: string;
+  trackIds?: string[];
 }
 
 export interface AddTrackToPlaylistInput {
@@ -71,6 +72,11 @@ export interface AddTracksToPlaylistInput {
 
 export interface DeletePlaylistInput {
   name: string;
+}
+
+export interface DeleteAllTracksFromPlaylistInput {
+  name: string;
+  trackIds: string[];
 }
 
 export interface DeleteTrackFromPlaylistInput {

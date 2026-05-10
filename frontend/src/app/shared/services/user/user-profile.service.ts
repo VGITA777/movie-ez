@@ -20,4 +20,3 @@ export class UserProfileService {
     return this.client.get<ServerResponse<UserSummaryDto>>(`${this.baseUrl}current/summary`);
   }
 }
-

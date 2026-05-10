@@ -40,6 +40,7 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
             .map((content) => ({
               trackId: content.trackId.trim(),
             })),
+          toBeDeleted: playlist.toBeDeleted,
         }));
     } catch {
       return [];
@@ -127,6 +128,7 @@ export class UserLocalPlaylistService implements PlaylistService {
       name: name,
       items: [],
       lastEditTimestamp: this.nowIso(),
+      toBeDeleted: false,
     };
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
     return of(newPlaylist);

@@ -9,9 +9,11 @@ export interface OfflinePlaylistContent {
 }
 
 export interface OfflinePlaylist {
+  id?: string;
   name: string;
   items: OfflinePlaylistContent[];
   lastEditTimestamp: string;
+  toBeDeleted: boolean;
 }
 
 export interface PlaylistContentDto extends OfflinePlaylistContent {
