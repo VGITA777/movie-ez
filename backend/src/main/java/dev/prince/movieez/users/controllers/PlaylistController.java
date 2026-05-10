@@ -6,14 +6,15 @@ import dev.prince.movieez.security.dto.PlaylistContentDto;
 import dev.prince.movieez.security.dto.PlaylistContentMapper;
 import dev.prince.movieez.security.dto.PlaylistDto;
 import dev.prince.movieez.security.dto.PlaylistMapper;
-import dev.prince.movieez.security.models.PlaylistModel;
+import dev.prince.movieez.users.models.inputs.NewNameInput;
+import dev.prince.movieez.users.models.inputs.TracksInput;
 import dev.prince.movieez.users.services.PlaylistService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,12 +88,14 @@ public class PlaylistController {
       @PathVariable
       @Valid
       @NotBlank
-      String name
+      String name,
+      @Valid
+      @NotNull
+      @RequestBody
+      TracksInput trackIds
   ) {
-    var playlist = new PlaylistModel();
-    playlist.setName(name);
     var userId = SecurityUtils.getUserId();
-    var saved = playlistService.createPlaylist(playlist, userId);
+    var saved = playlistService.createPlaylist(name, new HashSet<>(trackIds.trackIds()), userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(saved));
     return ResponseEntity.ok(response);
   }
@@ -105,10 +108,10 @@ public class PlaylistController {
       String name,
       @RequestBody
       @Valid
-      @NotBlank
-      String newName
+      @NotNull
+      NewNameInput newName
   ) {
-    var updated = playlistService.updatePlaylistName(name, newName, SecurityUtils.getUserId());
+    var updated = playlistService.updatePlaylistName(name, newName.name(), SecurityUtils.getUserId());
     var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }
@@ -134,9 +137,9 @@ public class PlaylistController {
       @NotBlank
       String name,
       @RequestBody
-      Set<String> trackIds
+      TracksInput trackIds
   ) {
-    var updated = playlistService.addToPlaylist(name, trackIds, SecurityUtils.getUserId());
+    var updated = playlistService.addToPlaylist(name, new HashSet<>(trackIds.trackIds()), SecurityUtils.getUserId());
     var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }
@@ -173,11 +176,10 @@ public class PlaylistController {
       String name,
       @RequestBody
       @Valid
-      @NotNull
-      Set<String> trackIds
+      TracksInput input
   ) {
     var userId = SecurityUtils.getUserId();
-    var playlist = playlistService.deleteAllTracksFromPlaylist(name, trackIds, userId);
+    var playlist = playlistService.deleteAllTracksFromPlaylist(name, new HashSet<>(input.trackIds()), userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(playlist));
     return ResponseEntity.ok(response);
   }

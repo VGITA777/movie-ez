@@ -49,7 +49,8 @@ public class PlaylistModel {
 
   @NotNull
   @Column(name = "last_edit_timestamp", nullable = false)
-  private Instant lastEditTimestamp;
+  @Builder.Default
+  private Instant lastEditTimestamp = Instant.now();
 
   @NotNull
   @OneToMany(

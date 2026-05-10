@@ -13,10 +13,10 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -62,12 +62,25 @@ public class PlaylistService {
   }
 
   @Transactional
-  public PlaylistModel createPlaylist(PlaylistModel playlistModel, UUID userId) {
-    var name = playlistModel.getName();
-    if (playlistRepository.existsByNameAndUserId(name, userId)) {
-      var msg = "Playlist with name: '" + name + "' already exists";
-      throw new PlaylistAlreadyExistsException(msg);
+  public PlaylistModel createPlaylist(String name, Collection<String> trackIds, UUID userId) {
+    var existingPlaylist = playlistRepository.findByNameAndUserId(name, userId);
+
+    if (existingPlaylist.isPresent()) {
+      return existingPlaylist.get();
     }
+
+    var playlistModel = new PlaylistModel();
+    playlistModel.setName(name);
+
+    var savedPlaylist = save(playlistModel, userId);
+
+    var tracks = trackIds
+        .stream()
+        .filter(trackId -> !trackId.isBlank())
+        .map(trackId -> toPlaylistContentModel(trackId, savedPlaylist))
+        .collect(Collectors.toCollection(java.util.ArrayList::new));
+
+    playlistModel.setItems(tracks);
     return save(playlistModel, userId);
   }
 
@@ -97,7 +110,7 @@ public class PlaylistService {
   }
 
   @Transactional
-  public PlaylistModel addToPlaylist(String name, Set<String> trackIds, UUID userId) {
+  public PlaylistModel addToPlaylist(String name, Collection<String> trackIds, UUID userId) {
     var playlist = getPlaylist(name, userId);
     var existingTracks = playlist
         .getItems()
@@ -111,21 +124,12 @@ public class PlaylistService {
     var trackModels = tracksToAdd
         .stream()
         .map(track -> toPlaylistContentModel(track, playlist))
-        .toList();
+        .collect(Collectors.toCollection(java.util.ArrayList::new));
     playlist
         .getItems()
         .addAll(trackModels);
 
     return playlistRepository.save(playlist);
-  }
-
-  public void delete(UUID id) {
-    var existing = playlistRepository.existsById(id);
-    if (!existing) {
-      throw new PlaylistNotFoundException("Playlist with ID: '" + id + "' not found");
-    }
-
-    playlistRepository.deleteById(id);
   }
 
   @Transactional
@@ -156,15 +160,12 @@ public class PlaylistService {
       String name,
       @Valid
       @NotNull
-      Set<String> trackIds, UUID userId
+      Collection<String> trackIds, UUID userId
   ) {
     var playlist = getPlaylist(name, userId);
-    var newItems = playlist
+    playlist
         .getItems()
-        .stream()
-        .filter(item -> !trackIds.contains(item.getTrackId()))
-        .toList();
-    playlist.setItems(newItems);
+        .removeIf(item -> trackIds.contains(item.getTrackId()));
     return playlistRepository.save(playlist);
   }
 
