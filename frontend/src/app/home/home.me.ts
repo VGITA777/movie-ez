@@ -274,7 +274,7 @@ export class HomeMe {
     },
   );
 
-  protected handleItemClick(event: MediaCarouselOutput): void {
+  protected handleItemClick(event: MediaCarouselOutput | HomeHeroSliderItem): void {
     this.navFacade.navigateToWatchPage({
       mediaId: event.id,
       mediaType: event.type,

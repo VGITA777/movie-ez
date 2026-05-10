@@ -5,7 +5,9 @@
   } @else {
     <me-hero-slider
       [items]="heroItems()"
-      class="w-full accent-background" />
+      class="w-full accent-background"
+      (onClickPlay)="handleItemClick($event)"
+    />
   }
 
   <div

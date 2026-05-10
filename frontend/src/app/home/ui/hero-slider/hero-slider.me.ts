@@ -46,9 +46,8 @@ export interface HomeHeroSliderItem {
 })
 export class HeroSliderMe {
   public readonly items: InputSignal<HomeHeroSliderItem[]> = input.required();
-  public readonly handlePlay: OutputEmitterRef<HomeHeroSliderItem> = output();
-  /* TODO: Create a directive that handles adding media to a playlist */
-  public readonly handleAddToPlaylist: OutputEmitterRef<HomeHeroSliderItem> = output();
+  public readonly onClickPlay: OutputEmitterRef<HomeHeroSliderItem> = output();
+  public readonly onClickAddToPlaylist: OutputEmitterRef<HomeHeroSliderItem> = output();
 
   protected readonly carousel: Signal<HlmCarousel> = viewChild.required('carousel');
   protected readonly options: EmblaOptionsType = {

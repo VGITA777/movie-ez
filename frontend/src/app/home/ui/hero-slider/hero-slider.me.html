@@ -7,8 +7,8 @@
           class="w-full h-[90vh] pl-0 mask-[linear-gradient(to_bottom,var(--background)_80%,transparent_95%)]">
           <me-hero-slider-item
             [item]="item"
-            (handleAddToPlaylist)="handleAddToPlaylist.emit($event)"
-            (handlePlay)="handlePlay.emit($event)" />
+            (handleAddToPlaylist)="onClickAddToPlaylist.emit($event)"
+            (handlePlay)="onClickPlay.emit($event)" />
         </hlm-carousel-item>
       }
     </hlm-carousel-content>
