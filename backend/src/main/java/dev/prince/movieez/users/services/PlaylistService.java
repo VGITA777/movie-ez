@@ -10,6 +10,9 @@ import dev.prince.movieez.security.repositories.PlaylistContentRepository;
 import dev.prince.movieez.security.repositories.PlaylistRepository;
 import dev.prince.movieez.security.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -146,6 +149,25 @@ public class PlaylistService {
     return playlistRepository.save(playlist);
   }
 
+  @Transactional
+  public PlaylistModel deleteAllTracksFromPlaylist(
+      @Valid
+      @NotBlank
+      String name,
+      @Valid
+      @NotNull
+      Set<String> trackIds, UUID userId
+  ) {
+    var playlist = getPlaylist(name, userId);
+    var newItems = playlist
+        .getItems()
+        .stream()
+        .filter(item -> !trackIds.contains(item.getTrackId()))
+        .toList();
+    playlist.setItems(newItems);
+    return playlistRepository.save(playlist);
+  }
+
   private PlaylistModel getPlaylist(String name, UUID userId) {
     return playlistRepository
         .findByNameAndUserId(name, userId)
@@ -166,5 +188,4 @@ public class PlaylistService {
   private boolean isPlaylistExisting(String name, UUID userId) {
     return playlistRepository.existsByNameAndUserId(name, userId);
   }
-
 }

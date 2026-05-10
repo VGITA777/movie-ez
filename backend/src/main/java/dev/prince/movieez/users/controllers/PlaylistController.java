@@ -10,6 +10,7 @@ import dev.prince.movieez.security.models.PlaylistModel;
 import dev.prince.movieez.users.services.PlaylistService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -162,5 +163,22 @@ public class PlaylistController {
   ) {
     var response = playlistService.deleteTrackFromPlaylist(name, trackId, SecurityUtils.getUserId());
     return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(response)));
+  }
+
+  @DeleteMapping("/{name}/tracks")
+  public ResponseEntity<ServerResponse<PlaylistDto>> deleteTracksFromPlaylist(
+      @PathVariable
+      @Valid
+      @NotBlank
+      String name,
+      @RequestBody
+      @Valid
+      @NotNull
+      Set<String> trackIds
+  ) {
+    var userId = SecurityUtils.getUserId();
+    var playlist = playlistService.deleteAllTracksFromPlaylist(name, trackIds, userId);
+    var response = ServerResponse.success(PlaylistMapper.toDto(playlist));
+    return ResponseEntity.ok(response);
   }
 }
