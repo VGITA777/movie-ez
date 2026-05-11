@@ -6,6 +6,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { provideIcons } from '@ng-icons/core';
 import {
   lucideCheck,
+  lucideCloudSync,
   lucideMinus,
   lucideMoreVertical,
   lucidePlus,
@@ -25,6 +26,7 @@ import { AutofocusDirective } from '@shared/directives/autofocus-directive';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-manager.service';
 import { LocalWinsStrategy, PlaylistSyncStrategy } from '@shared/playlist-sync-strategy';
+import { AuthFacadeService } from '@shared/services/auth-facade-service';
 
 @Component({
   selector: 'me-playlist-dialog',
@@ -44,7 +46,14 @@ import { LocalWinsStrategy, PlaylistSyncStrategy } from '@shared/playlist-sync-s
   templateUrl: './playlist-dialog.me.html',
   styleUrl: './playlist-dialog.me.css',
   providers: [
-    provideIcons({ lucidePlus, lucideMinus, lucideMoreVertical, lucideCheck, lucideRefreshCcw }),
+    provideIcons({
+      lucidePlus,
+      lucideMinus,
+      lucideMoreVertical,
+      lucideCheck,
+      lucideRefreshCcw,
+      lucideCloudSync,
+    }),
   ],
 })
 export class PlaylistDialogMe implements OnInit {
@@ -60,11 +69,15 @@ export class PlaylistDialogMe implements OnInit {
     inject(UserLocalPlaylistService);
   private readonly dialogRef: BrnDialogRef<PlaylistDialogMe> =
     inject<BrnDialogRef<PlaylistDialogMe>>(BrnDialogRef);
-  private readonly dialogContext = injectBrnDialogContext<ShowPlaylistsDirectiveContext>();
+  private readonly dialogContext: ShowPlaylistsDirectiveContext =
+    injectBrnDialogContext<ShowPlaylistsDirectiveContext>();
+  private readonly authFacadeService: AuthFacadeService = inject(AuthFacadeService);
 
   protected readonly localPlaylists: Signal<OfflinePlaylist[]> =
     this.localPlaylistService.playlists;
   protected readonly currentEditingPlaylist: WritableSignal<string | undefined> = signal(undefined);
+  protected readonly isSyncing: Signal<boolean> = this.playlistManagerService.isSyncing;
+  protected readonly isAuthenticated: Signal<boolean> = this.authFacadeService.isAuthenticated;
 
   public ngOnInit(): void {
     this.localPlaylistService.createPlaylist(PlaylistDialogMe.DEFAULT_PLAYLIST_NAME).subscribe();

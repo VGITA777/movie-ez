@@ -4,9 +4,18 @@
     <span>
       Playlists
     </span>
-    <button hlmBtn variant="outline" size="icon-xs" (click)="syncPlaylists()">
-      <ng-icon name="lucideRefreshCcw" class="text-xs" />
-    </button>
+
+    @if (isAuthenticated()) {
+
+      <button
+        hlmBtn variant="outline" size="icon-sm" [disabled]="isSyncing() || !isAuthenticated()"
+        (click)="syncPlaylists()">
+        <ng-icon
+          [name]="(isSyncing()) ? 'lucideRefreshCcw' : 'lucideCloudSync'" class="text-sm"
+          [class.animate-spin]="isSyncing()" />
+      </button>
+    }
+
   </div>
 
   <!-- Contents -->

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/* TODO: Migrating to playlist UUID for identity */
 @RestController
 @RequestMapping("/users/playlists")
 public class PlaylistController {

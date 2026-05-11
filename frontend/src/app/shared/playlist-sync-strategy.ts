@@ -4,7 +4,7 @@ import {
   PlaylistDto,
   PlaylistUpdateInput,
 } from '@shared/models';
-import { finalize, first, Observable, tap } from 'rxjs';
+import { first, Observable, tap } from 'rxjs';
 import { inject, Injectable } from '@angular/core';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
 import { UserPlaylistService } from '@shared/services/user/user-playlist.service';
@@ -34,6 +34,7 @@ export class LocalWinsStrategy implements PlaylistSyncStrategy {
   private readonly remotePlaylistService: UserPlaylistService = inject(UserPlaylistService);
 
   sync(local: OfflinePlaylist[], remote: PlaylistDto[]): PlaylistSyncJobs {
+    console.debug(`Sync Process: Starting Local Wins Strategy`);
     console.debug(`Sync Process: Current Local Playlists`, local);
     console.debug(`Sync Process: Current Remote Playlists`, remote);
 
@@ -57,17 +58,23 @@ export class LocalWinsStrategy implements PlaylistSyncStrategy {
     const toBeDeletedAtRemote = remote.filter((remotePlaylist) => {
       // Delete remote if missing locally or explicitly marked for deletion locally.
       return !local.some(
-        (localPlaylist) => localPlaylist.name === remotePlaylist.name && !localPlaylist.toBeDeleted,
+        (localPlaylist) =>
+          localPlaylist.name === remotePlaylist.name &&
+          !localPlaylist.toBeDeleted &&
+          !localPlaylist.toBeRenamed,
       );
     });
 
     console.debug(`Sync Process: Playlists to be deleted at remote`, toBeDeletedAtRemote);
 
     const toBeUpdatedAtRemote = local.filter((localPlaylist) => {
-      // Update only if it exists remotely and is not marked for deletion.
+      // Only update if it's not marked for deletion and either exists remotely
+      // Or is marked for rename but not recreated remotely.
       return (
-        !localPlaylist.toBeDeleted &&
-        remote.some((remotePlaylist) => remotePlaylist.name === localPlaylist.name)
+        (!localPlaylist.toBeDeleted &&
+          remote.some((remotePlaylist) => remotePlaylist.name === localPlaylist.name)) ||
+        (localPlaylist.toBeRenamed &&
+          toBeCreatedAtRemote.findIndex((pl) => pl.name === localPlaylist.name) === -1)
       );
     });
 
@@ -90,7 +97,10 @@ export class LocalWinsStrategy implements PlaylistSyncStrategy {
               .pipe(
                 first(),
                 tap({
-                  complete: () => {
+                  next: () => {
+                    console.debug(
+                      `Sync Process: Successfully updated remote playlist ${playlist.name}, now updating local rename flag if needed.`,
+                    );
                     this.localPlaylistService.setPlaylistRenameFlag(playlist.name, false);
                   },
                 }),
@@ -101,11 +111,13 @@ export class LocalWinsStrategy implements PlaylistSyncStrategy {
           ...toBeDeletedAtRemote.map((playlist) => {
             return this.remotePlaylistService.deletePlaylist(playlist.name).pipe(
               first(),
-              finalize(() => {
-                console.debug(
-                  `Sync Process: Successfully deleted remote playlist ${playlist.name}, now deleting locally as well.`,
-                );
-                this.localPlaylistService.deletePermanently(playlist.name);
+              tap({
+                next: () => {
+                  console.debug(
+                    `Sync Process: Successfully deleted remote playlist ${playlist.name}, now deleting locally as well.`,
+                  );
+                  this.localPlaylistService.deletePermanently(playlist.name);
+                },
               }),
             );
           }),
