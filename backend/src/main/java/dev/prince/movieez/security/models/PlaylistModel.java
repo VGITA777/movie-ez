@@ -4,8 +4,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -33,7 +31,6 @@ import lombok.Setter;
 public class PlaylistModel {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", nullable = false)
   private UUID id;
 
@@ -48,9 +45,10 @@ public class PlaylistModel {
   private String name;
 
   @NotNull
-  @Column(name = "last_edit_timestamp", nullable = false)
-  @Builder.Default
-  private Instant lastEditTimestamp = Instant.now();
+  @Column(
+      name = "last_edit_timestamp", nullable = false, insertable = false, updatable = false
+  )
+  private Instant lastEditTimestamp;
 
   @NotNull
   @OneToMany(

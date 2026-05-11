@@ -10,13 +10,15 @@ CREATE TABLE playlists
     id      UUID         NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID         NOT NULL REFERENCES users (id),
     last_edit_timestamp  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    name    VARCHAR(100) NOT NULL
+    name    VARCHAR(100) NOT NULL,
+    CONSTRAINT uq_user_playlist_name UNIQUE (user_id, name)
 );
 
 CREATE TABLE playlist_content
 (
     id          UUID   NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    playlist_id UUID NOT NULL REFERENCES playlists (id),
+    playlist_id UUID NOT NULL REFERENCES playlists (id)
+      ON DELETE CASCADE,
     track_id    TEXT   NOT NULL,
     CONSTRAINT single_entry UNIQUE (playlist_id, track_id)
 );

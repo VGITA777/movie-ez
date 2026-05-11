@@ -12,10 +12,9 @@ import dev.prince.movieez.security.repositories.PlaylistRepository;
 import dev.prince.movieez.security.repositories.UserRepository;
 import dev.prince.movieez.users.models.inputs.PlaylistInput;
 import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,6 +31,9 @@ public class PlaylistService {
   private final PlaylistRepository playlistRepository;
   private final PlaylistContentRepository playlistContentRepository;
 
+  @PersistenceContext
+  private EntityManager entityManager;
+
   public PlaylistService(
       UserRepository userRepository,
       PlaylistRepository playlistRepository,
@@ -43,31 +45,27 @@ public class PlaylistService {
   }
 
   @Transactional
-  public PlaylistModel save(PlaylistModel playlistModel, UUID userId) {
-    var user = userRepository
-        .findById(userId)
-        .orElseThrow(() -> {
-          var msg = "User with ID: '" + userId + "' not found";
-          return new UserNotFoundException(msg);
-        });
-    playlistModel.setUser(user);
-    return playlistRepository.save(playlistModel);
-  }
-
-  @Transactional
-  public PlaylistModel updatePlaylistName(String oldName, String newName, UUID userId) {
-    var playlist = getPlaylist(oldName, userId);
+  public PlaylistModel updatePlaylistName(UUID id, String newName, UUID userId) {
+    var playlist = getPlaylist(id, userId);
     if (isPlaylistExisting(newName, userId)) {
       var msg = "Playlist with name: '" + newName + "' already exists";
       throw new PlaylistAlreadyExistsException(msg);
     }
     playlist.setName(newName);
-    return playlistRepository.save(playlist);
+    return savePlaylistAndGetResult(playlist);
   }
 
   @Transactional
-  public PlaylistModel createPlaylist(String name, Collection<String> trackIds, UUID userId) {
-    var existingPlaylist = playlistRepository.findByNameAndUserId(name, userId);
+  public PlaylistModel createPlaylist(String name, Collection<String> trackIds, UUID playlistId, UUID userId) {
+    if (playlistId != null) {
+      var existingPlaylist = find(playlistId, userId);
+
+      if (existingPlaylist.isPresent()) {
+        return existingPlaylist.get();
+      }
+    }
+
+    var existingPlaylist = find(name, userId);
 
     if (existingPlaylist.isPresent()) {
       return existingPlaylist.get();
@@ -75,17 +73,20 @@ public class PlaylistService {
 
     var playlistModel = new PlaylistModel();
     playlistModel.setName(name);
-
-    var savedPlaylist = save(playlistModel, userId);
+    setId(playlistModel, playlistId);
 
     var tracks = trackIds
         .stream()
         .filter(trackId -> !trackId.isBlank())
-        .map(trackId -> toPlaylistContentModel(trackId, savedPlaylist))
+        .map(trackId -> toPlaylistContentModel(trackId, playlistModel))
         .collect(Collectors.toCollection(java.util.ArrayList::new));
 
     playlistModel.setItems(tracks);
-    return save(playlistModel, userId);
+    return savePlaylistAndGetResult(playlistModel);
+  }
+
+  public Optional<PlaylistModel> find(UUID id, UUID userId) {
+    return playlistRepository.findByIdAndUserId(id, userId);
   }
 
   public Optional<PlaylistModel> find(String name, UUID userId) {
@@ -97,8 +98,8 @@ public class PlaylistService {
   }
 
   @Transactional
-  public PlaylistModel addToPlaylist(String name, String trackId, UUID userId) {
-    var playlist = getPlaylist(name, userId);
+  public PlaylistModel addToPlaylist(UUID id, String trackId, UUID userId) {
+    var playlist = getPlaylist(id, userId);
 
     boolean alreadyExists = playlistContentRepository.existsByPlaylistIdAndTrackId(playlist.getId(), trackId);
     if (alreadyExists) {
@@ -110,12 +111,12 @@ public class PlaylistService {
     playlist
         .getItems()
         .add(track);
-    return playlistRepository.save(playlist);
+    return savePlaylistAndGetResult(playlist);
   }
 
   @Transactional
-  public PlaylistModel addToPlaylist(String name, Collection<String> trackIds, UUID userId) {
-    var playlist = getPlaylist(name, userId);
+  public PlaylistModel addToPlaylist(UUID id, Collection<String> trackIds, UUID userId) {
+    var playlist = getPlaylist(id, userId);
     var existingTracks = playlist
         .getItems()
         .stream()
@@ -133,82 +134,65 @@ public class PlaylistService {
         .getItems()
         .addAll(trackModels);
 
-    return playlistRepository.save(playlist);
+    return savePlaylistAndGetResult(playlist);
   }
 
   @Transactional
-  public void delete(String name, UUID userId) {
-    var existing = playlistRepository.findByNameAndUserId(name, userId);
+  public void delete(UUID id, UUID userId) {
+    var existing = playlistRepository.findByIdAndUserId(id, userId);
     if (existing.isEmpty()) {
-      throw new PlaylistNotFoundException("Playlist with name: '" + name + "' not found");
+      throw new PlaylistNotFoundException("Playlist not found");
     }
 
-    playlistRepository.deleteByNameAndUserId(name, userId);
+    playlistRepository.deleteByIdAndUserId(id, userId);
   }
 
   @Transactional
-  public PlaylistModel deleteTrackFromPlaylist(String name, String trackId, UUID userId) {
-    var playlist = getPlaylist(name, userId);
+  public PlaylistModel deleteTrackFromPlaylist(UUID id, String trackId, UUID userId) {
+    var playlist = getPlaylist(id, userId);
     playlist
         .getItems()
         .removeIf(item -> item
             .getTrackId()
             .equals(trackId));
-    return playlistRepository.save(playlist);
+    return savePlaylistAndGetResult(playlist);
   }
 
   @Transactional
-  public PlaylistModel deleteAllTracksFromPlaylist(
-      @Valid
-      @NotBlank
-      String name,
-      @Valid
-      @NotNull
-      Collection<String> trackIds, UUID userId
-  ) {
-    var playlist = getPlaylist(name, userId);
+  public PlaylistModel deleteAllTracksFromPlaylist(UUID id, Collection<String> trackIds, UUID userId) {
+    var playlist = getPlaylist(id, userId);
     playlist
         .getItems()
         .removeIf(item -> trackIds.contains(item.getTrackId()));
-    return playlistRepository.save(playlist);
+    return savePlaylistAndGetResult(playlist);
   }
 
   @Transactional
-  public PlaylistModel deleteAllTracksFromPlaylist(
-      @Valid
-      @NotBlank
-      String name, UUID userId
-  ) {
-    var playlist = getPlaylist(name, userId);
+  public PlaylistModel deleteAllTracksFromPlaylist(UUID id, UUID userId) {
+    var playlist = getPlaylist(id, userId);
     playlist
         .getItems()
         .clear();
-    return playlistRepository.save(playlist);
+    return savePlaylistAndGetResult(playlist);
   }
 
   @Transactional
-  public PlaylistModel updatePlaylist(
-      @Valid
-      @NotBlank
-      String name,
-      @Valid
-      @NotNull
-      PlaylistUpdateInput input, UUID userId
-  ) {
-    var playlist = getPlaylist(name, userId);
+  public PlaylistModel updatePlaylist(UUID id, PlaylistUpdateInput input, UUID userId) {
+    var playlist = getPlaylist(id, userId);
+    var oldName = playlist.getName();
     var newName = input.newName();
     var newTracks = input.newTracks();
     var tracksToRemove = input.tracksToRemove();
     var tracksToAdd = input.tracksToAdd();
 
-    if (newName != null && !newName.isBlank() && !newName.equals(name)) {
-      updatePlaylistName(playlist, newName, userId);
+    if (newName != null && !newName.isBlank() && !newName.equals(oldName)) {
+      applyPlaylistNameUpdate(playlist, newName, userId);
     }
 
     // If newTracks is provided, it takes precedence over tracksToAdd and tracksToRemove
     if (newTracks != null) {
       overrideTracks(playlist, newTracks);
-      return playlistRepository.save(playlist);
+      return savePlaylistAndGetResult(playlist);
     }
 
     if (tracksToRemove != null) {
@@ -219,36 +203,35 @@ public class PlaylistService {
       addTracks(playlist, tracksToAdd);
     }
 
-    return playlistRepository.save(playlist);
+    return savePlaylistAndGetResult(playlist);
   }
 
   @Transactional
-  public Collection<PlaylistModel> createPlaylists(
-      @NotNull
-      List<PlaylistInput> playlists, UUID userId
-  ) {
+  public Collection<PlaylistModel> createPlaylists(List<PlaylistInput> playlists, UUID userId) {
     var user = userRepository
         .findById(userId)
         .orElseThrow(() -> new UserNotFoundException("User with ID: '" + userId + "' not found"));
     var userPlaylists = user.getPlaylistModels();
-    var exitingPlaylistNames = userPlaylists
+    var existingPlaylistNames = userPlaylists
         .stream()
         .map(PlaylistModel::getName)
         .collect(Collectors.toSet());
     // Skip all playlists that already exist and create only the new ones
     var playlistsToCreate = playlists
         .stream()
-        .filter(playlist -> !exitingPlaylistNames.contains(playlist.name()))
+        .filter(playlist -> !existingPlaylistNames.contains(playlist.name()))
         .map(playlist -> toPlaylistModel(playlist, user))
         .collect(Collectors.toCollection(ArrayList::new));
 
     userPlaylists.addAll(playlistsToCreate);
-    return userRepository.save(user).getPlaylistModels();
+    userRepository.saveAndFlush(user);
+    return findAllByUserId(userId);
   }
 
   private PlaylistModel toPlaylistModel(PlaylistInput input, UserModel user) {
     var playlistModel = new PlaylistModel();
     playlistModel.setName(input.name());
+    setId(playlistModel, input.id());
     playlistModel.setUser(user);
     var trackModels = toPlaylistContentModels(input.trackIds(), playlistModel);
     playlistModel.setItems(trackModels);
@@ -309,7 +292,7 @@ public class PlaylistService {
         .addAll(tracksToAdd);
   }
 
-  private void updatePlaylistName(PlaylistModel playlist, String newName, UUID userId) {
+  private void applyPlaylistNameUpdate(PlaylistModel playlist, String newName, UUID userId) {
     if (isPlaylistExisting(newName, userId)) {
       var msg = "Playlist with name: '" + newName + "' already exists";
       throw new PlaylistAlreadyExistsException(msg);
@@ -317,11 +300,11 @@ public class PlaylistService {
     playlist.setName(newName);
   }
 
-  private PlaylistModel getPlaylist(String name, UUID userId) {
+  private PlaylistModel getPlaylist(UUID id, UUID userId) {
     return playlistRepository
-        .findByNameAndUserId(name, userId)
+        .findByIdAndUserId(id, userId)
         .orElseThrow(() -> {
-          var msg = "Playlist with name '" + name + "' not found";
+          var msg = "Playlist with ID '" + id + "' not found";
           return new PlaylistNotFoundException(msg);
         });
   }
@@ -336,5 +319,17 @@ public class PlaylistService {
 
   private boolean isPlaylistExisting(String name, UUID userId) {
     return playlistRepository.existsByNameAndUserId(name, userId);
+  }
+
+  private void setId(PlaylistModel playlistModel, UUID id) {
+    playlistModel.setId((id != null) ? id : UUID.randomUUID());
+  }
+
+  private PlaylistModel savePlaylistAndGetResult(
+      PlaylistModel playlist
+  ) {
+    var saved = playlistRepository.saveAndFlush(playlist);
+    entityManager.refresh(saved);
+    return saved;
   }
 }

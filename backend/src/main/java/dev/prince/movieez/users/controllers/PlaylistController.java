@@ -8,8 +8,9 @@ import dev.prince.movieez.security.dto.PlaylistDto;
 import dev.prince.movieez.security.dto.PlaylistMapper;
 import dev.prince.movieez.users.models.inputs.CreatePlaylistsInput;
 import dev.prince.movieez.users.models.inputs.NewNameInput;
+import dev.prince.movieez.users.models.inputs.PlaylistAndTracksInput;
+import dev.prince.movieez.users.models.inputs.PlaylistTracksInput;
 import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
-import dev.prince.movieez.users.models.inputs.TracksInput;
 import dev.prince.movieez.users.services.PlaylistService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +18,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import org.hibernate.validator.constraints.Length;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/* TODO: Migrating to playlist UUID for identity */
 @RestController
 @RequestMapping("/users/playlists")
 public class PlaylistController {
@@ -51,31 +51,29 @@ public class PlaylistController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/{name}")
-  public ResponseEntity<ServerResponse<Optional<PlaylistDto>>> getPlaylistByName(
+  @GetMapping("/{id}")
+  public ResponseEntity<ServerResponse<Optional<PlaylistDto>>> getPlaylistById(
       @PathVariable
       @Valid
-      @NotBlank
-      String name
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id
   ) {
-    var playlist = playlistService
-        .find(name, SecurityUtils.getUserId())
-        .map(PlaylistMapper::toDto);
-
+    var data = playlistService.find(id, SecurityUtils.getUserId());
+    var playlist = data.map(PlaylistMapper::toDto);
     var response = ServerResponse.success(playlist);
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/{name}/tracks")
+  @GetMapping("/{id}/tracks")
   public ResponseEntity<ServerResponse<List<PlaylistContentDto>>> getPlaylistContents(
       @PathVariable
       @Valid
-      @NotBlank
-      String name
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id
   ) {
     var playlist = playlistService
-        .find(name, SecurityUtils.getUserId())
-        .orElseThrow(() -> new IllegalArgumentException("Playlist with name: '" + name + "' not found"));
+        .find(id, SecurityUtils.getUserId())
+        .orElseThrow(() -> new IllegalArgumentException("Playlist with ID not found"));
 
     var contents = playlist
         .getItems()
@@ -91,15 +89,16 @@ public class PlaylistController {
   public ResponseEntity<ServerResponse<PlaylistDto>> createPlaylist(
       @PathVariable
       @Valid
-      @NotBlank
+      @NotBlank(message = "{validation.playlist.name.notBlank}")
       String name,
       @Valid
-      @NotNull
+      @NotNull(message = "{validation.playlist.tracksInput.notNull}")
       @RequestBody
-      TracksInput trackIds
+      PlaylistAndTracksInput input
   ) {
     var userId = SecurityUtils.getUserId();
-    var saved = playlistService.createPlaylist(name, new HashSet<>(trackIds.trackIds()), userId);
+    var playlistId = input.playlistId();
+    var saved = playlistService.createPlaylist(name, new HashSet<>(input.trackIds()), playlistId, userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(saved));
     return ResponseEntity.ok(response);
   }
@@ -107,7 +106,7 @@ public class PlaylistController {
   @PostMapping("/create/batch")
   public ResponseEntity<ServerResponse<List<PlaylistDto>>> createPlaylists(
       @Valid
-      @NotNull
+      @NotNull(message = "{validation.playlist.createInput.notNull}")
       @RequestBody
       CreatePlaylistsInput input
   ) {
@@ -120,116 +119,115 @@ public class PlaylistController {
     return ResponseEntity.ok(response);
   }
 
-  @PatchMapping("/{name}/name")
+  @PatchMapping("/{id}/name")
   public ResponseEntity<ServerResponse<PlaylistDto>> updatePlaylistName(
       @PathVariable
       @Valid
-      @NotBlank
-      @Length(min = 1, max = 100, message = "{validation.length.message}")
-      String name,
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id,
       @RequestBody
       @Valid
-      @NotNull
+      @NotNull(message = "{validation.playlist.newNameInput.notNull}")
       NewNameInput newName
   ) {
-    var updated = playlistService.updatePlaylistName(name, newName.name(), SecurityUtils.getUserId());
+    var updated = playlistService.updatePlaylistName(id, newName.name(), SecurityUtils.getUserId());
     var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/{name}/update")
+  @PostMapping("/{id}/update")
   public ResponseEntity<ServerResponse<PlaylistDto>> updatePlaylist(
       @PathVariable
       @Valid
-      @NotBlank
-      String name,
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id,
       @RequestBody
       @Valid
-      @NotNull
+      @NotNull(message = "{validation.playlist.updateInput.notNull}")
       PlaylistUpdateInput input
   ) {
-    var updated = playlistService.updatePlaylist(name, input, SecurityUtils.getUserId());
+    var updated = playlistService.updatePlaylist(id, input, SecurityUtils.getUserId());
     var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/{name}/tracks/{trackId}")
+  @PostMapping("/{id}/tracks/{trackId}")
   public ResponseEntity<ServerResponse<PlaylistDto>> addTrackToPlaylist(
       @PathVariable
       @Valid
-      @NotBlank
-      String name,
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id,
       @PathVariable
       String trackId
   ) {
-    var updated = playlistService.addToPlaylist(name, trackId, SecurityUtils.getUserId());
+    var updated = playlistService.addToPlaylist(id, trackId, SecurityUtils.getUserId());
     var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/{name}/tracks")
+  @PostMapping("/{id}/tracks")
   public ResponseEntity<ServerResponse<PlaylistDto>> addAllTracksToPlaylist(
       @PathVariable
       @Valid
-      @NotBlank
-      String name,
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id,
       @RequestBody
-      TracksInput trackIds
+      PlaylistTracksInput input
   ) {
-    var updated = playlistService.addToPlaylist(name, new HashSet<>(trackIds.trackIds()), SecurityUtils.getUserId());
+    var updated = playlistService.addToPlaylist(id, new HashSet<>(input.tracksIds()), SecurityUtils.getUserId());
     var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }
 
-  @DeleteMapping("/{name}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<ServerResponse<?>> deletePlaylist(
       @PathVariable
       @Valid
-      @NotBlank
-      String name
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id
   ) {
-    playlistService.delete(name, SecurityUtils.getUserId());
-    return ResponseEntity.ok(ServerResponse.success("Playlist with name: '" + name + "' deleted successfully", null));
+    playlistService.delete(id, SecurityUtils.getUserId());
+    return ResponseEntity.ok(ServerResponse.success("Playlist deleted successfully", null));
   }
 
-  @DeleteMapping("/{name}/tracks/{trackId}")
+  @DeleteMapping("/{id}/tracks/{trackId}")
   public ResponseEntity<ServerResponse<?>> deleteTrackFromPlaylist(
       @PathVariable
       @Valid
-      @NotBlank
-      String name,
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id,
       @PathVariable
       String trackId
   ) {
-    var response = playlistService.deleteTrackFromPlaylist(name, trackId, SecurityUtils.getUserId());
+    var response = playlistService.deleteTrackFromPlaylist(id, trackId, SecurityUtils.getUserId());
     return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(response)));
   }
 
-  @DeleteMapping("/{name}/tracks")
+  @DeleteMapping("/{id}/tracks")
   public ResponseEntity<ServerResponse<PlaylistDto>> deleteTracksFromPlaylist(
       @PathVariable
       @Valid
-      @NotBlank
-      String name,
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id,
       @RequestBody
       @Valid
-      TracksInput input
+      PlaylistAndTracksInput input
   ) {
     var userId = SecurityUtils.getUserId();
-    var playlist = playlistService.deleteAllTracksFromPlaylist(name, new HashSet<>(input.trackIds()), userId);
+    var playlist = playlistService.deleteAllTracksFromPlaylist(id, new HashSet<>(input.trackIds()), userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(playlist));
     return ResponseEntity.ok(response);
   }
 
-  @DeleteMapping("/{name}/tracks/all")
+  @DeleteMapping("/{id}/tracks/all")
   public ResponseEntity<ServerResponse<PlaylistDto>> deleteAllTracksFromPlaylist(
       @PathVariable
       @Valid
-      @NotBlank
-      String name
+      @NotNull(message = "{validation.playlist.id.notNull}")
+      UUID id
   ) {
     var userId = SecurityUtils.getUserId();
-    var playlist = playlistService.deleteAllTracksFromPlaylist(name, userId);
+    var playlist = playlistService.deleteAllTracksFromPlaylist(id, userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(playlist));
     return ResponseEntity.ok(response);
   }
