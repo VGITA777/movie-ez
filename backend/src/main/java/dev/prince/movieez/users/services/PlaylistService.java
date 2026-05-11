@@ -9,6 +9,7 @@ import dev.prince.movieez.security.models.PlaylistModel;
 import dev.prince.movieez.security.repositories.PlaylistContentRepository;
 import dev.prince.movieez.security.repositories.PlaylistRepository;
 import dev.prince.movieez.security.repositories.UserRepository;
+import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -167,6 +168,109 @@ public class PlaylistService {
         .getItems()
         .removeIf(item -> trackIds.contains(item.getTrackId()));
     return playlistRepository.save(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel deleteAllTracksFromPlaylist(
+      @Valid
+      @NotBlank
+      String name, UUID userId
+  ) {
+    var playlist = getPlaylist(name, userId);
+    playlist
+        .getItems()
+        .clear();
+    return playlistRepository.save(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel updatePlaylist(
+      @Valid
+      @NotBlank
+      String name,
+      @Valid
+      @NotNull
+      PlaylistUpdateInput input, UUID userId
+  ) {
+    var playlist = getPlaylist(name, userId);
+    var newName = input.newName();
+    var newTracks = input.newTracks();
+    var tracksToRemove = input.tracksToRemove();
+    var tracksToAdd = input.tracksToAdd();
+
+    if (newName != null && !newName.isBlank() && !newName.equals(name)) {
+      updatePlaylistName(playlist, newName, userId);
+    }
+
+    // If newTracks is provided, it takes precedence over tracksToAdd and tracksToRemove
+    if (newTracks != null) {
+      overrideTracks(playlist, newTracks);
+      return playlistRepository.save(playlist);
+    }
+
+    if (tracksToRemove != null) {
+      removeTracks(playlist, tracksToRemove);
+    }
+
+    if (tracksToAdd != null) {
+      addTracks(playlist, tracksToAdd);
+    }
+
+    return playlistRepository.save(playlist);
+  }
+
+  private void removeTracks(PlaylistModel playlist, Collection<String> trackIds) {
+    playlist
+        .getItems()
+        .removeIf(item -> trackIds.contains(item.getTrackId()));
+  }
+
+  private void addTracks(PlaylistModel playlist, Collection<String> trackIds) {
+    var existingTrackIds = playlist
+        .getItems()
+        .stream()
+        .map(PlaylistContentModel::getTrackId)
+        .collect(Collectors.toSet());
+    var newTracksToAdd = trackIds
+        .stream()
+        .filter(trackId -> !trackId.isBlank())
+        .filter(trackId -> !existingTrackIds.contains(trackId))
+        .map(trackId -> toPlaylistContentModel(trackId, playlist))
+        .collect(Collectors.toSet());
+    playlist
+        .getItems()
+        .addAll(newTracksToAdd);
+  }
+
+  private void overrideTracks(PlaylistModel playlist, Collection<String> trackIds) {
+    var existingTrackIds = playlist
+        .getItems()
+        .stream()
+        .map(PlaylistContentModel::getTrackId)
+        .collect(Collectors.toSet());
+    var tracksToAdd = trackIds
+        .stream()
+        .filter(trackId -> !trackId.isBlank())
+        .filter(trackId -> !existingTrackIds.contains(trackId))
+        .map(trackId -> toPlaylistContentModel(trackId, playlist))
+        .collect(Collectors.toCollection(HashSet::new));
+    playlist
+        .getItems()
+        .removeIf(item -> {
+          var trackId = item.getTrackId();
+          return !trackIds.contains(trackId);
+        });
+    playlist
+        .getItems()
+        .addAll(tracksToAdd);
+  }
+
+  private void updatePlaylistName(PlaylistModel playlist, String newName, UUID userId) {
+    if (isPlaylistExisting(newName, userId)) {
+      var msg = "Playlist with name: '" + newName + "' already exists";
+      throw new PlaylistAlreadyExistsException(msg);
+    }
+    playlist.setName(newName);
   }
 
   private PlaylistModel getPlaylist(String name, UUID userId) {
