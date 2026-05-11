@@ -1,6 +1,13 @@
 <section class="playlists w-full h-full flex flex-col gap-4">
   <!-- Header -->
-  <div hlmDialogHeader>Playlists</div>
+  <div hlmDialogHeader class="flex flex-row gap-2 items-center w-full">
+    <span>
+      Playlists
+    </span>
+    <button hlmBtn variant="outline" size="icon-xs" (click)="syncPlaylists()">
+      <ng-icon name="lucideRefreshCcw" class="text-xs" />
+    </button>
+  </div>
 
   <!-- Contents -->
   <ng-scrollbar hlm appearance="compact" class="playlist-items w-full h-full max-h-100">
@@ -35,7 +42,8 @@
               <span>{{ playlist.name }}</span>
             }
             @if (isTrackInPlaylist(playlist.name)) {
-              <span class="w-1 h-1 rounded-full bg-lime-500 animate-pulse shadow-[0_0_8px_rgba(132,204,22,0.85)]"></span>
+              <span
+                class="w-1 h-1 rounded-full bg-lime-500 animate-pulse shadow-[0_0_8px_rgba(132,204,22,0.85)]"></span>
             }
           </hlm-item-title>
           <p hlmItemDescription>{{ playlist.items.length }} items</p>

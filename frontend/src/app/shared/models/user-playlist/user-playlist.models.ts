@@ -1,3 +1,6 @@
+export type Playlist = OfflinePlaylist | PlaylistDto;
+export type PlaylistContent = OfflinePlaylistContent | PlaylistContentDto;
+
 export interface ServerResponse<T> {
   message: string;
   details: T;
@@ -13,6 +16,7 @@ export interface OfflinePlaylist {
   name: string;
   items: OfflinePlaylistContent[];
   lastEditTimestamp: string;
+  toBeRenamed: boolean;
   toBeDeleted: boolean;
 }
 
@@ -21,9 +25,10 @@ export interface PlaylistContentDto extends OfflinePlaylistContent {
   playlistId: string;
 }
 
-export interface PlaylistDto extends OfflinePlaylist {
+export interface PlaylistDto {
   id: string;
   userId: string;
+  name: string;
   items: PlaylistContentDto[];
 }
 

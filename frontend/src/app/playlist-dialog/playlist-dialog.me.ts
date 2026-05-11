@@ -4,7 +4,13 @@ import { OfflinePlaylist } from '@shared/models';
 import { HlmItemImports } from '@spartan-ng/helm/item';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { provideIcons } from '@ng-icons/core';
-import { lucideCheck, lucideMinus, lucideMoreVertical, lucidePlus } from '@ng-icons/lucide';
+import {
+  lucideCheck,
+  lucideMinus,
+  lucideMoreVertical,
+  lucidePlus,
+  lucideRefreshCcw,
+} from '@ng-icons/lucide';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
 import { BrnDialogRef, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
@@ -17,6 +23,8 @@ import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { AutofocusDirective } from '@shared/directives/autofocus-directive';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
+import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-manager.service';
+import { LocalWinsStrategy, PlaylistSyncStrategy } from '@shared/playlist-sync-strategy';
 
 @Component({
   selector: 'me-playlist-dialog',
@@ -35,13 +43,19 @@ import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
   ],
   templateUrl: './playlist-dialog.me.html',
   styleUrl: './playlist-dialog.me.css',
-  providers: [provideIcons({ lucidePlus, lucideMinus, lucideMoreVertical, lucideCheck })],
+  providers: [
+    provideIcons({ lucidePlus, lucideMinus, lucideMoreVertical, lucideCheck, lucideRefreshCcw }),
+  ],
 })
 export class PlaylistDialogMe implements OnInit {
   private static readonly DEFAULT_PLAYLIST_NAME = 'Favorites';
   private static readonly SHARED_TOAST_OPTIONS: Omit<ToastT, 'id' | 'type' | 'title'> = {
     position: 'top-right',
   };
+  private readonly playlistManagerService: UserPlaylistManagerService = inject(
+    UserPlaylistManagerService,
+  );
+  private readonly localWinsSyncStrategy: PlaylistSyncStrategy = inject(LocalWinsStrategy);
   private readonly localPlaylistService: UserLocalPlaylistService =
     inject(UserLocalPlaylistService);
   private readonly dialogRef: BrnDialogRef<PlaylistDialogMe> =
@@ -191,5 +205,9 @@ export class PlaylistDialogMe implements OnInit {
   private handleTrackIsNotInPlaylist(name: string): void {
     toast.error(`Track is not in the playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
     this.closeDialog();
+  }
+
+  protected syncPlaylists(): void {
+    this.playlistManagerService.sync(this.localWinsSyncStrategy);
   }
 }

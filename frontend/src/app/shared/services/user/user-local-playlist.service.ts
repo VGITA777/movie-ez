@@ -1,16 +1,8 @@
 import { computed, Injectable, Signal, WritableSignal } from '@angular/core';
-import {
-  OfflinePlaylist,
-  OfflinePlaylistContent,
-  PlaylistContentDto,
-  PlaylistDto,
-} from '@shared/models';
+import { OfflinePlaylist, OfflinePlaylistContent, Playlist } from '@shared/models';
 import { storage } from '@signality/core';
 import { Serializer } from '@signality/core/browser/storage';
 import { Observable, of } from 'rxjs';
-
-export type Playlist = OfflinePlaylist | PlaylistDto;
-export type PlaylistContent = OfflinePlaylistContent | PlaylistContentDto;
 
 export interface PlaylistService {
   createPlaylist(name: string, items?: string[]): Observable<Playlist>;
@@ -40,6 +32,7 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
             .map((content) => ({
               trackId: content.trackId.trim(),
             })),
+          toBeRenamed: playlist.toBeRenamed,
           toBeDeleted: playlist.toBeDeleted,
         }));
     } catch {
@@ -110,6 +103,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     const newPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       name: newNameTrimmed,
+      toBeRenamed: true,
       lastEditTimestamp: this.nowIso(),
     };
 
@@ -139,6 +133,7 @@ export class UserLocalPlaylistService implements PlaylistService {
       name: name,
       items: items?.map((trackId) => ({ trackId })) ?? [],
       lastEditTimestamp: this.nowIso(),
+      toBeRenamed: false,
       toBeDeleted: false,
     };
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
@@ -222,6 +217,32 @@ export class UserLocalPlaylistService implements PlaylistService {
 
   public deleteAllPlaylistsPermanently(): void {
     this.userPlaylist.set([]);
+  }
+
+  public setPlaylistRenameFlag(name: string, flag: boolean): void {
+    const currentPlaylist: OfflinePlaylist | null = this.findPlaylist(name);
+    if (!currentPlaylist) {
+      return;
+    }
+
+    const updatedPlaylist: OfflinePlaylist = {
+      ...currentPlaylist,
+      toBeRenamed: flag,
+    };
+    this.updateExistingPlaylist(name, updatedPlaylist);
+  }
+
+  public setPlaylistDeleteFlag(name: string, flag: boolean): void {
+    const currentPlaylist: OfflinePlaylist | null = this.findPlaylist(name);
+    if (!currentPlaylist) {
+      return;
+    }
+
+    const updatedPlaylist: OfflinePlaylist = {
+      ...currentPlaylist,
+      toBeDeleted: flag,
+    };
+    this.updateExistingPlaylist(name, updatedPlaylist);
   }
 
   private findPlaylist(name: string): OfflinePlaylist | null {

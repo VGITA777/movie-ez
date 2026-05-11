@@ -90,3 +90,12 @@ export interface PlaylistUpdateInput {
   tracksToRemove?: string[] | null;
   tracksToAdd?: string[] | null;
 }
+
+export interface PlaylistInput {
+  name: string;
+  trackIds: string[];
+}
+
+export interface CreatePlaylistsInput {
+  playlists: PlaylistInput[];
+}

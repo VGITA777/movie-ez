@@ -4,6 +4,7 @@ import { environment } from '@environments/environment';
 import {
   AddTracksToPlaylistInput,
   AddTrackToPlaylistInput,
+  CreatePlaylistsInput,
   CreateUserPlaylistInput,
   DeleteAllTracksFromPlaylistInput,
   DeletePlaylistInput,
@@ -104,6 +105,10 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     });
   }
 
+  public createPlaylists(input: CreatePlaylistsInput): Observable<PlaylistDto[]> {
+    return this.createOnlinePlaylists(input).pipe(map((response) => response.details ?? []));
+  }
+
   public updatePlaylistName(name: string, newName: string) {
     const encodedName: string = encodeURIComponent(name);
     return this.client.patch<ServerResponse<PlaylistDto>>(`${this.baseUrl}${encodedName}/name`, {
@@ -174,6 +179,12 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     return this.client.delete<ServerResponse<PlaylistDto>>(
       `${this.baseUrl}${encodedName}/tracks/${encodedTrackId}`,
     );
+  }
+
+  public createOnlinePlaylists(
+    input: CreatePlaylistsInput,
+  ): Observable<ServerResponse<PlaylistDto[]>> {
+    return this.client.post<ServerResponse<PlaylistDto[]>>(`${this.baseUrl}create/batch`, input);
   }
 
   private unwrapOptional(details: PlaylistDto | OptionalPlaylistDto | null): PlaylistDto | null {
