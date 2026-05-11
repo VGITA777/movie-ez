@@ -83,3 +83,10 @@ export interface DeleteTrackFromPlaylistInput {
   name: string;
   trackId: string;
 }
+
+export interface PlaylistUpdateInput {
+  newName?: string | null;
+  newTracks?: string[] | null;
+  tracksToRemove?: string[] | null;
+  tracksToAdd?: string[] | null;
+}
