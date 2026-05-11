@@ -6,14 +6,17 @@ import dev.prince.movieez.exceptions.PlaylistNotFoundException;
 import dev.prince.movieez.exceptions.UserNotFoundException;
 import dev.prince.movieez.security.models.PlaylistContentModel;
 import dev.prince.movieez.security.models.PlaylistModel;
+import dev.prince.movieez.security.models.UserModel;
 import dev.prince.movieez.security.repositories.PlaylistContentRepository;
 import dev.prince.movieez.security.repositories.PlaylistRepository;
 import dev.prince.movieez.security.repositories.UserRepository;
+import dev.prince.movieez.users.models.inputs.PlaylistInput;
 import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -217,6 +220,47 @@ public class PlaylistService {
     }
 
     return playlistRepository.save(playlist);
+  }
+
+  @Transactional
+  public Collection<PlaylistModel> createPlaylists(
+      @NotNull
+      List<PlaylistInput> playlists, UUID userId
+  ) {
+    var user = userRepository
+        .findById(userId)
+        .orElseThrow(() -> new UserNotFoundException("User with ID: '" + userId + "' not found"));
+    var userPlaylists = user.getPlaylistModels();
+    var exitingPlaylistNames = userPlaylists
+        .stream()
+        .map(PlaylistModel::getName)
+        .collect(Collectors.toSet());
+    // Skip all playlists that already exist and create only the new ones
+    var playlistsToCreate = playlists
+        .stream()
+        .filter(playlist -> !exitingPlaylistNames.contains(playlist.name()))
+        .map(playlist -> toPlaylistModel(playlist, user))
+        .collect(Collectors.toCollection(ArrayList::new));
+
+    userPlaylists.addAll(playlistsToCreate);
+    return userRepository.save(user).getPlaylistModels();
+  }
+
+  private PlaylistModel toPlaylistModel(PlaylistInput input, UserModel user) {
+    var playlistModel = new PlaylistModel();
+    playlistModel.setName(input.name());
+    playlistModel.setUser(user);
+    var trackModels = toPlaylistContentModels(input.trackIds(), playlistModel);
+    playlistModel.setItems(trackModels);
+    return playlistModel;
+  }
+
+  private List<PlaylistContentModel> toPlaylistContentModels(Collection<String> trackIds, PlaylistModel playlist) {
+    return trackIds
+        .stream()
+        .filter(trackId -> !trackId.isBlank())
+        .map(trackId -> toPlaylistContentModel(trackId, playlist))
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   private void removeTracks(PlaylistModel playlist, Collection<String> trackIds) {

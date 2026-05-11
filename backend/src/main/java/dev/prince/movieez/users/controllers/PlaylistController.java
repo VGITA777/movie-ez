@@ -6,6 +6,7 @@ import dev.prince.movieez.security.dto.PlaylistContentDto;
 import dev.prince.movieez.security.dto.PlaylistContentMapper;
 import dev.prince.movieez.security.dto.PlaylistDto;
 import dev.prince.movieez.security.dto.PlaylistMapper;
+import dev.prince.movieez.users.models.inputs.CreatePlaylistsInput;
 import dev.prince.movieez.users.models.inputs.NewNameInput;
 import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
 import dev.prince.movieez.users.models.inputs.TracksInput;
@@ -99,6 +100,22 @@ public class PlaylistController {
     var userId = SecurityUtils.getUserId();
     var saved = playlistService.createPlaylist(name, new HashSet<>(trackIds.trackIds()), userId);
     var response = ServerResponse.success(PlaylistMapper.toDto(saved));
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/create/batch")
+  public ResponseEntity<ServerResponse<List<PlaylistDto>>> createPlaylists(
+      @Valid
+      @NotNull
+      @RequestBody
+      CreatePlaylistsInput input
+  ) {
+    var userId = SecurityUtils.getUserId();
+    var saved = playlistService.createPlaylists(input.playlists(), userId);
+    var response = ServerResponse.success(saved
+                                              .stream()
+                                              .map(PlaylistMapper::toDto)
+                                              .toList());
     return ResponseEntity.ok(response);
   }
 
