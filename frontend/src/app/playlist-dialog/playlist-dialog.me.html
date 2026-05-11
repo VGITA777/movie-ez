@@ -23,10 +23,10 @@
     @for (playlist of localPlaylists(); track playlist.name) {
       <a
         hlmItem variant="outline" size="sm" class="w-full mb-2"
-        (click)="handlePlaylistButtonClick(playlist.name)">
+        (click)="handlePlaylistButtonClick(playlist.id)">
         <hlm-item-content>
           <hlm-item-title class="text-start flex flex-row gap-2 items-center">
-            @if (currentEditingPlaylist() === playlist.name) {
+            @if (currentEditingPlaylistId() === playlist.id) {
               <hlm-input-group>
                 <input
                   #newNameInput
@@ -36,13 +36,13 @@
                   [value]="playlist.name"
                   [placeholder]="playlist.name"
                   (click)="$event.stopPropagation()"
-                  (keydown.enter)="handleSavePlaylistName($event, newNameInput.value)"
+                  (keydown.enter)="handleSavePlaylistName($event, newNameInput.value, playlist.id)"
                   (keydown.esc)="setCurrentUpdatingPlaylist(undefined, $event)"
                 >
                 <hlm-input-group-addon align="inline-end">
                   <button
                     hlmBtn variant="outline" size="xs"
-                    (click)="handleSavePlaylistName($event, newNameInput.value)">
+                    (click)="handleSavePlaylistName($event, newNameInput.value, playlist.id)">
                     <ng-icon name="lucideCheck" class="text-sm" />
                   </button>
                 </hlm-input-group-addon>
@@ -61,7 +61,7 @@
           <button
             hlmBtn
             [hlmDropdownMenuTrigger]="actionsMenu"
-            [hlmDropdownMenuTriggerData]="{$implicit: playlist.name}"
+            [hlmDropdownMenuTriggerData]="{$implicit: playlist.id}"
             variant="outline"
             class="rounded-full"
             (click)="$event.stopPropagation()"
@@ -107,17 +107,17 @@
   </div>
 </section>
 
-<ng-template #actionsMenu let-name>
+<ng-template #actionsMenu let-playlistId>
   <hlm-dropdown-menu>
     @let addRemoveBtnName = (
-                              isTrackInPlaylist(name)
+                              isTrackInPlaylist(playlistId)
                             ) ? 'Remove' : 'Add';
 
-    <button hlmDropdownMenuItem (click)="handlePlaylistButtonClick(name)">{{
+    <button hlmDropdownMenuItem (click)="handlePlaylistButtonClick(playlistId)">{{
         addRemoveBtnName
       }}
     </button>
-    <button hlmDropdownMenuItem (click)="setCurrentUpdatingPlaylist(name)">Edit</button>
-    <button hlmDropdownMenuItem (click)="handleDeletePlaylist(name)">Delete</button>
+    <button hlmDropdownMenuItem (click)="setCurrentUpdatingPlaylist(playlistId)">Edit</button>
+    <button hlmDropdownMenuItem (click)="handleDeletePlaylist(playlistId)">Delete</button>
   </hlm-dropdown-menu>
 </ng-template>

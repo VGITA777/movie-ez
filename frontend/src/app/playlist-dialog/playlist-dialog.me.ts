@@ -75,20 +75,23 @@ export class PlaylistDialogMe implements OnInit {
 
   protected readonly localPlaylists: Signal<OfflinePlaylist[]> =
     this.localPlaylistService.playlists;
-  protected readonly currentEditingPlaylist: WritableSignal<string | undefined> = signal(undefined);
+  protected readonly currentEditingPlaylistId: WritableSignal<string | undefined> =
+    signal(undefined);
   protected readonly isSyncing: Signal<boolean> = this.playlistManagerService.isSyncing;
   protected readonly isAuthenticated: Signal<boolean> = this.authFacadeService.isAuthenticated;
 
   public ngOnInit(): void {
-    this.localPlaylistService.createPlaylist(PlaylistDialogMe.DEFAULT_PLAYLIST_NAME).subscribe();
+    this.localPlaylistService
+      .createPlaylist(crypto.randomUUID(), PlaylistDialogMe.DEFAULT_PLAYLIST_NAME)
+      .subscribe();
     console.debug(`Current dialog context:`, this.dialogContext.trackId);
   }
 
-  protected handlePlaylistButtonClick(name: string): void {
-    if (this.isTrackInPlaylist(name)) {
-      this.removeFromPlaylist(name);
+  protected handlePlaylistButtonClick(playlistId: string): void {
+    if (this.isTrackInPlaylist(playlistId)) {
+      this.removeFromPlaylist(playlistId);
     } else {
-      this.addToPlaylist(name);
+      this.addToPlaylist(playlistId);
     }
   }
 
@@ -107,7 +110,7 @@ export class PlaylistDialogMe implements OnInit {
     this.handleAddingToPlaylist(name);
   }
 
-  protected removeFromPlaylist(name: string): void {
+  protected removeFromPlaylist(playlistId: string): void {
     const trackId: string = this.dialogContext.trackId;
 
     if (trackId.trim() === '') {
@@ -115,17 +118,17 @@ export class PlaylistDialogMe implements OnInit {
       return;
     }
 
-    if (!this.isTrackInPlaylist(name)) {
-      this.handleTrackIsNotInPlaylist(name);
+    if (!this.isTrackInPlaylist(playlistId)) {
+      this.handleTrackIsNotInPlaylist(playlistId);
       return;
     }
 
-    this.handleRemovingFromPlaylist(name);
+    this.handleRemovingFromPlaylist(playlistId);
   }
 
-  protected isTrackInPlaylist(name: string): boolean {
+  protected isTrackInPlaylist(playlistId: string): boolean {
     const playlist: OfflinePlaylist | undefined = this.localPlaylists().find(
-      (pl) => pl.name === name,
+      (pl) => pl.id === playlistId,
     );
     if (!playlist) {
       return false;
@@ -138,45 +141,48 @@ export class PlaylistDialogMe implements OnInit {
     this.dialogRef.close();
   }
 
-  protected setCurrentUpdatingPlaylist(name?: string, event?: Event): void {
+  protected setCurrentUpdatingPlaylist(playlistId?: string, event?: Event): void {
     event?.stopPropagation();
-    this.currentEditingPlaylist.set(name);
+    this.currentEditingPlaylistId.set(playlistId);
   }
 
   protected handleDeletePlaylist(name: string): void {
     this.localPlaylistService.deletePlaylist(name).subscribe();
   }
 
-  protected handleSavePlaylistName(event: Event, name: string): void {
+  protected handleSavePlaylistName(event: Event, name: string, playlistId: string): void {
     event.stopPropagation();
     const newName: string = name.trim();
 
     if (newName.length === 0) {
       console.debug(
-        `Attempted to rename playlist to an empty name. Current editing playlist: "${this.currentEditingPlaylist()}".`,
+        `Attempted to rename playlist to an empty name. Current editing playlist: "${this.currentEditingPlaylistId()}".`,
       );
       toast.error(`Playlist name cannot be empty.`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
-      this.currentEditingPlaylist.set(undefined);
+      this.currentEditingPlaylistId.set(undefined);
       return;
     }
 
+    const currentPlaylist: OfflinePlaylist | undefined = this.localPlaylists().find(
+      (pl) => pl.id === playlistId,
+    );
     const isNameTaken: boolean =
       this.localPlaylists().some((playlist) => playlist.name === newName) &&
-      newName !== this.currentEditingPlaylist();
+      newName !== currentPlaylist?.name;
     if (isNameTaken) {
       console.debug(
-        `Playlist with name "${newName}" already exists. Current editing playlist: "${this.currentEditingPlaylist()}".`,
+        `Playlist with name "${newName}" already exists. Current editing playlist: "${this.currentEditingPlaylistId()}".`,
       );
       toast.error(
         `A playlist with the name "${newName}" already exists. Please choose a different name.`,
         PlaylistDialogMe.SHARED_TOAST_OPTIONS,
       );
-      this.currentEditingPlaylist.set(undefined);
+      this.currentEditingPlaylistId.set(undefined);
       return;
     }
 
-    this.localPlaylistService.renamePlaylist(this.currentEditingPlaylist()!, newName).subscribe();
-    this.currentEditingPlaylist.set(undefined);
+    this.localPlaylistService.renamePlaylist(playlistId, newName).subscribe();
+    this.currentEditingPlaylistId.set(undefined);
   }
 
   protected createNewPlaylist() {
@@ -189,7 +195,7 @@ export class PlaylistDialogMe implements OnInit {
       counter++;
     }
 
-    this.localPlaylistService.createPlaylist(newName).subscribe();
+    this.localPlaylistService.createPlaylist(crypto.randomUUID(), newName).subscribe();
   }
 
   protected handleDeleteAllPlaylists(context: any) {
@@ -197,25 +203,33 @@ export class PlaylistDialogMe implements OnInit {
     this.localPlaylistService.deleteAllPlaylists();
   }
 
-  private handleTrackAlreadyInPlaylist(name: string): void {
+  private handleTrackAlreadyInPlaylist(playlistName: string): void {
     toast.error(
-      `Track is already in the playlist "${name}".`,
+      `Track is already in the playlist "${playlistName}".`,
       PlaylistDialogMe.SHARED_TOAST_OPTIONS,
     );
     this.closeDialog();
   }
 
-  private handleAddingToPlaylist(name: string): void {
-    this.localPlaylistService.addToPlaylist(name, this.dialogContext.trackId).subscribe();
+  private handleAddingToPlaylist(playlistId: string): void {
+    const name: string =
+      this.localPlaylists().find((pl) => pl.id === playlistId)?.name ?? 'Unknown Playlist';
+    this.localPlaylistService.addToPlaylist(playlistId, this.dialogContext.trackId).subscribe();
     toast.success(`Track added to playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }
 
-  private handleRemovingFromPlaylist(name: string): void {
-    this.localPlaylistService.removeFromPlaylist(name, this.dialogContext.trackId).subscribe();
+  private handleRemovingFromPlaylist(playlistId: string): void {
+    const name: string =
+      this.localPlaylists().find((pl) => pl.id === playlistId)?.name ?? 'Unknown Playlist';
+    this.localPlaylistService
+      .removeFromPlaylist(playlistId, this.dialogContext.trackId)
+      .subscribe();
     toast.success(`Track removed from playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }
 
-  private handleTrackIsNotInPlaylist(name: string): void {
+  private handleTrackIsNotInPlaylist(playlistId: string): void {
+    const name: string =
+      this.localPlaylists().find((pl) => pl.id === playlistId)?.name ?? 'Unknown Playlist';
     toast.error(`Track is not in the playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
     this.closeDialog();
   }

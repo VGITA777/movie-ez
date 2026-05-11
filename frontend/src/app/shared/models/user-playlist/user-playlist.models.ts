@@ -12,7 +12,7 @@ export interface OfflinePlaylistContent {
 }
 
 export interface OfflinePlaylist {
-  id?: string;
+  id: string;
   name: string;
   items: OfflinePlaylistContent[];
   lastEditTimestamp: string;
@@ -29,6 +29,7 @@ export interface PlaylistDto {
   id: string;
   userId: string;
   name: string;
+  lastEditTimestamp: string;
   items: PlaylistContentDto[];
 }
 

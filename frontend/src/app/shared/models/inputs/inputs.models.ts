@@ -52,35 +52,42 @@ export interface TvSeriesListsInput {
 }
 
 export interface GetUserPlaylistInput {
-  name: string;
+  id: string;
 }
 
 export interface CreateUserPlaylistInput {
   name: string;
+  playlistId: string;
   trackIds?: string[];
 }
 
+export const defaultCreateUserPlaylistInput: CreateUserPlaylistInput = {
+  name: '',
+  playlistId: crypto.randomUUID(),
+  trackIds: [],
+};
+
 export interface AddTrackToPlaylistInput {
-  name: string;
+  playlistId: string;
   trackId: string;
 }
 
 export interface AddTracksToPlaylistInput {
-  name: string;
-  trackIds: string[];
+  playlistId: string;
+  tracksIds: string[];
 }
 
 export interface DeletePlaylistInput {
-  name: string;
+  playlistId: string;
 }
 
 export interface DeleteAllTracksFromPlaylistInput {
-  name: string;
+  playlistId: string;
   trackIds: string[];
 }
 
 export interface DeleteTrackFromPlaylistInput {
-  name: string;
+  playlistId: string;
   trackId: string;
 }
 
@@ -92,10 +99,20 @@ export interface PlaylistUpdateInput {
 }
 
 export interface PlaylistInput {
+  id: string;
   name: string;
   trackIds: string[];
 }
 
 export interface CreatePlaylistsInput {
   playlists: PlaylistInput[];
+}
+
+export interface PlaylistAndTracksInput {
+  playlistId: string;
+  trackIds: string[];
+}
+
+export interface PlaylistTracksInput {
+  tracksIds: string[];
 }

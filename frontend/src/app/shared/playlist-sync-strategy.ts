@@ -50,6 +50,7 @@ export class LocalWinsStrategy implements PlaylistSyncStrategy {
 
     const toBeCreatedRequest: CreatePlaylistsInput = {
       playlists: toBeCreatedAtRemote.map((playlist) => ({
+        id: playlist.id,
         name: playlist.name,
         trackIds: playlist.items.map((item) => item.trackId),
       })),
