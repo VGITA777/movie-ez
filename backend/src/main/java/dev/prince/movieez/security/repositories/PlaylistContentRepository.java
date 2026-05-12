@@ -1,5 +1,6 @@
 package dev.prince.movieez.security.repositories;
 
+import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.security.models.PlaylistContentModel;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,5 @@ public interface PlaylistContentRepository extends JpaRepository<PlaylistContent
 
   boolean existsByPlaylistIdAndTrackId(UUID playlistId, String trackId);
 
+  boolean existsByPlaylistIdAndTrackIdAndMediaType(UUID playlistId, String trackId, MediaType mediaType);
 }

@@ -75,3 +75,8 @@ my progress here.
 - Moved the syncing logic to the backend instead of the frontend and created a new endpoint for
   syncing playlists.
 - Updated the frontend to use the new endpoint for syncing playlists.
+
+### May 13, 2026
+
+- Refactored the Playlist Content to have a media type to accommodate TMDB's ID system (TMDB can
+  have the same IDs for different media types).

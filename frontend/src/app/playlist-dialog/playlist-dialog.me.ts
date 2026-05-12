@@ -218,7 +218,9 @@ export class PlaylistDialogMe implements OnInit {
   private handleAddingToPlaylist(playlistId: string): void {
     const name: string =
       this.localPlaylists().find((pl) => pl.id === playlistId)?.name ?? 'Unknown Playlist';
-    this.localPlaylistService.addToPlaylist(playlistId, this.dialogContext.trackId).subscribe();
+    this.localPlaylistService
+      .addToPlaylist(playlistId, this.dialogContext.trackId, this.dialogContext.mediaType)
+      .subscribe();
     toast.success(`Track added to playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }
 
@@ -226,7 +228,7 @@ export class PlaylistDialogMe implements OnInit {
     const name: string =
       this.localPlaylists().find((pl) => pl.id === playlistId)?.name ?? 'Unknown Playlist';
     this.localPlaylistService
-      .removeFromPlaylist(playlistId, this.dialogContext.trackId)
+      .removeFromPlaylist(playlistId, this.dialogContext.trackId, this.dialogContext.mediaType)
       .subscribe();
     toast.success(`Track removed from playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }

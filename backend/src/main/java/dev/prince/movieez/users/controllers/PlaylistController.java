@@ -1,6 +1,7 @@
 package dev.prince.movieez.users.controllers;
 
 import dev.prince.movieez.ServerResponse;
+import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.security.SecurityUtils;
 import dev.prince.movieez.security.dto.PlaylistContentDto;
 import dev.prince.movieez.security.dto.PlaylistContentMapper;
@@ -151,16 +152,18 @@ public class PlaylistController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/{id}/tracks/{trackId}")
+  @PostMapping("/{id}/tracks/{trackId}/{mediaType}")
   public ResponseEntity<ServerResponse<PlaylistDto>> addTrackToPlaylist(
       @PathVariable
       @Valid
       @NotNull(message = "{validation.playlist.id.notNull}")
       UUID id,
       @PathVariable
-      String trackId
+      String trackId,
+      @PathVariable
+      MediaType mediaType
   ) {
-    var updated = playlistService.addToPlaylist(id, trackId, SecurityUtils.getUserId());
+    var updated = playlistService.addToPlaylist(id, trackId, mediaType, SecurityUtils.getUserId());
     var response = ServerResponse.success(PlaylistMapper.toDto(updated));
     return ResponseEntity.ok(response);
   }

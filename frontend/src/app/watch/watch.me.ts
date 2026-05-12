@@ -113,7 +113,8 @@ export class WatchMe implements OnDestroy, AfterViewInit {
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly getYearFromDate = getYearFromDate;
   protected readonly Array = Array;
-  protected readonly mediaId: Signal<number> = computed(() => this.mediaObject()?.getId() ?? 0);
+  protected readonly mediaId: Signal<number> = computed(() => this.queryParams.value().id ?? 0);
+  protected readonly mediaType: Signal<MediaType> = computed(() => this.queryParams.value().type);
   protected readonly isLoading: Signal<boolean> = this.mediaDetails.isLoading;
   protected readonly error: Signal<Error | undefined> = computed(() => this.mediaDetails.error());
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);

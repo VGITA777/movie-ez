@@ -1,9 +1,11 @@
 import { Directive, HostListener, inject, input, InputSignal } from '@angular/core';
 import { HlmDialogOptions, HlmDialogService } from '@spartan-ng/helm/dialog';
 import { PlaylistDialogMe } from '@app/playlist-dialog/playlist-dialog.me';
+import { MediaType } from '@shared/models';
 
 export interface ShowPlaylistsDirectiveContext {
   trackId: string;
+  mediaType: MediaType;
 }
 
 @Directive({

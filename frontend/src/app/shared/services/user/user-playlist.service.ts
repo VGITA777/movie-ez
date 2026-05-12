@@ -10,6 +10,8 @@ import {
   DeletePlaylistInput,
   DeleteTrackFromPlaylistInput,
   GetUserPlaylistInput,
+  MediaType,
+  OfflinePlaylistContent,
   PlaylistContentDto,
   PlaylistDto,
   PlaylistUpdateInput,
@@ -26,11 +28,15 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     super(`${environment.api.userBaseUrl}playlists/`);
   }
 
-  public createPlaylist(id: string, name: string, items?: string[]): Observable<PlaylistDto> {
+  public createPlaylist(
+    id: string,
+    name: string,
+    items: OfflinePlaylistContent[] = [],
+  ): Observable<PlaylistDto> {
     return this.createOnlinePlaylist({
       name,
       playlistId: id,
-      trackIds: items ?? [],
+      items,
     }).pipe(map((response) => response.details));
   }
 
@@ -44,14 +50,22 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     );
   }
 
-  public removeFromPlaylist(playlistId: string, trackId: string): Observable<PlaylistDto | null> {
-    return this.deleteTrackFromPlaylist({ playlistId, trackId }).pipe(
+  public removeFromPlaylist(
+    playlistId: string,
+    trackId: string,
+    mediaType: MediaType,
+  ): Observable<PlaylistDto | null> {
+    return this.deleteTrackFromPlaylist({ playlistId, trackId, mediaType }).pipe(
       map((response) => response.details ?? null),
     );
   }
 
-  public addToPlaylist(playlistId: string, trackId: string): Observable<PlaylistDto | null> {
-    return this.addTrackToOnlinePlaylist({ playlistId, trackId }).pipe(
+  public addToPlaylist(
+    playlistId: string,
+    trackId: string,
+    mediaType: MediaType,
+  ): Observable<PlaylistDto | null> {
+    return this.addTrackToOnlinePlaylist({ playlistId, trackId, mediaType }).pipe(
       map((response) => response.details ?? null),
     );
   }
@@ -73,9 +87,9 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
 
   public deleteAllTracksFromPlaylist(
     playlistId: string,
-    trackIds: string[],
+    items: OfflinePlaylistContent[],
   ): Observable<PlaylistDto | null> {
-    return this.deleteAllTracksFromOnlinePlaylist({ playlistId, trackIds }).pipe(
+    return this.deleteAllTracksFromOnlinePlaylist({ playlistId, items }).pipe(
       map((response) => response.details ?? null),
     );
   }
@@ -103,10 +117,16 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
   public createOnlinePlaylist(
     input: CreateUserPlaylistInput,
   ): Observable<ServerResponse<PlaylistDto>> {
-    const encodedName: string = encodeURIComponent(input.name);
+    const encodedName = encodeURIComponent(input.name);
+
     return this.client.post<ServerResponse<PlaylistDto>>(`${this.baseUrl}${encodedName}`, {
       playlistId: input.playlistId ?? crypto.randomUUID(),
-      trackIds: input.trackIds ?? [],
+
+      /**
+       * Replaces the old trackIds-only payload.
+       * Each item must include trackId + mediaType.
+       */
+      items: input.items ?? [],
     });
   }
 
@@ -114,8 +134,12 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     return this.createOnlinePlaylists(input).pipe(map((response) => response.details ?? []));
   }
 
-  public updatePlaylistName(playlistId: string, newName: string) {
-    const encodedId: string = encodeURIComponent(playlistId);
+  public updatePlaylistName(
+    playlistId: string,
+    newName: string,
+  ): Observable<ServerResponse<PlaylistDto>> {
+    const encodedId = encodeURIComponent(playlistId);
+
     return this.client.patch<ServerResponse<PlaylistDto>>(`${this.baseUrl}${encodedId}/name`, {
       name: newName,
     });
@@ -125,7 +149,8 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
     playlistId: string,
     input: PlaylistUpdateInput,
   ): Observable<ServerResponse<PlaylistDto>> {
-    const encodedId: string = encodeURIComponent(playlistId);
+    const encodedId = encodeURIComponent(playlistId);
+
     return this.client.post<ServerResponse<PlaylistDto>>(
       `${this.baseUrl}${encodedId}/update`,
       input,
@@ -135,51 +160,74 @@ export class UserPlaylistService extends AbstractMediaBackendService implements 
   public addTrackToOnlinePlaylist(
     input: AddTrackToPlaylistInput,
   ): Observable<ServerResponse<PlaylistDto>> {
-    const encodedId: string = encodeURIComponent(input.playlistId);
-    const encodedTrackId: string = encodeURIComponent(input.trackId);
+    const encodedId = encodeURIComponent(input.playlistId);
+    const encodedTrackId = encodeURIComponent(input.trackId);
+
     return this.client.post<ServerResponse<PlaylistDto>>(
       `${this.baseUrl}${encodedId}/tracks/${encodedTrackId}`,
-      null,
+
+      /**
+       * Backend should read mediaType from the request body.
+       */
+      {
+        mediaType: input.mediaType,
+      },
     );
   }
 
   public addAllTracksToOnlinePlaylist(
     input: AddTracksToPlaylistInput,
   ): Observable<ServerResponse<PlaylistDto>> {
-    const encodedId: string = encodeURIComponent(input.playlistId);
+    const encodedId = encodeURIComponent(input.playlistId);
+
     return this.client.post<ServerResponse<PlaylistDto>>(`${this.baseUrl}${encodedId}/tracks`, {
-      tracksIds: input.tracksIds,
+      items: input.items,
     });
   }
 
   public deleteAllTracksFromOnlinePlaylist(
     input: DeleteAllTracksFromPlaylistInput,
   ): Observable<ServerResponse<PlaylistDto>> {
-    const encodedId: string = encodeURIComponent(input.playlistId);
+    const encodedId = encodeURIComponent(input.playlistId);
+
     return this.client.delete<ServerResponse<PlaylistDto>>(`${this.baseUrl}${encodedId}/tracks`, {
-      body: { playlistId: input.playlistId, trackIds: input.trackIds },
+      body: {
+        playlistId: input.playlistId,
+        items: input.items,
+      },
     });
   }
 
   public clearPlaylistTracks(playlistId: string): Observable<ServerResponse<PlaylistDto>> {
-    const encodedId: string = encodeURIComponent(playlistId);
+    const encodedId = encodeURIComponent(playlistId);
+
     return this.client.delete<ServerResponse<PlaylistDto>>(
       `${this.baseUrl}${encodedId}/tracks/all`,
     );
   }
 
   public deleteOnlinePlaylist(input: DeletePlaylistInput): Observable<ServerResponse<unknown>> {
-    const encodedId: string = encodeURIComponent(input.playlistId);
+    const encodedId = encodeURIComponent(input.playlistId);
+
     return this.client.delete<ServerResponse<unknown>>(`${this.baseUrl}${encodedId}`);
   }
 
   public deleteTrackFromPlaylist(
     input: DeleteTrackFromPlaylistInput,
   ): Observable<ServerResponse<PlaylistDto>> {
-    const encodedId: string = encodeURIComponent(input.playlistId);
-    const encodedTrackId: string = encodeURIComponent(input.trackId);
+    const encodedId = encodeURIComponent(input.playlistId);
+    const encodedTrackId = encodeURIComponent(input.trackId);
+
     return this.client.delete<ServerResponse<PlaylistDto>>(
       `${this.baseUrl}${encodedId}/tracks/${encodedTrackId}`,
+      {
+        /**
+         * Backend should use this mediaType together with trackId.
+         */
+        body: {
+          mediaType: input.mediaType,
+        },
+      },
     );
   }
 

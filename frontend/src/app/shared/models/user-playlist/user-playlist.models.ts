@@ -1,3 +1,5 @@
+import { MediaType } from '@shared/models';
+
 export type Playlist = OfflinePlaylist | PlaylistDto;
 export type PlaylistContent = OfflinePlaylistContent | PlaylistContentDto;
 
@@ -9,6 +11,7 @@ export interface ServerResponse<T> {
 
 export interface OfflinePlaylistContent {
   trackId: string;
+  mediaType: MediaType;
 }
 
 export interface OfflinePlaylist {
@@ -29,8 +32,19 @@ export interface PlaylistDto {
   userId: string;
   name: string;
   lastEditTimestamp: string;
-  deletedOn?: string | null,
+  deletedOn?: string | null;
   items: PlaylistContentDto[];
+}
+
+export interface PlaylistIdMapping {
+  localId: string;
+  canonicalServerId: string;
+}
+
+export interface PlaylistSyncResponse {
+  playlists: PlaylistDto[];
+  idMappings: PlaylistIdMapping[];
+  serverSyncedAt: string;
 }
 
 export interface UserDto {

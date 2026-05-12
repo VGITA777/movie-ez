@@ -4,6 +4,7 @@ import dev.prince.movieez.exceptions.PlaylistAlreadyExistsException;
 import dev.prince.movieez.exceptions.PlaylistContentAlreadyExistsException;
 import dev.prince.movieez.exceptions.PlaylistNotFoundException;
 import dev.prince.movieez.exceptions.UserNotFoundException;
+import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.security.models.PlaylistContentModel;
 import dev.prince.movieez.security.models.PlaylistModel;
 import dev.prince.movieez.security.models.UserModel;
@@ -99,10 +100,15 @@ public class PlaylistService {
   }
 
   @Transactional
-  public PlaylistModel addToPlaylist(UUID id, String trackId, UUID userId) {
+  public PlaylistModel addToPlaylist(UUID id, String trackId, MediaType mediaType, UUID userId) {
     var playlist = getPlaylist(id, userId);
 
-    boolean alreadyExists = playlistContentRepository.existsByPlaylistIdAndTrackId(playlist.getId(), trackId);
+    boolean alreadyExists = playlistContentRepository.existsByPlaylistIdAndTrackIdAndMediaType(
+        playlist.getId(),
+        trackId,
+        mediaType
+    );
+
     if (alreadyExists) {
       throw new PlaylistContentAlreadyExistsException(
           "Track with ID: '" + trackId + "' already exists in this playlist");

@@ -1,4 +1,4 @@
-import { LanguageCode, OfflinePlaylist, PlaylistDto } from '@shared/models';
+import { LanguageCode, MediaType, OfflinePlaylist, OfflinePlaylistContent } from '@shared/models';
 
 export interface SearchMultiInput {
   page: number;
@@ -33,6 +33,10 @@ export interface DiscoverTvInput {
   firstAirDateYear?: number;
 }
 
+export interface GetUserPlaylistInput {
+  id: string;
+}
+
 export interface TvSeasonDetailsInput {
   seriesId: number;
   seasonNumber: number;
@@ -58,23 +62,18 @@ export interface GetUserPlaylistInput {
 export interface CreateUserPlaylistInput {
   name: string;
   playlistId: string;
-  trackIds?: string[];
+  items?: OfflinePlaylistContent[];
 }
-
-export const defaultCreateUserPlaylistInput: CreateUserPlaylistInput = {
-  name: '',
-  playlistId: crypto.randomUUID(),
-  trackIds: [],
-};
 
 export interface AddTrackToPlaylistInput {
   playlistId: string;
   trackId: string;
+  mediaType: MediaType;
 }
 
 export interface AddTracksToPlaylistInput {
   playlistId: string;
-  tracksIds: string[];
+  items: OfflinePlaylistContent[];
 }
 
 export interface DeletePlaylistInput {
@@ -83,25 +82,38 @@ export interface DeletePlaylistInput {
 
 export interface DeleteAllTracksFromPlaylistInput {
   playlistId: string;
-  trackIds: string[];
+  items: OfflinePlaylistContent[];
 }
 
 export interface DeleteTrackFromPlaylistInput {
   playlistId: string;
   trackId: string;
+  mediaType: MediaType;
 }
 
 export interface PlaylistUpdateInput {
   newName?: string | null;
-  newTracks?: string[] | null;
-  tracksToRemove?: string[] | null;
-  tracksToAdd?: string[] | null;
+
+  /**
+   * Full replacement list.
+   */
+  newTracks?: OfflinePlaylistContent[] | null;
+
+  /**
+   * Incremental removals.
+   */
+  tracksToRemove?: OfflinePlaylistContent[] | null;
+
+  /**
+   * Incremental additions.
+   */
+  tracksToAdd?: OfflinePlaylistContent[] | null;
 }
 
 export interface PlaylistInput {
   id: string;
   name: string;
-  trackIds: string[];
+  items: OfflinePlaylistContent[];
 }
 
 export interface CreatePlaylistsInput {
@@ -110,24 +122,13 @@ export interface CreatePlaylistsInput {
 
 export interface PlaylistAndTracksInput {
   playlistId: string;
-  trackIds: string[];
+  items: OfflinePlaylistContent[];
 }
 
 export interface PlaylistTracksInput {
-  tracksIds: string[];
+  items: OfflinePlaylistContent[];
 }
 
 export interface PlaylistSyncInput {
   playlists: OfflinePlaylist[];
-}
-
-export interface PlaylistIdMapping {
-  localId: string;
-  canonicalServerId: string;
-}
-
-export interface PlaylistSyncResponse {
-  playlists: PlaylistDto[];
-  idMappings: PlaylistIdMapping[];
-  serverSyncedAt: string;
 }

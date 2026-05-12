@@ -1,5 +1,6 @@
 package dev.prince.movieez.users.sync;
 
+import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.security.models.PlaylistContentModel;
 import dev.prince.movieez.security.models.PlaylistModel;
 import dev.prince.movieez.security.models.UserModel;
@@ -30,6 +31,17 @@ public class PlaylistSyncSupport {
     this.playlistRepository = playlistRepository;
   }
 
+  /*
+   * Internal sync identity for playlist content.
+   *
+   * trackId alone is no longer enough because TMDB can reuse the same numeric ID
+   * across different media types.
+   */
+  private record PlaylistContentKey(String trackId,
+                                    MediaType mediaType) {
+
+  }
+
   public PlaylistModel createFromOffline(OfflinePlaylistModel offline, UserModel user) {
     if (offline == null) {
       throw new IllegalArgumentException("Offline playlist cannot be null");
@@ -49,15 +61,14 @@ public class PlaylistSyncSupport {
 
     var playlist = new PlaylistModel();
     playlist.setId(offline.getId() != null ? offline.getId() : UUID.randomUUID());
-    playlist.setName(offline.getName());
+    playlist.setName(offline
+                         .getName()
+                         .trim());
     playlist.setUser(user);
 
-    var items = extractTrackIds(offline.getItems())
+    var items = extractContentKeys(offline.getItems())
         .stream()
-        .map(String::trim)
-        .filter(trackId -> !trackId.isBlank())
-        .map(trackId -> toPlaylistContentModel(trackId, playlist))
-        .distinct()
+        .map(key -> toPlaylistContentModel(key, playlist))
         .collect(Collectors.toCollection(ArrayList::new));
 
     playlist.setItems(items);
@@ -89,15 +100,17 @@ public class PlaylistSyncSupport {
 
     if (hasValidName(newName) && !Objects.equals(remote.getName(), newName) &&
         canUseNameForCurrentPlaylist(newName, remote.getId(), context)) {
-      // Update the context if the name is changing.
+
+      /*
+       * Keep the active-name lookup map in sync when the remote playlist name changes.
+       */
       if (oldNameKey != null) {
         context
             .getRemoteActiveByName()
             .remove(oldNameKey);
       }
 
-      // Update the name on the remote playlist.
-      remote.setName(newName);
+      remote.setName(newName.trim());
       context
           .getRemoteActiveByName()
           .put(normalizeName(newName), remote);
@@ -106,85 +119,147 @@ public class PlaylistSyncSupport {
     replaceTracks(remote, offline.getItems());
   }
 
+  /*
+   * Replace remote playlist contents using a diff instead of clear()+add().
+   *
+   * Why:
+   * The DB has UNIQUE(playlist_id, track_id, media_type).
+   * Calling clear() and then adding new entities can cause Hibernate to INSERT
+   * before DELETE, which can temporarily violate the unique constraint.
+   *
+   * This method:
+   * - removes only contents that are no longer desired
+   * - adds only contents that are missing
+   * - compares by trackId + mediaType
+   */
   public void replaceTracks(PlaylistModel playlist, List<OfflinePlaylistContentModel> offlineItems) {
-    var desiredTrackIds = extractTrackIds(offlineItems);
+    var desiredKeys = extractContentKeys(offlineItems);
+    var existingKeys = extractContentKeysFromRemote(playlist);
 
-    var remoteExistingTracks = playlist
-        .getItems()
-        .stream()
-        .map(PlaylistContentModel::getTrackId)
-        .filter(trackId -> trackId != null && !trackId.isBlank())
-        .collect(Collectors.toCollection(HashSet::new));
-
-    // Remove tracks from the remote that are no longer present in the desired playlist.
     playlist
         .getItems()
-        .removeIf(item -> !desiredTrackIds.contains(item.getTrackId()));
+        .removeIf(item -> !desiredKeys.contains(toContentKey(item)));
 
-    // Add only tracks that do not already exist.
-    // With this, we ensure that no same trackIds are duplicated.
-    var tracksToAdd = new HashSet<>(desiredTrackIds);
-    tracksToAdd.removeAll(remoteExistingTracks);
+    var keysToAdd = new HashSet<>(desiredKeys);
+    keysToAdd.removeAll(existingKeys);
 
-    for (var trackId : tracksToAdd) {
+    for (var key : keysToAdd) {
       playlist
           .getItems()
-          .add(toPlaylistContentModel(trackId, playlist));
+          .add(toPlaylistContentModel(key, playlist));
     }
   }
 
+  /*
+   * Merge playlist contents into the canonical remote playlist.
+   *
+   * Used when the offline playlist has a different ID but the same active name.
+   * Since the server playlist is canonical, we only add missing contents and do not remove
+   * remote contents.
+   */
   public boolean mergeTracksIntoCanonical(
       PlaylistModel canonicalRemote,
       List<OfflinePlaylistContentModel> offlineItems
   ) {
-    var offlineTrackIds = extractTrackIds(offlineItems);
+    var offlineKeys = extractContentKeys(offlineItems);
 
-    if (offlineTrackIds.isEmpty()) {
+    if (offlineKeys.isEmpty()) {
       return false;
     }
 
-    var remoteTrackIds = canonicalRemote
-        .getItems()
-        .stream()
-        .map(PlaylistContentModel::getTrackId)
-        .filter(trackId -> trackId != null && !trackId.isBlank())
-        .collect(Collectors.toCollection(HashSet::new));
+    var remoteKeys = extractContentKeysFromRemote(canonicalRemote);
 
-    var merged = new HashSet<>(remoteTrackIds);
-    merged.addAll(offlineTrackIds);
+    var keysToAdd = new HashSet<>(offlineKeys);
+    keysToAdd.removeAll(remoteKeys);
 
-    if (merged.equals(remoteTrackIds)) {
+    if (keysToAdd.isEmpty()) {
       return false;
     }
 
-    var toAdd = new HashSet<>(merged);
-    toAdd.removeAll(remoteTrackIds);
-
-    for (var trackId : toAdd) {
+    for (var key : keysToAdd) {
       canonicalRemote
           .getItems()
-          .add(toPlaylistContentModel(trackId, canonicalRemote));
+          .add(toPlaylistContentModel(key, canonicalRemote));
     }
 
     return true;
   }
 
-  public Set<String> extractTrackIds(List<OfflinePlaylistContentModel> items) {
+  /*
+   * Extract unique offline playlist content keys.
+   *
+   * This automatically removes duplicates from the client payload.
+   */
+  private Set<PlaylistContentKey> extractContentKeys(List<OfflinePlaylistContentModel> items) {
     if (items == null || items.isEmpty()) {
       return new HashSet<>();
     }
 
     return items
         .stream()
-        .map(OfflinePlaylistContentModel::getTrackId)
-        .filter(trackId -> trackId != null && !trackId.isBlank())
+        .map(this::toContentKey)
+        .filter(Objects::nonNull)
         .collect(Collectors.toCollection(HashSet::new));
   }
 
-  public PlaylistContentModel toPlaylistContentModel(String trackId, PlaylistModel playlistModel) {
+  /*
+   * Extract unique remote playlist content keys.
+   */
+  private Set<PlaylistContentKey> extractContentKeysFromRemote(PlaylistModel playlist) {
+    if (playlist == null || playlist.getItems() == null || playlist
+        .getItems()
+        .isEmpty()) {
+      return new HashSet<>();
+    }
+
+    return playlist
+        .getItems()
+        .stream()
+        .map(this::toContentKey)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toCollection(HashSet::new));
+  }
+
+  private PlaylistContentKey toContentKey(OfflinePlaylistContentModel item) {
+    if (item == null || item.getTrackId() == null || item
+        .getTrackId()
+        .isBlank()) {
+      return null;
+    }
+
+    return new PlaylistContentKey(
+        item
+            .getTrackId()
+            .trim(), resolveMediaType(item.getMediaType())
+    );
+  }
+
+  private PlaylistContentKey toContentKey(PlaylistContentModel item) {
+    if (item == null || item.getTrackId() == null || item
+        .getTrackId()
+        .isBlank()) {
+      return null;
+    }
+
+    return new PlaylistContentKey(
+        item
+            .getTrackId()
+            .trim(), resolveMediaType(item.getMediaType())
+    );
+  }
+
+  private MediaType resolveMediaType(MediaType mediaType) {
+    /*
+     * MOVIE fallback protects older local data and older DB rows.
+     */
+    return mediaType != null ? mediaType : MediaType.MOVIE;
+  }
+
+  private PlaylistContentModel toPlaylistContentModel(PlaylistContentKey key, PlaylistModel playlistModel) {
     return PlaylistContentModel
         .builder()
-        .trackId(trackId)
+        .trackId(key.trackId())
+        .mediaType(key.mediaType())
         .playlist(playlistModel)
         .build();
   }

@@ -19,11 +19,13 @@ CREATE UNIQUE INDEX uq_user_playlist_name ON playlists (user_id, LOWER(name))
 
 CREATE TABLE playlist_content
 (
-    id          UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    playlist_id UUID NOT NULL REFERENCES playlists (id)
+    id          UUID        NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+    playlist_id UUID        NOT NULL REFERENCES playlists (id)
         ON DELETE CASCADE,
-    track_id    TEXT NOT NULL,
-    CONSTRAINT single_entry UNIQUE (playlist_id, track_id)
+    track_id    TEXT        NOT NULL,
+    media_type  VARCHAR(20) NOT NULL             DEFAULT 'MOVIE'
+        CHECK ( media_type IN ('MOVIE', 'TV', 'PERSON')),
+    CONSTRAINT single_entry UNIQUE (playlist_id, track_id, media_type)
 );
 
 -- 1) Updates the playlist timestamp whenever the playlist row itself changes

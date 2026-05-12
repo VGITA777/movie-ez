@@ -1,8 +1,10 @@
 package dev.prince.movieez.security.models;
 
-import jakarta.persistence.CascadeType;
+import dev.prince.movieez.media.models.enums.MediaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,9 +38,16 @@ public class PlaylistContentModel {
   private UUID id;
 
   @NotNull
-  @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "playlist_id", nullable = false)
   private PlaylistModel playlist;
+
+  @NotNull
+  @Builder.Default
+  @Enumerated(EnumType.STRING)
+  @Column(name = "media_type", nullable = false, length = 20)
+  @EqualsAndHashCode.Include
+  private MediaType mediaType = MediaType.MOVIE;
 
   @NotNull
   @Column(name = "track_id", nullable = false, length = Integer.MAX_VALUE)

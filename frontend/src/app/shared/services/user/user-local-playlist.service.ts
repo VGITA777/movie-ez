@@ -1,5 +1,7 @@
 import { computed, Injectable, Signal, WritableSignal } from '@angular/core';
 import {
+  MEDIA_TYPES,
+  MediaType,
   OfflinePlaylist,
   OfflinePlaylistContent,
   Playlist,
@@ -13,15 +15,29 @@ import { Observable, of } from 'rxjs';
 import { USER_LOCAL_STORAGE_PLAYLIST_KEY } from '@shared/keys';
 
 export interface PlaylistService {
-  createPlaylist(playlistId: string, name: string, items?: string[]): Observable<Playlist>;
+  createPlaylist(
+    playlistId: string,
+    name: string,
+    items?: OfflinePlaylistContent[],
+  ): Observable<Playlist>;
   deletePlaylist(playlistId: string): Observable<void>;
   getPlaylist(playlistId: string): Observable<Playlist | null>;
-  removeFromPlaylist(playlistId: string, trackId: string): Observable<Playlist | null>;
-  addToPlaylist(playlistId: string, trackId: string): Observable<Playlist | null>;
+  removeFromPlaylist(
+    playlistId: string,
+    trackId: string,
+    mediaType: MediaType,
+  ): Observable<Playlist | null>;
+  addToPlaylist(
+    playlistId: string,
+    trackId: string,
+    mediaType: MediaType,
+  ): Observable<Playlist | null>;
   renamePlaylist(playlistId: string, newName: string): Observable<Playlist | null>;
 }
 
 class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
+  private readonly defaultMediaType: MediaType = 'movie';
+
   write: (value: OfflinePlaylist[]) => string = (value) => JSON.stringify(value);
 
   read: (raw: string) => OfflinePlaylist[] = (raw): OfflinePlaylist[] => {
@@ -39,11 +55,14 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
           name: playlist.name.trim(),
           lastEditTimestamp: this.normalizeTimestamp(playlist.lastEditTimestamp),
           deletedOn: this.normalizeOptionalTimestamp(playlist.deletedOn),
-          items: playlist.items
-            .filter((content) => this.isValidContent(content))
-            .map((content) => ({
-              trackId: content.trackId.trim(),
-            })),
+          items: this.toUniqueContents(
+            playlist.items
+              .filter((content: unknown) => this.isValidContent(content))
+              .map((content: any) => ({
+                trackId: content.trackId.trim(),
+                mediaType: this.normalizeMediaType(content.mediaType),
+              })),
+          ),
         }));
     } catch {
       return [];
@@ -59,15 +78,47 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
   }
 
   private isValidPlaylist(playlist: any): playlist is OfflinePlaylist {
-    if (!playlist || typeof playlist.name !== 'string' || playlist.name.trim() === '') {
-      return false;
-    }
-
-    return Array.isArray(playlist.items);
+    return (
+      !!playlist &&
+      typeof playlist.name === 'string' &&
+      playlist.name.trim() !== '' &&
+      Array.isArray(playlist.items)
+    );
   }
 
   private isValidContent(content: any): content is OfflinePlaylistContent {
     return !!content && typeof content.trackId === 'string' && content.trackId.trim() !== '';
+  }
+
+  private normalizeMediaType(value: unknown): MediaType {
+    if (typeof value !== 'string') {
+      return this.defaultMediaType;
+    }
+
+    const normalized = value.trim().toLowerCase();
+
+    return MEDIA_TYPES.includes(normalized as MediaType)
+      ? (normalized as MediaType)
+      : this.defaultMediaType;
+  }
+
+  private toUniqueContents(contents: OfflinePlaylistContent[]): OfflinePlaylistContent[] {
+    const byKey: Map<string, OfflinePlaylistContent> = new Map();
+
+    for (const content of contents) {
+      const normalized: OfflinePlaylistContent = {
+        trackId: content.trackId.trim(),
+        mediaType: this.normalizeMediaType(content.mediaType),
+      };
+
+      byKey.set(this.contentKey(normalized), normalized);
+    }
+
+    return [...byKey.values()];
+  }
+
+  private contentKey(content: OfflinePlaylistContent): string {
+    return `${content.mediaType}:${content.trackId}`;
   }
 }
 
@@ -75,6 +126,8 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
   providedIn: 'root',
 })
 export class UserLocalPlaylistService implements PlaylistService {
+  private readonly defaultMediaType: MediaType = 'movie';
+
   private readonly userPlaylist: WritableSignal<OfflinePlaylist[]> = storage(
     USER_LOCAL_STORAGE_PLAYLIST_KEY,
     [],
@@ -117,9 +170,10 @@ export class UserLocalPlaylistService implements PlaylistService {
         const remappedPlaylist: OfflinePlaylist = {
           ...playlist,
           id: canonicalId,
+          items: this.toUniqueContents(playlist.items),
         };
 
-        const existing: OfflinePlaylist | undefined = mergedById.get(canonicalId);
+        const existing = mergedById.get(canonicalId);
 
         if (!existing) {
           mergedById.set(canonicalId, remappedPlaylist);
@@ -142,45 +196,42 @@ export class UserLocalPlaylistService implements PlaylistService {
   }
 
   public renamePlaylist(id: string, newName: string): Observable<Playlist | null> {
-    const newNameTrimmed: string = newName.trim();
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistById(id);
+    const newNameTrimmed = newName.trim();
+    const currentPlaylist = this.findPlaylistById(id);
 
     if (currentPlaylist && currentPlaylist.name === newNameTrimmed) {
-      console.debug(
-        `Playlist name is the same as the current one. No need to rename. Playlist id: "${id}", name: "${newNameTrimmed}"`,
-      );
       return of(currentPlaylist);
     }
 
     if (newNameTrimmed === '' || newNameTrimmed.length > 25) {
-      console.debug(`Cannot rename playlist. Invalid name. New name: "${newName}"`);
       return of(null);
     }
 
     if (this.doesPlaylistExistsByName(newNameTrimmed, id)) {
-      console.debug(
-        `Cannot rename playlist. A playlist with the new name already exists. New name: "${newNameTrimmed}"`,
-      );
       return of(null);
     }
 
-    if (!currentPlaylist) {
+    if (!currentPlaylist || currentPlaylist.deletedOn) {
       return of(null);
     }
 
-    const newPlaylist: OfflinePlaylist = {
+    const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       name: newNameTrimmed,
       lastEditTimestamp: this.nowIso(),
     };
 
-    this.updateExistingPlaylistById(id, newPlaylist);
-    return of(newPlaylist);
+    this.updateExistingPlaylistById(id, updatedPlaylist);
+    return of(updatedPlaylist);
   }
 
-  public createPlaylist(id: string, name: string, items?: string[]): Observable<OfflinePlaylist> {
-    const nameTrimmed: string = name.trim();
-    const existing: OfflinePlaylist | undefined = this.findActivePlaylistByName(nameTrimmed);
+  public createPlaylist(
+    id: string,
+    name: string,
+    items: OfflinePlaylistContent[] = [],
+  ): Observable<OfflinePlaylist> {
+    const nameTrimmed = name.trim();
+    const existing = this.findActivePlaylistByName(nameTrimmed);
 
     if (existing) {
       return of(existing);
@@ -189,7 +240,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     const newPlaylist: OfflinePlaylist = {
       id,
       name: nameTrimmed,
-      items: this.toUniqueContents(items ?? []),
+      items: this.toUniqueContents(items),
       lastEditTimestamp: this.nowIso(),
     };
 
@@ -198,19 +249,21 @@ export class UserLocalPlaylistService implements PlaylistService {
   }
 
   public deletePlaylist(id: string): Observable<void> {
+    const deletedOn = this.nowIso();
+
     this.userPlaylist.update((playlists) => {
-      const index: number = playlists.findIndex((playlist) => playlist.id === id);
+      const index = playlists.findIndex((playlist) => playlist.id === id);
 
       if (index === -1) {
         return playlists;
       }
 
-      const updated: OfflinePlaylist[] = [...playlists];
+      const updated = [...playlists];
 
       updated[index] = {
         ...updated[index],
-        deletedOn: this.nowIso(),
-        lastEditTimestamp: this.nowIso(),
+        deletedOn,
+        lastEditTimestamp: deletedOn,
       };
 
       return updated;
@@ -223,16 +276,23 @@ export class UserLocalPlaylistService implements PlaylistService {
     return of(this.findPlaylistById(id));
   }
 
-  public removeFromPlaylist(id: string, trackId: string): Observable<OfflinePlaylist | null> {
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistById(id);
+  public removeFromPlaylist(
+    id: string,
+    trackId: string,
+    mediaType: MediaType,
+  ): Observable<OfflinePlaylist | null> {
+    const currentPlaylist = this.findPlaylistById(id);
+    const contentToRemove = this.normalizeContent({ trackId, mediaType });
 
-    if (!currentPlaylist || currentPlaylist.deletedOn) {
+    if (!currentPlaylist || currentPlaylist.deletedOn || !contentToRemove) {
       return of(null);
     }
 
+    const removeKey = this.contentKey(contentToRemove);
+
     const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
-      items: currentPlaylist.items.filter((content) => content.trackId !== trackId),
+      items: currentPlaylist.items.filter((content) => this.contentKey(content) !== removeKey),
       lastEditTimestamp: this.nowIso(),
     };
 
@@ -240,21 +300,27 @@ export class UserLocalPlaylistService implements PlaylistService {
     return of(updatedPlaylist);
   }
 
-  public addToPlaylist(id: string, trackId: string): Observable<OfflinePlaylist | null> {
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistById(id);
-    const normalizedTrackId: string = trackId.trim();
+  public addToPlaylist(
+    id: string,
+    trackId: string,
+    mediaType: MediaType,
+  ): Observable<OfflinePlaylist | null> {
+    const currentPlaylist = this.findPlaylistById(id);
+    const contentToAdd = this.normalizeContent({ trackId, mediaType });
 
-    if (!currentPlaylist || currentPlaylist.deletedOn || normalizedTrackId === '') {
+    if (!currentPlaylist || currentPlaylist.deletedOn || !contentToAdd) {
       return of(null);
     }
 
-    if (currentPlaylist.items.some((content) => content.trackId === normalizedTrackId)) {
+    const addKey = this.contentKey(contentToAdd);
+
+    if (currentPlaylist.items.some((content) => this.contentKey(content) === addKey)) {
       return of(currentPlaylist);
     }
 
     const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
-      items: [...currentPlaylist.items, { trackId: normalizedTrackId }],
+      items: this.toUniqueContents([...currentPlaylist.items, contentToAdd]),
       lastEditTimestamp: this.nowIso(),
     };
 
@@ -267,7 +333,7 @@ export class UserLocalPlaylistService implements PlaylistService {
   }
 
   public setPlaylistDeleteFlag(id: string, deletedOn: string): void {
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistById(id);
+    const currentPlaylist = this.findPlaylistById(id);
 
     if (!currentPlaylist) {
       return;
@@ -276,14 +342,14 @@ export class UserLocalPlaylistService implements PlaylistService {
     const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       deletedOn,
-      lastEditTimestamp: this.nowIso(),
+      lastEditTimestamp: deletedOn,
     };
 
     this.updateExistingPlaylistById(id, updatedPlaylist);
   }
 
   public deleteAllPlaylists(): void {
-    const deletedOn: string = this.nowIso();
+    const deletedOn = this.nowIso();
 
     this.userPlaylist.update((playlists) => {
       return playlists.map((playlist) => ({
@@ -295,27 +361,23 @@ export class UserLocalPlaylistService implements PlaylistService {
   }
 
   private findPlaylistById(id: string): OfflinePlaylist | null {
-    const playlist: OfflinePlaylist | undefined = this.userPlaylist().find(
-      (entry) => entry.id === id,
-    );
-
-    return playlist ?? null;
+    return this.userPlaylist().find((entry) => entry.id === id) ?? null;
   }
 
   private updateExistingPlaylistById(id: string, newPlaylist: OfflinePlaylist): void {
     this.userPlaylist.update((playlists) => {
-      const playlistIndex: number = playlists.findIndex((playlist) => playlist.id === id);
+      const playlistIndex = playlists.findIndex((playlist) => playlist.id === id);
 
       if (playlistIndex === -1) {
         return playlists;
       }
 
-      const updated: OfflinePlaylist[] = [...playlists];
+      const updated = [...playlists];
 
       updated[playlistIndex] = {
         ...newPlaylist,
         lastEditTimestamp: newPlaylist.lastEditTimestamp ?? this.nowIso(),
-        items: this.toUniqueContents(newPlaylist.items.map((item) => item.trackId)),
+        items: this.toUniqueContents(newPlaylist.items),
       };
 
       return updated;
@@ -328,51 +390,73 @@ export class UserLocalPlaylistService implements PlaylistService {
       name: playlist.name.trim(),
       lastEditTimestamp: this.normalizeTimestamp(playlist.lastEditTimestamp),
       deletedOn: this.normalizeOptionalTimestamp(playlist.deletedOn),
-      items: this.toUniqueContents(this.extractTrackIdsFromDto(playlist)),
+      items: this.toUniqueContents(playlist.items ?? []),
     };
   }
 
-  private extractTrackIdsFromDto(playlist: PlaylistDto): string[] {
-    const items = playlist.items ?? [];
+  private toUniqueContents(contents: OfflinePlaylistContent[]): OfflinePlaylistContent[] {
+    const byKey: Map<string, OfflinePlaylistContent> = new Map();
 
-    return items
-      .map((item) => item.trackId)
-      .filter((trackId): trackId is string => typeof trackId === 'string' && trackId.trim() !== '');
+    for (const content of contents) {
+      const normalized = this.normalizeContent(content);
+
+      if (!normalized) {
+        continue;
+      }
+
+      byKey.set(this.contentKey(normalized), normalized);
+    }
+
+    return [...byKey.values()];
   }
 
-  private toUniqueContents(trackIds: string[]): OfflinePlaylistContent[] {
-    const uniqueTrackIds: Set<string> = new Set(
-      trackIds.map((trackId) => trackId.trim()).filter((trackId) => trackId !== ''),
-    );
+  private normalizeContent(
+    content: Partial<OfflinePlaylistContent>,
+  ): OfflinePlaylistContent | null {
+    const trackId = content.trackId?.trim();
 
-    return [...uniqueTrackIds].map((trackId) => ({ trackId }));
+    if (!trackId) {
+      return null;
+    }
+
+    return {
+      trackId,
+      mediaType: this.normalizeMediaType(content.mediaType),
+    };
+  }
+
+  private normalizeMediaType(value: unknown): MediaType {
+    if (typeof value !== 'string') {
+      return this.defaultMediaType;
+    }
+
+    const normalized = value.trim().toLowerCase();
+
+    return MEDIA_TYPES.includes(normalized as MediaType)
+      ? (normalized as MediaType)
+      : this.defaultMediaType;
+  }
+
+  private contentKey(content: OfflinePlaylistContent): string {
+    return `${content.mediaType}:${content.trackId}`;
   }
 
   private mergeLocalDuplicates(first: OfflinePlaylist, second: OfflinePlaylist): OfflinePlaylist {
-    const firstTimestamp: string = first.lastEditTimestamp ?? '';
-    const secondTimestamp: string = second.lastEditTimestamp ?? '';
-
-    const newest: OfflinePlaylist =
-      new Date(secondTimestamp).getTime() > new Date(firstTimestamp).getTime() ? second : first;
-
-    const deletedOn: string | undefined = this.newestOptionalTimestamp(
-      first.deletedOn,
-      second.deletedOn,
-    );
+    const newest =
+      new Date(second.lastEditTimestamp).getTime() > new Date(first.lastEditTimestamp).getTime()
+        ? second
+        : first;
 
     return {
       ...newest,
-      deletedOn,
-      items: this.toUniqueContents([
-        ...first.items.map((item) => item.trackId),
-        ...second.items.map((item) => item.trackId),
-      ]),
+      deletedOn: this.newestOptionalTimestamp(first.deletedOn, second.deletedOn),
+      items: this.toUniqueContents([...first.items, ...second.items]),
       lastEditTimestamp: this.newestTimestamp(first.lastEditTimestamp, second.lastEditTimestamp),
     };
   }
 
   private doesPlaylistExistsByName(name: string, ignoredId?: string): boolean {
-    const normalizedName: string = this.normalizeName(name);
+    const normalizedName = this.normalizeName(name);
 
     return this.userPlaylist().some((playlist) => {
       return (
@@ -384,7 +468,7 @@ export class UserLocalPlaylistService implements PlaylistService {
   }
 
   private findActivePlaylistByName(name: string): OfflinePlaylist | undefined {
-    const normalizedName: string = this.normalizeName(name);
+    const normalizedName = this.normalizeName(name);
 
     return this.userPlaylist().find((entry) => {
       return !entry.deletedOn && this.normalizeName(entry.name) === normalizedName;

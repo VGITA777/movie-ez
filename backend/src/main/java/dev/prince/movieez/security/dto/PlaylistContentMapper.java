@@ -1,5 +1,6 @@
 package dev.prince.movieez.security.dto;
 
+import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.security.models.PlaylistContentModel;
 import dev.prince.movieez.security.models.PlaylistModel;
 import java.util.Collections;
@@ -31,6 +32,7 @@ public final class PlaylistContentMapper {
         model.getPlaylist() != null ? model
                                       .getPlaylist()
                                       .getId() : null,
+        model.getMediaType(),
         model.getTrackId()
     );
   }
@@ -53,6 +55,11 @@ public final class PlaylistContentMapper {
     PlaylistContentModel model = new PlaylistContentModel();
     model.setId(dto.id());
     model.setTrackId(dto.trackId());
+
+    /*
+     * Default to MOVIE for older DTOs or old cached frontend data.
+     */
+    model.setMediaType(dto.mediaType() != null ? dto.mediaType() : MediaType.MOVIE);
 
     if (dto.playlistId() != null) {
       PlaylistModel playlistModel = new PlaylistModel();
