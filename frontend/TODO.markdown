@@ -19,7 +19,8 @@
 
 - [X] Implement User Playlist and Profile Services.
 - [X] Create a Local User Playlist functionality (using local storage).
-- [ ] Implement the User Playlist Dialog.
+- [X] Implement the User Playlist Dialog.
+- [X] Implement a Playlist Syncing feature.
 - [ ] Implement User Profile Page (Playlists).
 - [ ] Test if the User Playlist and Profile Services created by the AI are functioning properly.
 - [ ] Create a way to sync user's playlists with the backend
@@ -80,3 +81,4 @@ my progress here.
 
 - Refactored the Playlist Content to have a media type to accommodate TMDB's ID system (TMDB can
   have the same IDs for different media types).
+- Added cleanup service for tombstone playlists.

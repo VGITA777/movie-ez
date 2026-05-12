@@ -88,7 +88,7 @@ export class PlaylistDialogMe implements OnInit {
     this.localPlaylistService
       .createPlaylist(crypto.randomUUID(), PlaylistDialogMe.DEFAULT_PLAYLIST_NAME)
       .subscribe();
-    console.debug(`Current dialog context:`, this.dialogContext.trackId);
+    console.debug(`Current dialog context:`, this.dialogContext);
   }
 
   protected handlePlaylistButtonClick(playlistId: string): void {
