@@ -1,6 +1,7 @@
 package dev.prince.movieez.security.repositories;
 
 import dev.prince.movieez.security.models.PlaylistModel;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,4 +22,6 @@ public interface PlaylistRepository extends JpaRepository<PlaylistModel, UUID> {
   Optional<PlaylistModel> findByIdAndUserIdAndDeletedOnIsNull(UUID id, UUID userId);
 
   List<PlaylistModel> findAllByUserIdAndDeletedOnIsNull(UUID uuid);
+
+  long deleteByDeletedOnIsNotNullAndDeletedOnBefore(Instant deletedOnBefore);
 }
