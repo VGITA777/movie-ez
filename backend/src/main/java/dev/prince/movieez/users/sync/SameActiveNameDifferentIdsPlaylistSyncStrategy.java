@@ -40,11 +40,13 @@ public class SameActiveNameDifferentIdsPlaylistSyncStrategy implements PlaylistS
       return;
     }
 
+    // Merge tracks from the offline playlists into the canonical remote playlists.
     var changed = support.mergeTracksIntoCanonical(canonicalRemote, offline.getItems());
 
     var offlineTimestamp = offline.getLastEditTimestamp();
     var remoteTimestamp = canonicalRemote.getLastEditTimestamp();
 
+    // Change the name on the server if the offline playlist is newer and has a valid name, and the names are not yet the same.
     if (support.compareInstants(offlineTimestamp, remoteTimestamp) > 0 && support.hasValidName(offline.getName()) &&
         !Objects.equals(canonicalRemote.getName(), offline.getName())) {
       var oldKey = support.normalizeName(canonicalRemote.getName());
@@ -57,6 +59,7 @@ public class SameActiveNameDifferentIdsPlaylistSyncStrategy implements PlaylistS
       }
     }
 
+    // Map the offline playlist ID to the canonical remote playlist ID, so that client can update local ID if needed.
     context.addIdMapping(offline.getId(), canonicalRemote.getId());
 
     if (changed) {

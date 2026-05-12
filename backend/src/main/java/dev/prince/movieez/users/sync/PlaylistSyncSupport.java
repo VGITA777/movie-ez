@@ -52,23 +52,21 @@ public class PlaylistSyncSupport {
     playlist.setName(offline.getName());
     playlist.setUser(user);
 
-    var items = new ArrayList<PlaylistContentModel>();
-    var trackIds = extractTrackIds(offline.getItems());
-
-    for (var trackId : trackIds) {
-      items.add(toPlaylistContentModel(trackId, playlist));
-    }
+    var items = extractTrackIds(offline.getItems())
+        .stream()
+        .map(String::trim)
+        .filter(trackId -> !trackId.isBlank())
+        .map(trackId -> toPlaylistContentModel(trackId, playlist))
+        .distinct()
+        .collect(Collectors.toCollection(ArrayList::new));
 
     playlist.setItems(items);
 
-    var saved = saveAndRefresh(playlist);
-
     if (offline.getDeletedOn() != null) {
-      saved.setDeletedOn(offline.getDeletedOn());
-      saved = saveAndRefresh(saved);
+      playlist.setDeletedOn(offline.getDeletedOn());
     }
 
-    return saved;
+    return saveAndRefresh(playlist);
   }
 
   public PlaylistModel saveAndRefresh(PlaylistModel playlist) {
@@ -91,12 +89,14 @@ public class PlaylistSyncSupport {
 
     if (hasValidName(newName) && !Objects.equals(remote.getName(), newName) &&
         canUseNameForCurrentPlaylist(newName, remote.getId(), context)) {
+      // Update the context if the name is changing.
       if (oldNameKey != null) {
         context
             .getRemoteActiveByName()
             .remove(oldNameKey);
       }
 
+      // Update the name on the remote playlist.
       remote.setName(newName);
       context
           .getRemoteActiveByName()
@@ -109,21 +109,22 @@ public class PlaylistSyncSupport {
   public void replaceTracks(PlaylistModel playlist, List<OfflinePlaylistContentModel> offlineItems) {
     var desiredTrackIds = extractTrackIds(offlineItems);
 
-    var existingTrackIds = playlist
+    var remoteExistingTracks = playlist
         .getItems()
         .stream()
         .map(PlaylistContentModel::getTrackId)
         .filter(trackId -> trackId != null && !trackId.isBlank())
         .collect(Collectors.toCollection(HashSet::new));
 
-    // Remove tracks that are no longer present in the incoming playlist.
+    // Remove tracks from the remote that are no longer present in the desired playlist.
     playlist
         .getItems()
         .removeIf(item -> !desiredTrackIds.contains(item.getTrackId()));
 
     // Add only tracks that do not already exist.
+    // With this, we ensure that no same trackIds are duplicated.
     var tracksToAdd = new HashSet<>(desiredTrackIds);
-    tracksToAdd.removeAll(existingTrackIds);
+    tracksToAdd.removeAll(remoteExistingTracks);
 
     for (var trackId : tracksToAdd) {
       playlist
@@ -137,6 +138,10 @@ public class PlaylistSyncSupport {
       List<OfflinePlaylistContentModel> offlineItems
   ) {
     var offlineTrackIds = extractTrackIds(offlineItems);
+
+    if (offlineTrackIds.isEmpty()) {
+      return false;
+    }
 
     var remoteTrackIds = canonicalRemote
         .getItems()

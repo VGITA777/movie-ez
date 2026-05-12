@@ -71,6 +71,8 @@ public class SameIdPlaylistSyncStrategy implements PlaylistSyncStrategy {
     var offlineTimestamp = offline.getLastEditTimestamp();
     var remoteTimestamp = remote.getLastEditTimestamp();
 
+    // If the remote playlist is newer or has the same timestamp, then keep the remote version.
+    // Otherwise, replace the remote version with the offline version.
     if (support.compareInstants(offlineTimestamp, remoteTimestamp) <= 0) {
       return;
     }
