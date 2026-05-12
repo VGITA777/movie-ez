@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   computed,
   effect,
@@ -7,6 +8,7 @@ import {
   OnDestroy,
   ResourceRef,
   Signal,
+  WritableSignal,
 } from '@angular/core';
 import { z } from 'zod';
 import {
@@ -21,9 +23,9 @@ import {
   TvSeriesSimilarModel,
   VideosModel,
 } from '@shared/models';
-import { breakpoints, queryParams } from '@signality/core';
-import { MediaMovieService } from '../shared/services/media/media-movie.service';
-import { MediaTvSeriesService } from '../shared/services/media/media-tv-series-series.service';
+import { breakpoints, queryParams, storage } from '@signality/core';
+import { MediaMovieService } from '@shared/services/media/media-movie.service';
+import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
 import { Observable, of } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TvData } from '@shared/tv-data';
@@ -48,6 +50,7 @@ import { environment } from '@environments/environment';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.me';
 import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
+import { toast } from '@spartan-ng/brain/sonner';
 
 export type MediaData = MovieData | TvData;
 
@@ -80,7 +83,7 @@ export const watchPageQueryParams = z.object({
   styleUrl: './watch.me.css',
   providers: [provideIcons({ lucideStar, lucidePlus, lucideShare })],
 })
-export class WatchMe implements OnDestroy {
+export class WatchMe implements OnDestroy, AfterViewInit {
   private readonly navigator: NavigationFacade = inject(NavigationFacade);
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
   private readonly tvSeries: MediaTvSeriesService = inject(MediaTvSeriesService);
@@ -212,6 +215,10 @@ export class WatchMe implements OnDestroy {
 
   private readonly navFacade = inject(NavigationFacade);
   private readonly errorWatcher: EffectRef;
+  private readonly showSiteLogoNavigationToast: WritableSignal<boolean> = storage(
+    'showSiteLogoNavigationToast',
+    true,
+  );
 
   constructor() {
     this.errorWatcher = effect(() => {
@@ -228,8 +235,21 @@ export class WatchMe implements OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.errorWatcher.destroy();
+  }
+
+  public ngAfterViewInit() {
+    if (this.showSiteLogoNavigationToast()) {
+      toast.info('Click the Site Logo to go Home!', {
+        duration: 8000,
+        position: 'top-right',
+        action: {
+          label: 'Ok',
+          onClick: () => this.showSiteLogoNavigationToast.set(false),
+        },
+      });
+    }
   }
 
   protected handleClick() {
