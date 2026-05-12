@@ -66,6 +66,8 @@ export class HomeMe {
   private readonly playlists: Signal<OfflinePlaylist[]> = this.userLocalPlaylist.playlists;
 
   protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
+
+  /* TODO: Fetch data about the user's playlist contents and show it */
   /*
   protected readonly playlistItems: Signal<{
     playlistItems: { name: string; contents: MediaCarouselItem[] }[];

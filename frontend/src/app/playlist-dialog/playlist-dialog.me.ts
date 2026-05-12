@@ -25,7 +25,6 @@ import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { AutofocusDirective } from '@shared/directives/autofocus-directive';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-manager.service';
-import { LocalWinsStrategy, PlaylistSyncStrategy } from '@shared/playlist-sync-strategy';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { UserPlaylistSyncService } from '@shared/services/user/user-playlist-sync.service';
 import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
@@ -67,7 +66,6 @@ export class PlaylistDialogMe implements OnInit {
   private readonly playlistManagerService: UserPlaylistManagerService = inject(
     UserPlaylistManagerService,
   );
-  private readonly localWinsSyncStrategy: PlaylistSyncStrategy = inject(LocalWinsStrategy);
   private readonly localPlaylistService: UserLocalPlaylistService =
     inject(UserLocalPlaylistService);
   private readonly dialogRef: BrnDialogRef<PlaylistDialogMe> =
