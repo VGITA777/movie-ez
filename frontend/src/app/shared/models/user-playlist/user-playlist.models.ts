@@ -16,8 +16,7 @@ export interface OfflinePlaylist {
   name: string;
   items: OfflinePlaylistContent[];
   lastEditTimestamp: string;
-  toBeRenamed: boolean;
-  toBeDeleted: boolean;
+  deletedOn?: string | null;
 }
 
 export interface PlaylistContentDto extends OfflinePlaylistContent {

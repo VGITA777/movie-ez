@@ -1,10 +1,5 @@
-import {
-  CreatePlaylistsInput,
-  OfflinePlaylist,
-  PlaylistDto,
-  PlaylistUpdateInput,
-} from '@shared/models';
-import { first, Observable, tap } from 'rxjs';
+import { OfflinePlaylist, PlaylistDto } from '@shared/models';
+import { Observable } from 'rxjs';
 import { inject, Injectable } from '@angular/core';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
 import { UserPlaylistService } from '@shared/services/user/user-playlist.service';
@@ -34,7 +29,7 @@ export class LocalWinsStrategy implements PlaylistSyncStrategy {
   private readonly remotePlaylistService: UserPlaylistService = inject(UserPlaylistService);
 
   sync(local: OfflinePlaylist[], remote: PlaylistDto[]): PlaylistSyncJobs {
-    console.debug(`Sync Process: Starting Local Wins Strategy`);
+    /*    console.debug(`Sync Process: Starting Local Wins Strategy`);
     console.debug(`Sync Process: Current Local Playlists`, local);
     console.debug(`Sync Process: Current Remote Playlists`, remote);
 
@@ -125,7 +120,9 @@ export class LocalWinsStrategy implements PlaylistSyncStrategy {
         ],
       },
       local: {},
-    };
+    };*/
+
+    return { remote: {}, local: {} };
   }
 }
 

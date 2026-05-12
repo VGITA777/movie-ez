@@ -33,8 +33,7 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
             .map((content) => ({
               trackId: content.trackId.trim(),
             })),
-          toBeRenamed: playlist.toBeRenamed,
-          toBeDeleted: playlist.toBeDeleted,
+          toBeDeleted: playlist.deletedOn,
         }));
     } catch {
       return [];
@@ -70,7 +69,7 @@ export class UserLocalPlaylistService implements PlaylistService {
   );
 
   public readonly playlists: Signal<OfflinePlaylist[]> = computed(() => {
-    return this.userPlaylist().filter((playlist) => !playlist.toBeDeleted);
+    return this.userPlaylist().filter((playlist) => !playlist.deletedOn);
   });
   public readonly allPlaylists: Signal<OfflinePlaylist[]> = this.userPlaylist.asReadonly();
 
@@ -104,7 +103,6 @@ export class UserLocalPlaylistService implements PlaylistService {
     const newPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       name: newNameTrimmed,
-      toBeRenamed: true,
       lastEditTimestamp: this.nowIso(),
     };
 
@@ -115,20 +113,8 @@ export class UserLocalPlaylistService implements PlaylistService {
   public createPlaylist(id: string, name: string, items?: string[]): Observable<OfflinePlaylist> {
     const existing: OfflinePlaylist | undefined = this.findPlaylistByName(name.trim());
 
-    if (existing && !existing.toBeDeleted) {
+    if (existing && !existing.deletedOn) {
       return of(existing);
-    }
-
-    if (existing && existing.toBeDeleted) {
-      const newPlaylist: OfflinePlaylist = {
-        ...existing,
-        name: name.trim(),
-        items: items?.map((trackId) => ({ trackId })) ?? [],
-        lastEditTimestamp: this.nowIso(),
-        toBeDeleted: false,
-      };
-      this.updateExistingPlaylistById(id, newPlaylist);
-      return of(newPlaylist);
     }
 
     const newPlaylist: OfflinePlaylist = {
@@ -136,8 +122,6 @@ export class UserLocalPlaylistService implements PlaylistService {
       name: name.trim(),
       items: items?.map((trackId) => ({ trackId })) ?? [],
       lastEditTimestamp: this.nowIso(),
-      toBeRenamed: false,
-      toBeDeleted: false,
     };
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
     return of(newPlaylist);
@@ -152,7 +136,7 @@ export class UserLocalPlaylistService implements PlaylistService {
       const updated: OfflinePlaylist[] = [...playlists];
       updated[index] = {
         ...updated[index],
-        toBeDeleted: true,
+        deletedOn: this.nowIso(),
       };
       return updated;
     });
@@ -204,7 +188,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     this.userPlaylist.update((playlists) => playlists.filter((playlist) => playlist.id !== id));
   }
 
-  public setPlaylistRenameFlag(id: string, flag: boolean): void {
+  public setPlaylistDeleteFlag(id: string, deletedOn: string): void {
     const currentPlaylist: OfflinePlaylist | null = this.findPlaylistById(id);
     if (!currentPlaylist) {
       return;
@@ -212,20 +196,7 @@ export class UserLocalPlaylistService implements PlaylistService {
 
     const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
-      toBeRenamed: flag,
-    };
-    this.updateExistingPlaylistById(id, updatedPlaylist);
-  }
-
-  public setPlaylistDeleteFlag(id: string, flag: boolean): void {
-    const currentPlaylist: OfflinePlaylist | null = this.findPlaylistById(id);
-    if (!currentPlaylist) {
-      return;
-    }
-
-    const updatedPlaylist: OfflinePlaylist = {
-      ...currentPlaylist,
-      toBeDeleted: flag,
+      deletedOn: deletedOn,
     };
     this.updateExistingPlaylistById(id, updatedPlaylist);
   }
