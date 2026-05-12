@@ -74,3 +74,4 @@ my progress here.
 - Updated the playlist dialog to accommodate the changes from the backend.
 - Moved the syncing logic to the backend instead of the frontend and created a new endpoint for
   syncing playlists.
+- Updated the frontend to use the new endpoint for syncing playlists.
