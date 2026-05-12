@@ -1,4 +1,4 @@
-import { LanguageCode } from '@shared/models';
+import { LanguageCode, OfflinePlaylist, PlaylistDto } from '@shared/models';
 
 export interface SearchMultiInput {
   page: number;
@@ -115,4 +115,19 @@ export interface PlaylistAndTracksInput {
 
 export interface PlaylistTracksInput {
   tracksIds: string[];
+}
+
+export interface PlaylistSyncInput {
+  playlists: OfflinePlaylist[];
+}
+
+export interface PlaylistIdMapping {
+  localId: string;
+  canonicalServerId: string;
+}
+
+export interface PlaylistSyncResponse {
+  playlists: PlaylistDto[];
+  idMappings: PlaylistIdMapping[];
+  serverSyncedAt: string;
 }

@@ -27,6 +27,7 @@ import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-manager.service';
 import { LocalWinsStrategy, PlaylistSyncStrategy } from '@shared/playlist-sync-strategy';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
+import { UserPlaylistSyncService } from '@shared/services/user/user-playlist-sync.service';
 
 @Component({
   selector: 'me-playlist-dialog',
@@ -72,6 +73,7 @@ export class PlaylistDialogMe implements OnInit {
   private readonly dialogContext: ShowPlaylistsDirectiveContext =
     injectBrnDialogContext<ShowPlaylistsDirectiveContext>();
   private readonly authFacadeService: AuthFacadeService = inject(AuthFacadeService);
+  private readonly playlistSyncService: UserPlaylistSyncService = inject(UserPlaylistSyncService);
 
   protected readonly localPlaylists: Signal<OfflinePlaylist[]> =
     this.localPlaylistService.playlists;
@@ -235,6 +237,6 @@ export class PlaylistDialogMe implements OnInit {
   }
 
   protected syncPlaylists(): void {
-    this.playlistManagerService.sync(this.localWinsSyncStrategy);
+    this.playlistManagerService.sync();
   }
 }

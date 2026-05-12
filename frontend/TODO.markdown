@@ -67,8 +67,10 @@ my progress here.
 - Updated my local playlist service to use the local playlist model flags instead of directly
   deleting playlists.
 
-
 ### May 12, 2026
+
 - Updated the backend playlist controller to use playlist IDs instead of playlist name.
 - Updated the frontend services and models to accommodate the changes from the backend.
 - Updated the playlist dialog to accommodate the changes from the backend.
+- Moved the syncing logic to the backend instead of the frontend and created a new endpoint for
+  syncing playlists.

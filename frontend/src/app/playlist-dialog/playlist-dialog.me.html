@@ -50,7 +50,7 @@
             } @else {
               <span>{{ playlist.name }}</span>
             }
-            @if (isTrackInPlaylist(playlist.name)) {
+            @if (isTrackInPlaylist(playlist.id)) {
               <span
                 class="w-1 h-1 rounded-full bg-lime-500 animate-pulse shadow-[0_0_8px_rgba(132,204,22,0.85)]"></span>
             }
