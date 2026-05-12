@@ -18,7 +18,11 @@ export class UserPlaylistManagerService {
 
   public readonly isSyncing: Signal<boolean> = this._isSyncing.asReadonly();
 
-  public sync(): void {
+  public sync(callbacks: {
+    next?: () => void;
+    error?: (e: unknown) => void;
+    complete?: () => void;
+  }): void {
     if (!this.authFacadeService.isAuthenticated() || this.isSyncing()) {
       return;
     }
@@ -45,8 +49,15 @@ export class UserPlaylistManagerService {
         finalize(() => this._isSyncing.set(false)),
       )
       .subscribe({
+        next: () => {
+          callbacks.next?.();
+        },
         error: (error: unknown) => {
+          callbacks.error?.(error);
           console.error('Playlist sync failed', error);
+        },
+        complete: () => {
+          callbacks.complete?.();
         },
       });
   }

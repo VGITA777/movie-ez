@@ -10,7 +10,7 @@ import {
   lucideMinus,
   lucideMoreVertical,
   lucidePlus,
-  lucideRefreshCcw,
+  lucideRefreshCw,
 } from '@ng-icons/lucide';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
@@ -28,6 +28,7 @@ import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-
 import { LocalWinsStrategy, PlaylistSyncStrategy } from '@shared/playlist-sync-strategy';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { UserPlaylistSyncService } from '@shared/services/user/user-playlist-sync.service';
+import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
 
 @Component({
   selector: 'me-playlist-dialog',
@@ -43,6 +44,7 @@ import { UserPlaylistSyncService } from '@shared/services/user/user-playlist-syn
     HlmInputGroupImports,
     AutofocusDirective,
     HlmAlertDialogImports,
+    HlmTooltipImports,
   ],
   templateUrl: './playlist-dialog.me.html',
   styleUrl: './playlist-dialog.me.css',
@@ -52,7 +54,7 @@ import { UserPlaylistSyncService } from '@shared/services/user/user-playlist-syn
       lucideMinus,
       lucideMoreVertical,
       lucideCheck,
-      lucideRefreshCcw,
+      lucideRefreshCw,
       lucideCloudSync,
     }),
   ],
@@ -237,6 +239,13 @@ export class PlaylistDialogMe implements OnInit {
   }
 
   protected syncPlaylists(): void {
-    this.playlistManagerService.sync();
+    this.playlistManagerService.sync({
+      next: () => {
+        toast.success(`Playlists synced successfully.`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
+      },
+      error: (e) => {
+        toast.error(`Failed to sync playlists.`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
+      },
+    });
   }
 }

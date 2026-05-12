@@ -8,10 +8,12 @@
     @if (isAuthenticated()) {
 
       <button
-        hlmBtn variant="outline" size="icon-sm" [disabled]="isSyncing() || !isAuthenticated()"
+        hlmBtn
+        hlmTooltip="Sync Playlists"
+        variant="outline" size="icon-sm" [disabled]="isSyncing() || !isAuthenticated()"
         (click)="syncPlaylists()">
         <ng-icon
-          [name]="(isSyncing()) ? 'lucideRefreshCcw' : 'lucideCloudSync'" class="text-sm"
+          [name]="(isSyncing()) ? 'lucideRefreshCw' : 'lucideCloudSync'" class="text-sm"
           [class.animate-spin]="isSyncing()" />
       </button>
     }
