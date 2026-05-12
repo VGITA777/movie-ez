@@ -8,6 +8,7 @@ public record PlaylistDto(UUID id,
                           UUID userId,
                           String name,
                           Instant lastEditTimestamp,
+                          Instant deletedOn,
                           List<PlaylistContentDto> items) {
 
 }

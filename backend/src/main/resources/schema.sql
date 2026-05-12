@@ -7,27 +7,31 @@ CREATE TABLE users
 
 CREATE TABLE playlists
 (
-    id      UUID         NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID         NOT NULL REFERENCES users (id),
-    last_edit_timestamp  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    name    VARCHAR(100) NOT NULL,
-    CONSTRAINT uq_user_playlist_name UNIQUE (user_id, name)
+    id                  UUID         NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id             UUID         NOT NULL REFERENCES users (id),
+    last_edit_timestamp TIMESTAMPTZ  NOT NULL             DEFAULT NOW(),
+    name                VARCHAR(100) NOT NULL,
+    deleted_on          TIMESTAMPTZ
 );
+
+CREATE UNIQUE INDEX uq_user_playlist_name ON playlists (user_id, LOWER(name))
+    WHERE playlists.deleted_on IS NULL;
 
 CREATE TABLE playlist_content
 (
-    id          UUID   NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+    id          UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     playlist_id UUID NOT NULL REFERENCES playlists (id)
-      ON DELETE CASCADE,
-    track_id    TEXT   NOT NULL,
+        ON DELETE CASCADE,
+    track_id    TEXT NOT NULL,
     CONSTRAINT single_entry UNIQUE (playlist_id, track_id)
 );
 
 -- 1) Updates the playlist timestamp whenever the playlist row itself changes
 CREATE OR REPLACE FUNCTION set_playlist_last_edit_timestamp()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-AS $$
+    RETURNS TRIGGER
+    LANGUAGE plpgsql
+AS
+$$
 BEGIN
     NEW.last_edit_timestamp := NOW();
     RETURN NEW;
@@ -37,15 +41,17 @@ $$;
 DROP TRIGGER IF EXISTS trg_playlists_set_last_edit_timestamp ON playlists;
 
 CREATE TRIGGER trg_playlists_set_last_edit_timestamp
-BEFORE UPDATE ON playlists
-FOR EACH ROW
+    BEFORE UPDATE
+    ON playlists
+    FOR EACH ROW
 EXECUTE FUNCTION set_playlist_last_edit_timestamp();
 
 -- 2) Updates the parent playlist timestamp whenever playlist_content changes
 CREATE OR REPLACE FUNCTION touch_playlist_on_content_change()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-AS $$
+    RETURNS TRIGGER
+    LANGUAGE plpgsql
+AS
+$$
 BEGIN
     IF TG_OP = 'INSERT' THEN
         UPDATE playlists
@@ -87,6 +93,7 @@ $$;
 DROP TRIGGER IF EXISTS trg_playlist_content_touch_playlist ON playlist_content;
 
 CREATE TRIGGER trg_playlist_content_touch_playlist
-AFTER INSERT OR UPDATE OR DELETE ON playlist_content
-FOR EACH ROW
+    AFTER INSERT OR UPDATE OR DELETE
+    ON playlist_content
+    FOR EACH ROW
 EXECUTE FUNCTION touch_playlist_on_content_change();

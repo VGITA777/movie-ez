@@ -10,14 +10,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlaylistRepository extends JpaRepository<PlaylistModel, UUID> {
 
-  Optional<PlaylistModel> findByNameAndUserId(String name, UUID userId);
+  Optional<PlaylistModel> findByNameIgnoreCaseAndUserIdAndDeletedOnIsNull(String name, UUID userId);
 
   List<PlaylistModel> findAllByUserId(UUID userId);
 
-  void deleteByIdAndUserId(UUID id, UUID userId);
-
-  boolean existsByNameAndUserId(String name, UUID userId);
-
   Optional<PlaylistModel> findByIdAndUserId(UUID id, UUID userId);
 
+  boolean existsByNameIgnoreCaseAndUserIdAndDeletedOnIsNull(String name, UUID userId);
+
+  Optional<PlaylistModel> findByIdAndUserIdAndDeletedOnIsNull(UUID id, UUID userId);
+
+  List<PlaylistModel> findAllByUserIdAndDeletedOnIsNull(UUID uuid);
 }

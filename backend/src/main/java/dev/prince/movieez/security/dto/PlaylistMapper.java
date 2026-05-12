@@ -35,6 +35,7 @@ public final class PlaylistMapper {
                                   .getId() : null,
         model.getName(),
         model.getLastEditTimestamp(),
+        model.getDeletedOn(),
         PlaylistContentMapper.toDtoList(model.getItems())
     );
   }

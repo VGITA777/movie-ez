@@ -1,5 +1,6 @@
 package dev.prince.movieez.security.models;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +50,10 @@ public class PlaylistModel {
       name = "last_edit_timestamp", nullable = false, insertable = false, updatable = false
   )
   private Instant lastEditTimestamp;
+
+  @Nullable
+  @Column(name = "deleted_on", insertable = false)
+  private Instant deletedOn;
 
   @NotNull
   @OneToMany(

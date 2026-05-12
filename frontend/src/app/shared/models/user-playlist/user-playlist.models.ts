@@ -30,6 +30,7 @@ export interface PlaylistDto {
   userId: string;
   name: string;
   lastEditTimestamp: string;
+  deletedOn?: string | null,
   items: PlaylistContentDto[];
 }
 

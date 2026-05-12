@@ -15,6 +15,7 @@ import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,7 +47,7 @@ public class PlaylistService {
 
   @Transactional
   public PlaylistModel updatePlaylistName(UUID id, String newName, UUID userId) {
-    var playlist = getPlaylist(id, userId);
+    var playlist = findNotDeleted(id, userId).orElseThrow(() -> new PlaylistNotFoundException("Playlist not found"));
     if (isPlaylistExisting(newName, userId)) {
       var msg = "Playlist with name: '" + newName + "' already exists";
       throw new PlaylistAlreadyExistsException(msg);
@@ -58,14 +59,14 @@ public class PlaylistService {
   @Transactional
   public PlaylistModel createPlaylist(String name, Collection<String> trackIds, UUID playlistId, UUID userId) {
     if (playlistId != null) {
-      var existingPlaylist = find(playlistId, userId);
+      var existingPlaylist = findNotDeleted(playlistId, userId);
 
       if (existingPlaylist.isPresent()) {
         return existingPlaylist.get();
       }
     }
 
-    var existingPlaylist = find(name, userId);
+    var existingPlaylist = findNotDeleted(name, userId);
 
     if (existingPlaylist.isPresent()) {
       return existingPlaylist.get();
@@ -85,16 +86,16 @@ public class PlaylistService {
     return savePlaylistAndGetResult(playlistModel);
   }
 
-  public Optional<PlaylistModel> find(UUID id, UUID userId) {
-    return playlistRepository.findByIdAndUserId(id, userId);
+  public Optional<PlaylistModel> findNotDeleted(UUID id, UUID userId) {
+    return playlistRepository.findByIdAndUserIdAndDeletedOnIsNull(id, userId);
   }
 
-  public Optional<PlaylistModel> find(String name, UUID userId) {
-    return playlistRepository.findByNameAndUserId(name, userId);
+  public Optional<PlaylistModel> findNotDeleted(String name, UUID userId) {
+    return playlistRepository.findByNameIgnoreCaseAndUserIdAndDeletedOnIsNull(name, userId);
   }
 
-  public List<PlaylistModel> findAllByUserId(UUID uuid) {
-    return playlistRepository.findAllByUserId(uuid);
+  public List<PlaylistModel> findAllByUserIdAndNotDeleted(UUID uuid) {
+    return playlistRepository.findAllByUserIdAndDeletedOnIsNull(uuid);
   }
 
   @Transactional
@@ -139,12 +140,11 @@ public class PlaylistService {
 
   @Transactional
   public void delete(UUID id, UUID userId) {
-    var existing = playlistRepository.findByIdAndUserId(id, userId);
-    if (existing.isEmpty()) {
-      throw new PlaylistNotFoundException("Playlist not found");
-    }
-
-    playlistRepository.deleteByIdAndUserId(id, userId);
+    var existing = playlistRepository
+        .findByIdAndUserIdAndDeletedOnIsNull(id, userId)
+        .orElseThrow(() -> new PlaylistNotFoundException("Playlist not found"));
+    existing.setDeletedOn(Instant.now());
+    playlistRepository.save(existing);
   }
 
   @Transactional
@@ -225,7 +225,7 @@ public class PlaylistService {
 
     userPlaylists.addAll(playlistsToCreate);
     userRepository.saveAndFlush(user);
-    return findAllByUserId(userId);
+    return findAllByUserIdAndNotDeleted(userId);
   }
 
   private PlaylistModel toPlaylistModel(PlaylistInput input, UserModel user) {
@@ -318,7 +318,7 @@ public class PlaylistService {
   }
 
   private boolean isPlaylistExisting(String name, UUID userId) {
-    return playlistRepository.existsByNameAndUserId(name, userId);
+    return playlistRepository.existsByNameIgnoreCaseAndUserIdAndDeletedOnIsNull(name, userId);
   }
 
   private void setId(PlaylistModel playlistModel, UUID id) {

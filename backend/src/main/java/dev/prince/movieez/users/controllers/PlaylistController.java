@@ -42,7 +42,7 @@ public class PlaylistController {
   @GetMapping("/all")
   public ResponseEntity<ServerResponse<List<PlaylistDto>>> getPlaylists() {
     var playlists = playlistService
-        .findAllByUserId(SecurityUtils.getUserId())
+        .findAllByUserIdAndNotDeleted(SecurityUtils.getUserId())
         .stream()
         .map(PlaylistMapper::toDto)
         .toList();
@@ -58,7 +58,7 @@ public class PlaylistController {
       @NotNull(message = "{validation.playlist.id.notNull}")
       UUID id
   ) {
-    var data = playlistService.find(id, SecurityUtils.getUserId());
+    var data = playlistService.findNotDeleted(id, SecurityUtils.getUserId());
     var playlist = data.map(PlaylistMapper::toDto);
     var response = ServerResponse.success(playlist);
     return ResponseEntity.ok(response);
@@ -72,7 +72,7 @@ public class PlaylistController {
       UUID id
   ) {
     var playlist = playlistService
-        .find(id, SecurityUtils.getUserId())
+        .findNotDeleted(id, SecurityUtils.getUserId())
         .orElseThrow(() -> new IllegalArgumentException("Playlist with ID not found"));
 
     var contents = playlist
