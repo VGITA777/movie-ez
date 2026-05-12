@@ -107,13 +107,25 @@ public class PlaylistSyncSupport {
   }
 
   public void replaceTracks(PlaylistModel playlist, List<OfflinePlaylistContentModel> offlineItems) {
+    var desiredTrackIds = extractTrackIds(offlineItems);
+
+    var existingTrackIds = playlist
+        .getItems()
+        .stream()
+        .map(PlaylistContentModel::getTrackId)
+        .filter(trackId -> trackId != null && !trackId.isBlank())
+        .collect(Collectors.toCollection(HashSet::new));
+
+    // Remove tracks that are no longer present in the incoming playlist.
     playlist
         .getItems()
-        .clear();
+        .removeIf(item -> !desiredTrackIds.contains(item.getTrackId()));
 
-    var trackIds = extractTrackIds(offlineItems);
+    // Add only tracks that do not already exist.
+    var tracksToAdd = new HashSet<>(desiredTrackIds);
+    tracksToAdd.removeAll(existingTrackIds);
 
-    for (var trackId : trackIds) {
+    for (var trackId : tracksToAdd) {
       playlist
           .getItems()
           .add(toPlaylistContentModel(trackId, playlist));
