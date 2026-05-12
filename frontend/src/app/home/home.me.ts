@@ -22,6 +22,7 @@ import {
   DiscoverTvModel,
   MovieDetailsModel,
   MovieShortDetailsWithMediaTypeModel,
+  OfflinePlaylist,
   TvSeriesDetailsModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
   Video,
@@ -35,6 +36,8 @@ import { CuratedContents } from '@shared/shared-types';
 import { YoutubeEmbedService } from '@shared/services/media/youtube-embed-service';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
+import { AuthFacadeService } from '@shared/services/auth-facade-service';
+import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
 
 @Component({
   selector: 'me-home',
@@ -58,6 +61,30 @@ export class HomeMe {
   private readonly mediaMovieService: MediaMovieService = inject(MediaMovieService);
   private readonly youtubeEmbedService: YoutubeEmbedService = inject(YoutubeEmbedService);
   private readonly navFacade: NavigationFacade = inject(NavigationFacade);
+  private readonly authFacade: AuthFacadeService = inject(AuthFacadeService);
+  private readonly userLocalPlaylist: UserLocalPlaylistService = inject(UserLocalPlaylistService);
+  private readonly playlists: Signal<OfflinePlaylist[]> = this.userLocalPlaylist.playlists;
+
+  protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
+  /*
+  protected readonly playlistItems: Signal<{
+    playlistItems: { name: string; contents: MediaCarouselItem[] }[];
+  }> = toObservable(this.playlists).pipe(
+    map((playlists): { name: string; contents: string[] }[] => {
+      return playlists.map((item) => ({
+        name: item.name,
+        contents: item.items.map((c) => c.trackId),
+      }));
+    }),
+    switchMap((playlists) => {
+      const detailsRequests = playlists.map((playlists) => {
+        return {
+          name: playlists.name,
+          contents: playlists.contents.map((contentId) => {})
+        }
+      })
+    }),
+  );*/
 
   protected readonly heroItems: Signal<HomeHeroSliderItem[]> = toSignal(
     from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(

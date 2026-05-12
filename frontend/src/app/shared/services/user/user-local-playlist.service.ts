@@ -10,6 +10,7 @@ import {
 import { storage } from '@signality/core';
 import { Serializer } from '@signality/core/browser/storage';
 import { Observable, of } from 'rxjs';
+import { USER_LOCAL_STORAGE_PLAYLIST_KEY } from '@shared/keys';
 
 export interface PlaylistService {
   createPlaylist(playlistId: string, name: string, items?: string[]): Observable<Playlist>;
@@ -75,7 +76,7 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
 })
 export class UserLocalPlaylistService implements PlaylistService {
   private readonly userPlaylist: WritableSignal<OfflinePlaylist[]> = storage(
-    'offlinePlaylist',
+    USER_LOCAL_STORAGE_PLAYLIST_KEY,
     [],
     {
       serializer: new LocalUserPlaylistsSerializer(),

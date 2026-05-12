@@ -88,6 +88,12 @@
         <me-media-carousel [items]="discoverTvShows()" [template]="mediaCoverItem" />
       }
     </div>
+
+
+    @if (isAuthenticated()) {
+      <!-- User Playlist -->
+      <hlm-separator />
+    }
   </div>
 </section>
 
@@ -147,7 +153,8 @@
 </ng-template>
 
 <ng-template #heroSkeleton>
-  <div class="h-[90vh] w-screen max-w-screen relative aspect-video mask-[linear-gradient(to_bottom,var(--background)_80%,transparent_95%)]">
+  <div
+    class="h-[90vh] w-screen max-w-screen relative aspect-video mask-[linear-gradient(to_bottom,var(--background)_80%,transparent_95%)]">
     <hlm-skeleton class="absolute inset-0 w-full h-full" />
   </div>
 </ng-template>
