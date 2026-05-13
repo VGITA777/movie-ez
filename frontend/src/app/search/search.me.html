@@ -31,16 +31,17 @@
   </div>
 
   @let items = searchedItems.value();
+  @let search = debouncedSearch();
 
   <!-- Results Container -->
   <div
     class="results-container rounded-2xl border overflow-hidden w-full h-full flex items-center justify-center">
-    @if (items.length > 0 || isLoading()) {
+    @if ((search.length > 0 && isLoading()) || items.length > 0) {
       <ng-scrollbar hlm class="w-full h-full " appearance="compact">
         <div
           class="results h-full p-1 grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(175px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]">
-          @if (isLoading()) {
-            <!-- Loading Items Skeletong -->
+          @if (isLoading() && search.length > 0) {
+            <!-- Loading Items Skeleton -->
             @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track item) {
               <ng-container *ngTemplateOutlet="mediaCoverItemSkeleton"></ng-container>
             }
@@ -53,7 +54,7 @@
           }
         </div>
       </ng-scrollbar>
-    } @else if (items.length === 0 && debouncedSearch().length > 0) {
+    } @else if (items.length === 0 && search.length > 0) {
       <!-- No Results in Search -->
       @let context = {
         title  : 'Nothing Found',

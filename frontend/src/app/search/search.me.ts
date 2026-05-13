@@ -29,7 +29,7 @@ import { MediaSearchService } from '../shared/services/media/media-search-servic
 import { FormsModule } from '@angular/forms';
 import { debounced } from '@signality/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, filter, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, defaultIfEmpty, filter, map, Observable, of } from 'rxjs';
 import {
   MovieShortDetailsWithMediaTypeModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
@@ -74,40 +74,48 @@ export class SearchMe {
       type: this.selectedType(),
       query: this.debouncedSearch(),
     }),
-    stream: ({ params }) => {
-      return of(params.query).pipe(
-        distinctUntilChanged(),
-        switchMap((query: string): Observable<MediaCarouselItem[]> => {
-          const trimmedQuery: string = query.trim();
+    stream: ({ params }): Observable<MediaCarouselItem[]> => {
+      const trimmedQuery: string = params.query.trim();
 
-          if (trimmedQuery === '') {
-            return of([]);
-          }
+      if (trimmedQuery === '') {
+        return of([]);
+      }
 
-          let request$: Observable<MediaCarouselItem[]> = of([]);
+      let request$: Observable<MediaCarouselItem[]>;
 
-          if (params.type === 'mixed') {
-            request$ = this.performMixedSearch(trimmedQuery);
-          } else if (params.type === 'movie') {
-            request$ = this.performMovieSearch(trimmedQuery);
-          } else if (params.type === 'tv') {
-            request$ = this.performTvSearch(trimmedQuery);
-          }
+      switch (params.type) {
+        case 'mixed':
+          request$ = this.performMixedSearch(trimmedQuery);
+          break;
+        case 'movie':
+          request$ = this.performMovieSearch(trimmedQuery);
+          break;
+        case 'tv':
+          request$ = this.performTvSearch(trimmedQuery);
+          break;
+        default:
+          request$ = of([]);
+          break;
+      }
 
-          return request$;
+      return request$.pipe(
+        defaultIfEmpty([]),
+        catchError((error) => {
+          console.error('Search failed:', error);
+          return of([]);
         }),
       );
     },
   });
   protected readonly isLoading: Signal<boolean> = computed(() => {
-    return this.searchedItems.isLoading() && this.searchedItems.error === undefined;
+    return this.searchedItems.isLoading();
   });
 
   public onNavigateToWatchPage: OutputEmitterRef<void> = output();
 
   constructor() {
     effect(() => {
-      console.debug(`Error`, this.searchedItems.error());
+      console.debug(`Error In Search`, this.searchedItems.error());
     });
   }
 
