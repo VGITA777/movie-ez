@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { mediaRequestUserSettingsInterceptor } from '@app/interceptors/media-request-user-settings-interceptor';
-import { authInterceptor, provideAuth } from 'angular-auth-oidc-client';
+import { authInterceptor, LogLevel, provideAuth } from 'angular-auth-oidc-client';
 import { environment } from '@environments/environment';
 
 export const appConfig: ApplicationConfig = {
@@ -19,11 +19,13 @@ export const appConfig: ApplicationConfig = {
         useRefreshToken: true,
         silentRenew: true,
         responseType: 'code',
-        scope: 'openid profile email',
+        scope: 'openid profile email offline_access',
+        renewTimeBeforeTokenExpiresInSeconds: 30,
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
+        logLevel: environment.auth.isDebug ? LogLevel.Debug : LogLevel.Error,
         secureRoutes: [
-          'http://localhost:4000/user/*',
+          'http://localhost:4000/users/*',
           'http://192.168.1.108:4000/users/*',
           'http://192.168.0.117:4000/users/*',
         ],

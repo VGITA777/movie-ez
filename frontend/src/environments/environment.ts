@@ -13,5 +13,6 @@ export const environment = {
   auth: {
     authority: '',
     clientId: '',
+    isDebug: false,
   },
 };
