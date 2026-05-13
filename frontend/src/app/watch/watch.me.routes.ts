@@ -6,7 +6,6 @@ import {
   Router,
   Routes,
 } from '@angular/router';
-import { MediaType } from '@shared/models';
 import { watchPageQueryParams } from './watch.me';
 import { z } from 'zod';
 import { GenericRouteData } from '../app';
@@ -22,18 +21,6 @@ const watchPageMediaTypeGuard: CanActivateFn = (
     return new RedirectCommand(router.parseUrl('/'), {
       state: {
         messages: [{ message: 'Invalid query parameters', type: 'error' } as GenericRouteData],
-      },
-    });
-  }
-  const mediaType: MediaType = validationResult.data.type;
-
-  if (mediaType === 'person') {
-    console.debug('Media type of "person" is currently not supported');
-    return new RedirectCommand(router.parseUrl('/'), {
-      state: {
-        messages: [
-          { message: `Invalid Media Type of '${mediaType}'`, type: 'error' } as GenericRouteData,
-        ],
       },
     });
   }

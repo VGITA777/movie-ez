@@ -173,7 +173,7 @@
     </div>
 
     <!-- Episode Lists -->
-    @if (queryParams.value().type === 'tv') {
+    @if (mediaType() === 'tv') {
       @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
       @if (!bp.sm()) {
         <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">

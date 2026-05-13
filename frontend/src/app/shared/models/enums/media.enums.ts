@@ -1,5 +1,21 @@
-export const MEDIA_TYPES = ['movie', 'tv', 'person'] as const;
-export type MediaType = (typeof MEDIA_TYPES)[number];
+export enum MediaType {
+  MOVIE = 'movie',
+  TV = 'tv',
+  PERSON = 'person',
+}
+
+export const MEDIA_TYPES: readonly MediaType[] = [MediaType.MOVIE, MediaType.TV, MediaType.PERSON];
+
+export const SEARCHABLE_MEDIA_TYPES: readonly SearchableMediaType[] = [
+  MediaType.MOVIE,
+  MediaType.TV,
+];
+
+export type SearchableMediaType = Exclude<MediaType, MediaType.PERSON>;
+
+export function isSearchableMediaType(mediaType: MediaType): mediaType is SearchableMediaType {
+  return mediaType === MediaType.MOVIE || mediaType === MediaType.TV;
+}
 
 export const LANGUAGE_CODES = [
   'ab',

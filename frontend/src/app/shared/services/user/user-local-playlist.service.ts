@@ -36,7 +36,7 @@ export interface PlaylistService {
 }
 
 class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
-  private readonly defaultMediaType: MediaType = 'movie';
+  private readonly defaultMediaType: MediaType = MediaType.MOVIE;
 
   write: (value: OfflinePlaylist[]) => string = (value) => JSON.stringify(value);
 
@@ -126,7 +126,7 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
   providedIn: 'root',
 })
 export class UserLocalPlaylistService implements PlaylistService {
-  private readonly defaultMediaType: MediaType = 'movie';
+  private readonly defaultMediaType: MediaType = MediaType.MOVIE;
 
   private readonly userPlaylist: WritableSignal<OfflinePlaylist[]> = storage(
     USER_LOCAL_STORAGE_PLAYLIST_KEY,

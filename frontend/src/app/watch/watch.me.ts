@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { z } from 'zod';
 import {
-  MEDIA_TYPES,
   MediaType,
   MovieDetailsModel,
   MovieShortDetailsWithMediaTypeModel,
@@ -26,10 +25,8 @@ import {
 import { breakpoints, queryParams, storage } from '@signality/core';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
-import { Observable, of } from 'rxjs';
+import { catchError, Observable, of, take } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { TvData } from '@shared/tv-data';
-import { MovieData } from '@shared/movie-data';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { convertRuntimeToHoursAndMinutes, getYearFromDate } from '@shared/utils';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
@@ -52,13 +49,24 @@ import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.
 import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
 import { toast } from '@spartan-ng/brain/sonner';
 
-export type MediaData = MovieData | TvData;
+export type WatchMediaType = MediaType.MOVIE | MediaType.TV;
+
+export type WatchMediaParams = {
+  type: WatchMediaType;
+  id: number;
+};
+
+export type MediaData = WatchMediaParams;
+
+const WATCH_PAGE_MEDIA_TYPES = [MediaType.MOVIE, MediaType.TV] as const;
 
 export const watchPageQueryParams = z.object({
-  type: z.enum(MEDIA_TYPES).readonly(),
-  id: z.coerce.number().readonly(),
-  season: z.coerce.number().optional(),
-  episode: z.coerce.number().optional(),
+  // Watch page should only accept playable media.
+  // Person is still valid in the global MediaType enum, but not here.
+  type: z.enum(WATCH_PAGE_MEDIA_TYPES).readonly(),
+  id: z.coerce.number().int().positive().readonly(),
+  season: z.coerce.number().int().positive().optional(),
+  episode: z.coerce.number().int().positive().optional(),
 });
 
 @Component({
@@ -84,28 +92,27 @@ export const watchPageQueryParams = z.object({
   providers: [provideIcons({ lucideStar, lucidePlus, lucideShare })],
 })
 export class WatchMe implements OnDestroy, AfterViewInit {
-  private readonly navigator: NavigationFacade = inject(NavigationFacade);
+  private readonly errorWatcher: EffectRef;
+  private readonly navFacade: NavigationFacade = inject(NavigationFacade);
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
-  private readonly tvSeries: MediaTvSeriesService = inject(MediaTvSeriesService);
-  private readonly mediaObject: Signal<MovieData | TvData | undefined> = computed(() => {
-    const values = this.queryParams.value();
-    switch (values.type) {
-      case 'movie':
-        return new MovieData(values.id, this.movieService);
-      case 'tv':
-        return new TvData(values.id, this.tvSeries);
-      default:
-        return undefined;
-    }
+  private readonly tvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
+  private readonly showSiteLogoNavigationToast: WritableSignal<boolean> = storage(
+    'showSiteLogoNavigationToast',
+    true,
+  );
+  private readonly mediaParams: Signal<WatchMediaParams> = computed(() => {
+    const params = this.queryParams.value();
+
+    return {
+      id: params.id,
+      type: params.type,
+    };
   });
   private readonly mediaDetails: ResourceRef<MovieDetailsModel | TvSeriesDetailsModel | undefined> =
     rxResource({
-      params: (): MediaData | undefined => this.mediaObject(),
-      stream: (data): Observable<MovieDetailsModel | TvSeriesDetailsModel | undefined> => {
-        if (data === undefined) {
-          return of(undefined);
-        }
-        return data.params.getDetails().pipe();
+      params: (): WatchMediaParams => this.mediaParams(),
+      stream: ({ params }): Observable<MovieDetailsModel | TvSeriesDetailsModel> => {
+        return this.getMediaDetails(params).pipe(take(1));
       },
     });
 
@@ -113,118 +120,98 @@ export class WatchMe implements OnDestroy, AfterViewInit {
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly getYearFromDate = getYearFromDate;
   protected readonly Array = Array;
-  protected readonly mediaId: Signal<number> = computed(() => this.queryParams.value().id ?? 0);
-  protected readonly mediaType: Signal<MediaType> = computed(() => this.queryParams.value().type);
-  protected readonly isLoading: Signal<boolean> = this.mediaDetails.isLoading;
-  protected readonly error: Signal<Error | undefined> = computed(() => this.mediaDetails.error());
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
-  protected readonly mediaVideos: ResourceRef<VideosModel | undefined> = rxResource({
-    params: (): MediaData | undefined => this.mediaObject(),
-    stream: (data): Observable<VideosModel | undefined> => {
-      if (data === undefined) {
-        return of(undefined);
-      }
-      return data.params.getVideos().pipe();
+  protected readonly mediaId: Signal<number> = computed(() => this.queryParams.value().id);
+  protected readonly mediaType: Signal<WatchMediaType> = computed(() => {
+    return this.queryParams.value().type;
+  });
+  protected readonly mediaVideos: ResourceRef<VideosModel> = rxResource({
+    defaultValue: this.emptyVideos(),
+    params: (): WatchMediaParams => this.mediaParams(),
+    stream: ({ params }): Observable<VideosModel> => {
+      return this.getMediaVideos(params).pipe(
+        take(1),
+        catchError((error) => {
+          console.error(`Failed to load videos for ${params.type}/${params.id}:`, error);
+          return of(this.emptyVideos());
+        }),
+      );
     },
+  });
+  protected readonly similarMedia: ResourceRef<MovieSimilarModel | TvSeriesSimilarModel> =
+    rxResource({
+      defaultValue: this.emptySimilarMedia(),
+      params: (): WatchMediaParams => this.mediaParams(),
+      stream: ({ params }): Observable<MovieSimilarModel | TvSeriesSimilarModel> => {
+        return this.getSimilarMedia(params).pipe(
+          take(1),
+          catchError((error) => {
+            console.error(`Failed to load similar media for ${params.type}/${params.id}:`, error);
+            return of(this.emptySimilarMedia());
+          }),
+        );
+      },
+    });
+  protected readonly isLoading: Signal<boolean> = this.mediaDetails.isLoading;
+  protected readonly error: Signal<Error | undefined> = computed(() => {
+    return this.mediaDetails.error();
   });
   protected readonly movieDetails: Signal<MovieDetailsModel | undefined> = computed(() => {
     if (this.checkIfErrorOrLoading()) {
       return undefined;
     }
 
-    const mediaType: MediaType | undefined = this.mediaDetails.value()?.media_type;
-    if (!mediaType || mediaType === 'person' || mediaType === 'tv') {
+    const details = this.mediaDetails.value();
+
+    if (!details || this.mediaType() !== MediaType.MOVIE) {
       return undefined;
     }
-    return this.mediaDetails.value() as MovieDetailsModel;
+
+    return details as MovieDetailsModel;
   });
   protected readonly tvDetails: Signal<TvSeriesDetailsModel | undefined> = computed(() => {
     if (this.checkIfErrorOrLoading()) {
       return undefined;
     }
 
-    const mediaType: MediaType | undefined = this.mediaDetails.value()?.media_type;
-    if (!mediaType || mediaType === 'person' || mediaType === 'movie') {
+    const details = this.mediaDetails.value();
+
+    if (!details || this.mediaType() !== MediaType.TV) {
       return undefined;
     }
-    return this.mediaDetails.value() as TvSeriesDetailsModel;
-  });
-  protected readonly similarMedia: ResourceRef<
-    MovieSimilarModel | TvSeriesSimilarModel | undefined
-  > = rxResource({
-    params: (): MediaData | undefined => this.mediaObject(),
-    stream: (data): Observable<MovieSimilarModel | TvSeriesSimilarModel | undefined> => {
-      if (data === undefined) {
-        return of(undefined);
-      }
-      return data.params.getSimilar();
-    },
+
+    return details as TvSeriesDetailsModel;
   });
   protected readonly similarMediaCarouselItems: Signal<MediaCarouselItem[]> = computed(() => {
-    const items: MovieSimilarModel | TvSeriesSimilarModel | undefined = this.similarMedia.value();
-    if (!items || !items.results) {
+    const similar = this.similarMedia.value();
+
+    if (!similar.results || similar.results.length === 0) {
       return [];
     }
 
-    const extractYear = (
-      item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
-    ): number => {
-      const dateStr =
-        (item as MovieShortDetailsWithMediaTypeModel).release_date ??
-        (item as TvSeriesShortDetailsModelWithMediaTypeModel).first_air_date;
-      return getYearFromDate(dateStr) ?? 0;
-    };
-
-    return items.results.map(
-      (
-        item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
-      ): MediaCarouselItem => ({
-        id: item.id,
-        title:
-          (item as MovieShortDetailsWithMediaTypeModel).title ??
-          (item as TvSeriesShortDetailsModelWithMediaTypeModel).name ??
-          '',
-        imgSrc: `${environment.tmdb.imageBaseUrl}original/${item.poster_path}`,
-        rating: item.vote_average,
-        year: extractYear(item),
-        type: item.media_type,
-      }),
-    );
+    return similar.results
+      .filter((item) => item.media_type === MediaType.MOVIE || item.media_type === MediaType.TV)
+      .map((item) => this.toSimilarCarouselItem(item));
   });
   protected readonly similarMovies: Signal<MovieSimilarModel | undefined> = computed(() => {
-    if (this.checkIfErrorOrLoading()) {
+    if (this.mediaType() !== MediaType.MOVIE) {
       return undefined;
     }
 
-    const mediaType: MediaType | undefined = this.similarMedia.value()?.results?.[0]?.media_type;
-    if (!mediaType || mediaType === 'person' || mediaType === 'tv') {
-      return undefined;
-    }
     return this.similarMedia.value() as MovieSimilarModel;
   });
   protected readonly similarTvSeries: Signal<TvSeriesSimilarModel | undefined> = computed(() => {
-    if (this.checkIfErrorOrLoading()) {
+    if (this.mediaType() !== MediaType.TV) {
       return undefined;
     }
 
-    const mediaType: MediaType | undefined = this.similarMedia.value()?.results?.[0]?.media_type;
-    if (!mediaType || mediaType === 'person' || mediaType === 'movie') {
-      return undefined;
-    }
     return this.similarMedia.value() as TvSeriesSimilarModel;
   });
-
-  private readonly navFacade = inject(NavigationFacade);
-  private readonly errorWatcher: EffectRef;
-  private readonly showSiteLogoNavigationToast: WritableSignal<boolean> = storage(
-    'showSiteLogoNavigationToast',
-    true,
-  );
 
   constructor() {
     this.errorWatcher = effect(() => {
       if (this.mediaDetails.status() === 'error') {
-        this.navigator.navigateToHomePage({
+        this.navFacade.navigateToHomePage({
           messages: [
             {
               message: 'An error occurred while fetching media details. Please try again later.',
@@ -236,11 +223,11 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     });
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.errorWatcher.destroy();
   }
 
-  public ngAfterViewInit() {
+  public ngAfterViewInit(): void {
     if (this.showSiteLogoNavigationToast()) {
       toast.info('Click the Site Logo to go Home!', {
         duration: 8000,
@@ -253,17 +240,14 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     }
   }
 
-  protected handleClick() {
+  protected handleClick(): void {
     this.navFacade.navigateToHomePage();
   }
 
-  private checkIfErrorOrLoading(): boolean {
-    return this.mediaDetails.isLoading() || this.mediaDetails.error() !== undefined;
-  }
-
-  protected handleOnEpisodeClicked(ep: TvSeasonDetailsEpisode) {
+  protected handleOnEpisodeClicked(ep: TvSeasonDetailsEpisode): void {
     const queryParams = this.queryParams.value();
-    this.navigator.navigateToWatchPage({
+
+    this.navFacade.navigateToWatchPage({
       episode: ep.episode_number,
       mediaId: queryParams.id,
       mediaType: queryParams.type,
@@ -274,10 +258,75 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     });
   }
 
-  protected navigateToWatchPage(event: MediaCarouselItem) {
-    this.navigator.navigateToWatchPage({
+  protected navigateToWatchPage(event: MediaCarouselItem): void {
+    this.navFacade.navigateToWatchPage({
       mediaId: event.id,
       mediaType: event.type,
     });
+  }
+
+  private getMediaDetails(
+    params: WatchMediaParams,
+  ): Observable<MovieDetailsModel | TvSeriesDetailsModel> {
+    return params.type === MediaType.MOVIE
+      ? this.movieService.getMovieDetails(params.id)
+      : this.tvSeriesService.getTvSeriesDetails(params.id);
+  }
+
+  private getMediaVideos(params: WatchMediaParams): Observable<VideosModel> {
+    return params.type === MediaType.MOVIE
+      ? this.movieService.getMovieVideos(params.id)
+      : this.tvSeriesService.getTvSeriesVideos(params.id);
+  }
+
+  private getSimilarMedia(
+    params: WatchMediaParams,
+  ): Observable<MovieSimilarModel | TvSeriesSimilarModel> {
+    return params.type === MediaType.MOVIE
+      ? this.movieService.getMovieSimilar(params.id)
+      : this.tvSeriesService.getTvSeriesSimilar(params.id);
+  }
+
+  private checkIfErrorOrLoading(): boolean {
+    return this.mediaDetails.isLoading() || this.mediaDetails.error() !== undefined;
+  }
+
+  private toSimilarCarouselItem(
+    item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
+  ): MediaCarouselItem {
+    const isMovie = item.media_type === MediaType.MOVIE;
+
+    const title = isMovie
+      ? (item as MovieShortDetailsWithMediaTypeModel).title
+      : (item as TvSeriesShortDetailsModelWithMediaTypeModel).name;
+
+    const date = isMovie
+      ? (item as MovieShortDetailsWithMediaTypeModel).release_date
+      : (item as TvSeriesShortDetailsModelWithMediaTypeModel).first_air_date;
+
+    return {
+      id: item.id,
+      title: title ?? '',
+      imgSrc: this.toTmdbImageUrl(item.poster_path),
+      rating: item.vote_average,
+      year: getYearFromDate(date) ?? 0,
+      type: item.media_type,
+    };
+  }
+
+  private toTmdbImageUrl(path: string | null | undefined): string {
+    if (!path) {
+      return '';
+    }
+
+    return `${environment.tmdb.imageBaseUrl}original${path}`;
+  }
+
+  private emptyVideos(): VideosModel {
+    return {} as VideosModel;
+  }
+
+  private emptySimilarMedia(): MovieSimilarModel | TvSeriesSimilarModel {
+    return {} as MovieSimilarModel | TvSeriesSimilarModel;
   }
 }
