@@ -15,10 +15,11 @@ import {
 } from '@shared/ui/media-carousel/media-carousel-top-item/media-carousel-top-item.me';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { MediaDiscoverService } from '@shared/services/media/media-discover.service';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   catchError,
   defaultIfEmpty,
+  first,
   forkJoin,
   from,
   map,
@@ -164,6 +165,90 @@ export class HomeMe {
   protected readonly popularTvShows: Signal<MediaCarouselItem[]> = this.toArraySignal(
     this.toPopularBackdropItems(this.mediaListService.getTvSeriesPopular(), MediaType.TV),
     'popular TV shows',
+  );
+
+  protected readonly userPlaylistsFullDetails: Signal<
+    { id: string; name: string; items: MediaCarouselItem[] }[]
+  > = toSignal(
+    toObservable(this.playlists).pipe(
+      // Remove unnecessary properties and filter out empty playlists.
+      map((playlists: OfflinePlaylist[]) => {
+        return playlists
+          .map((playlist) => {
+            return {
+              id: playlist.id,
+              name: playlist.name,
+              items: playlist.items,
+            };
+          })
+          .filter((playlist) => playlist.items.length > 0);
+      }),
+      // Request for details the videos for each playlist item.
+      switchMap((playlists) => {
+        const playlistItemsRequests$ = playlists.map((playlist) => {
+          const detailVideosRequests$ = playlist.items.map((media) => {
+            const mediaType: SearchableMediaType = media.mediaType as SearchableMediaType;
+            const trackId: number = Number.parseInt(media.trackId.trim(), 10);
+
+            if (Number.isNaN(trackId)) {
+              console.error(`Invalid track ID for playlist item: ${media.trackId}`);
+              return of(null);
+            }
+
+            const details$ = this.getDetails(mediaType, trackId).pipe(
+              first(),
+              catchError((error) => {
+                console.error(
+                  `Failed to load details for playlist item: ${media.mediaType}/${media.trackId}`,
+                  error,
+                );
+                return of({} as MovieDetailsModel | TvSeriesDetailsModel);
+              }),
+            );
+
+            /* TODO: Add the get Image (To get Images that has media names on it) */
+
+            const videos$ = this.getVideos(mediaType, trackId).pipe(
+              first(),
+              catchError((error) => {
+                console.error(
+                  `Failed to load videos for playlist item: ${media.mediaType}/${media.trackId}`,
+                  error,
+                );
+                return of({ results: [] } as VideoResponse);
+              }),
+            );
+
+            return forkJoin({
+              details: details$,
+              videos: videos$,
+            }).pipe(
+              map(({ details, videos }) => {
+                const item: MovieDetailsModel | TvSeriesDetailsModel = details;
+                const videoResults: Video[] = videos.results;
+                return this.toHomeHeroSliderItem(mediaType, item, videoResults);
+              }),
+            );
+          });
+
+          return forkJoin(detailVideosRequests$).pipe(
+            map((items) => {
+              return items.filter((item): item is HomeHeroSliderItem => item !== null);
+            }),
+            map((items) => {
+              return {
+                id: playlist.id,
+                name: playlist.name,
+                items: items,
+              };
+            }),
+          );
+        });
+
+        return forkJoin(playlistItemsRequests$);
+      }),
+    ),
+    { initialValue: [] },
   );
 
   protected handleItemClick(event: MediaCarouselOutput | HomeHeroSliderItem): void {
