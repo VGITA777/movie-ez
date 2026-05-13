@@ -16,13 +16,26 @@ import {
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import { MediaDiscoverService } from '@shared/services/media/media-discover.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { first, forkJoin, from, map, mergeMap, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  defaultIfEmpty,
+  forkJoin,
+  from,
+  map,
+  Observable,
+  of,
+  switchMap,
+  take,
+} from 'rxjs';
 import {
   DiscoverMovieModel,
   DiscoverTvModel,
+  isSearchableMediaType,
+  MediaType,
   MovieDetailsModel,
   MovieShortDetailsWithMediaTypeModel,
   OfflinePlaylist,
+  SearchableMediaType,
   TvSeriesDetailsModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
   Video,
@@ -38,6 +51,31 @@ import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
+
+type HomeSupportedMediaType = SearchableMediaType;
+
+type CarouselSourceItem =
+  | DiscoverMovieModel
+  | DiscoverTvModel
+  | MovieShortDetailsWithMediaTypeModel
+  | TvSeriesShortDetailsModelWithMediaTypeModel;
+
+type ListResponse<T> = {
+  results: T[];
+};
+
+type VideoResponse = {
+  results: Video[];
+};
+
+type BackdropImage = {
+  file_path: string;
+  vote_average: number;
+};
+
+type ImagesResponse = {
+  backdrops: BackdropImage[];
+};
 
 @Component({
   selector: 'me-home',
@@ -67,240 +105,65 @@ export class HomeMe {
 
   protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
 
-  /* TODO: Fetch data about the user's playlist contents and show it */
-  /*
-  protected readonly playlistItems: Signal<{
-    playlistItems: { name: string; contents: MediaCarouselItem[] }[];
-  }> = toObservable(this.playlists).pipe(
-    map((playlists): { name: string; contents: string[] }[] => {
-      return playlists.map((item) => ({
-        name: item.name,
-        contents: item.items.map((c) => c.trackId),
-      }));
-    }),
-    switchMap((playlists) => {
-      const detailsRequests = playlists.map((playlists) => {
-        return {
-          name: playlists.name,
-          contents: playlists.contents.map((contentId) => {})
-        }
-      })
-    }),
-  );*/
-
-  protected readonly heroItems: Signal<HomeHeroSliderItem[]> = toSignal(
+  protected readonly heroItems: Signal<HomeHeroSliderItem[]> = this.toArraySignal(
     from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(
       map((contents) => contents.homeHeroSlider),
-      switchMap((entries) => {
-        const detailsRequests$ = entries.map((entry) => {
-          return entry.mediaType === 'movie'
-            ? this.mediaMovieService.getMovieDetails(entry.id).pipe(first())
-            : this.mediaTvSeriesService.getTvSeriesDetails(entry.id).pipe(first());
-        });
-
-        const videosRequests$ = entries.map((entry) => {
-          return entry.mediaType === 'movie'
-            ? this.mediaMovieService.getMovieVideos(entry.id).pipe(first())
-            : this.mediaTvSeriesService.getTvSeriesVideos(entry.id).pipe(first());
-        });
-
-        return forkJoin({
-          details: forkJoin(detailsRequests$),
-          videos: forkJoin(videosRequests$),
-        });
-      }),
-      // Map to HomeHeroSliderItem
-      map(({ details, videos }) => {
-        return details.map((item, index): HomeHeroSliderItem => {
-          const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videos[index].results);
-          const title: string =
-            item.media_type === 'movie'
-              ? (item as MovieDetailsModel).title
-              : (item as TvSeriesDetailsModel).name;
-          const imgSrc: string =
-            item.media_type === 'movie'
-              ? (item as MovieDetailsModel).backdrop_path
-              : (item as TvSeriesDetailsModel).backdrop_path;
-          const year: number =
-            item.media_type === 'movie'
-              ? (getYearFromDate((item as MovieDetailsModel).release_date) ?? 0)
-              : (getYearFromDate((item as TvSeriesDetailsModel).first_air_date) ?? 0);
-          const genres: string[] = toGenres(item.genres.map((genre) => genre.id));
-          return {
-            description: item.overview,
-            genres: genres,
-            id: item.id,
-            imgSrc: `${environment.tmdb.imageBaseUrl}original${imgSrc}`,
-            rating: item.vote_average,
-            title: title,
-            type: item.media_type,
-            videoSrc: videoSrc,
-            year: year,
-          };
-        });
-      }),
-    ),
-    { initialValue: [] },
-  );
-
-  protected readonly discoverMovies: Signal<MediaCarouselItem[]> = toSignal(
-    this.discoverService.discoverMovies({ page: 1 }).pipe(
-      map((response) => response.results),
-      map((movies: DiscoverMovieModel[]) => {
-        return movies.map((movie): MediaCarouselItem => {
-          return this.convertToCarouselItem(movie);
-        });
-      }),
-    ),
-    { initialValue: [] },
-  );
-  protected readonly discoverTvShows: Signal<MediaCarouselItem[]> = toSignal(
-    this.discoverService.discoverTvShows({ page: 1 }).pipe(
-      map((response) => response.results),
-      map((tvShows: DiscoverTvModel[]) => {
-        return tvShows.map((tvShow) => {
-          return this.convertToCarouselItem(tvShow);
-        });
-      }),
-    ),
-    { initialValue: [] },
-  );
-  protected readonly topMovies: Signal<MediaCarouselTopItem[]> = toSignal(
-    this.mediaListService.getMovieTopRated().pipe(
-      first(),
-      map((movies) => movies.results),
-      map((movies) => {
-        return movies.map((movie) => {
-          return this.convertToCarouselItem(movie);
-        });
-      }),
-      map((movies) => {
-        return movies
-          .map((movie: MediaCarouselItem, index: number): MediaCarouselTopItem => {
-            return {
-              ...movie,
-              ranking: (index + 1) as TopRanking,
-            };
+      switchMap((entries): Observable<HomeHeroSliderItem[]> => {
+        const requests$ = entries
+          .filter((entry): entry is typeof entry & { mediaType: HomeSupportedMediaType } => {
+            return isSearchableMediaType(entry.mediaType);
           })
-          .slice(0, 10);
-      }),
-    ),
-    {
-      initialValue: [],
-    },
-  );
-  protected readonly topTvShows: Signal<MediaCarouselTopItem[]> = toSignal(
-    this.mediaListService.getTvSeriesTopRated().pipe(
-      first(),
-      map((tvShows) => tvShows.results),
-      map((tvShows) => {
-        return tvShows.map((tvShow) => {
-          return this.convertToCarouselItem(tvShow);
-        });
-      }),
-      map((tvShows) => {
-        return tvShows
-          .map((tvShow: MediaCarouselItem, index: number): MediaCarouselTopItem => {
-            return {
-              ...tvShow,
-              ranking: (index + 1) as TopRanking,
-            };
-          })
-          .slice(0, 10);
-      }),
-    ),
-    {
-      initialValue: [],
-    },
-  );
-  protected readonly popularMovies: Signal<MediaCarouselItem[]> = toSignal(
-    this.mediaListService.getMoviePopular().pipe(
-      first(),
-      map((movies) => movies.results),
-      // Get Details
-      switchMap((movieShow) => {
-        const requests = movieShow.map((movieShow) => {
-          return this.mediaMovieService.getMovieImages(movieShow.id).pipe(
-            first(),
-            map((e) => e.backdrops),
-            mergeMap((backdrops) => {
-              const backdrop =
-                backdrops.find((backdrop) => backdrop.vote_average > 0) ?? backdrops[0];
-              if (backdrop) {
-                movieShow.backdrop_path = backdrop.file_path;
-              }
-              return of(movieShow);
-            }),
-          );
-        });
-        return forkJoin(requests);
-      }),
-      // Get Videos
-      switchMap((movies) => {
-        const videos$ = movies.map((movie) => {
-          return this.mediaMovieService.getMovieVideos(movie.id).pipe(
-            first(),
-            map((videos) => ({ details: movie, videos: videos })),
-          );
-        });
+          .map((entry) => {
+            return this.getHeroSliderItem(entry.mediaType, entry.id).pipe(
+              catchError((error) => {
+                console.error(
+                  `Failed to load curated hero item: ${entry.mediaType}/${entry.id}`,
+                  error,
+                );
 
-        return forkJoin(videos$);
-      }),
-      // Map to MediaCarouselItem
-      map((movies) => {
-        return movies.map(({ details, videos }) => {
-          const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videos.results);
-          return this.convertToCarouselItem({ ...details, videoSrc }, 'backdrop');
-        });
+                return of(null);
+              }),
+            );
+          });
+
+        return this.joinOrEmpty(requests$).pipe(
+          map((items) => {
+            return items.filter((item): item is HomeHeroSliderItem => item !== null);
+          }),
+        );
       }),
     ),
-    {
-      initialValue: [],
-    },
+    'hero items',
   );
-  protected readonly popularTvShows: Signal<MediaCarouselItem[]> = toSignal(
-    this.mediaListService.getTvSeriesPopular().pipe(
-      first(),
-      map((tvShows) => tvShows.results),
-      // Get Details
-      switchMap((tvShow) => {
-        const requests = tvShow.map((tvShow) => {
-          return this.mediaTvSeriesService.getTvSeriesImages(tvShow.id).pipe(
-            first(),
-            map((e) => e.backdrops),
-            mergeMap((backdrops) => {
-              const backdrop =
-                backdrops.find((backdrop) => backdrop.vote_average > 0) ?? backdrops[0];
-              if (backdrop) {
-                tvShow.backdrop_path = backdrop.file_path;
-              }
-              return of(tvShow);
-            }),
-          );
-        });
-        return forkJoin(requests);
-      }),
-      // Get Videos
-      switchMap((tvShows) => {
-        const videos$ = tvShows.map((tvShow) => {
-          return this.mediaTvSeriesService.getTvSeriesVideos(tvShow.id).pipe(
-            first(),
-            map((videos) => ({ details: tvShow, videos: videos })),
-          );
-        });
-        return forkJoin(videos$);
-      }),
-      // Map to MediaCarouselItem
-      map((tvShows) => {
-        return tvShows.map(({ details, videos }) => {
-          const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videos.results);
-          return this.convertToCarouselItem({ ...details, videoSrc }, 'backdrop');
-        });
-      }),
-    ),
-    {
-      initialValue: [],
-    },
+
+  protected readonly discoverMovies: Signal<MediaCarouselItem[]> = this.toArraySignal(
+    this.toCarouselItems(this.discoverService.discoverMovies({ page: 1 })),
+    'discover movies',
+  );
+
+  protected readonly discoverTvShows: Signal<MediaCarouselItem[]> = this.toArraySignal(
+    this.toCarouselItems(this.discoverService.discoverTvShows({ page: 1 })),
+    'discover TV shows',
+  );
+
+  protected readonly topMovies: Signal<MediaCarouselTopItem[]> = this.toArraySignal(
+    this.toTopRankingItems(this.mediaListService.getMovieTopRated()),
+    'top movies',
+  );
+
+  protected readonly topTvShows: Signal<MediaCarouselTopItem[]> = this.toArraySignal(
+    this.toTopRankingItems(this.mediaListService.getTvSeriesTopRated()),
+    'top TV shows',
+  );
+
+  protected readonly popularMovies: Signal<MediaCarouselItem[]> = this.toArraySignal(
+    this.toPopularBackdropItems(this.mediaListService.getMoviePopular(), MediaType.MOVIE),
+    'popular movies',
+  );
+
+  protected readonly popularTvShows: Signal<MediaCarouselItem[]> = this.toArraySignal(
+    this.toPopularBackdropItems(this.mediaListService.getTvSeriesPopular(), MediaType.TV),
+    'popular TV shows',
   );
 
   protected handleItemClick(event: MediaCarouselOutput | HomeHeroSliderItem): void {
@@ -310,43 +173,235 @@ export class HomeMe {
     });
   }
 
+  private toArraySignal<T>(source$: Observable<T[]>, context: string): Signal<T[]> {
+    return toSignal(
+      source$.pipe(
+        defaultIfEmpty([]),
+        catchError((error) => {
+          console.error(`Failed to load ${context}:`, error);
+          return of([]);
+        }),
+      ),
+      { initialValue: [] },
+    );
+  }
+
+  private joinOrEmpty<T>(requests$: Observable<T>[]): Observable<T[]> {
+    if (requests$.length === 0) {
+      return of([]);
+    }
+
+    return forkJoin(requests$).pipe(defaultIfEmpty([]));
+  }
+
+  private toCarouselItems<T extends CarouselSourceItem>(
+    request$: Observable<ListResponse<T>>,
+  ): Observable<MediaCarouselItem[]> {
+    return request$.pipe(
+      take(1),
+      map((response) => {
+        return response.results.map((item) => this.convertToCarouselItem(item));
+      }),
+    );
+  }
+
+  private toTopRankingItems<T extends CarouselSourceItem>(
+    request$: Observable<ListResponse<T>>,
+  ): Observable<MediaCarouselTopItem[]> {
+    return request$.pipe(
+      take(1),
+      map((response) => {
+        return response.results.slice(0, 10).map((item, index): MediaCarouselTopItem => {
+          return {
+            ...this.convertToCarouselItem(item),
+            ranking: (index + 1) as TopRanking,
+          };
+        });
+      }),
+    );
+  }
+
+  private toPopularBackdropItems<T extends CarouselSourceItem>(
+    request$: Observable<ListResponse<T>>,
+    mediaType: HomeSupportedMediaType,
+  ): Observable<MediaCarouselItem[]> {
+    return request$.pipe(
+      take(1),
+      map((response) => response.results),
+      switchMap((items) => {
+        const requests$ = items.map((item) => {
+          return this.toPopularBackdropItem(item, mediaType).pipe(
+            catchError((error) => {
+              console.error(`Failed to load popular ${mediaType} item: ${item.id}`, error);
+              return of(null);
+            }),
+          );
+        });
+
+        return this.joinOrEmpty(requests$).pipe(
+          map((items) => {
+            return items.filter((item): item is MediaCarouselItem => item !== null);
+          }),
+        );
+      }),
+    );
+  }
+
+  private toPopularBackdropItem<T extends CarouselSourceItem>(
+    item: T,
+    mediaType: HomeSupportedMediaType,
+  ): Observable<MediaCarouselItem> {
+    return forkJoin({
+      images: this.getImages(mediaType, item.id).pipe(
+        take(1),
+        catchError((error) => {
+          console.error(`Failed to load images for ${mediaType}/${item.id}:`, error);
+          return of({ backdrops: [] });
+        }),
+      ),
+
+      videos: this.getVideos(mediaType, item.id).pipe(
+        take(1),
+        catchError((error) => {
+          console.error(`Failed to load videos for ${mediaType}/${item.id}:`, error);
+          return of({ results: [] });
+        }),
+      ),
+    }).pipe(
+      map(({ images, videos }) => {
+        const backdropPath = this.getBestBackdropPath(images.backdrops) ?? item.backdrop_path;
+
+        return this.convertToCarouselItem(
+          {
+            ...item,
+            backdrop_path: backdropPath,
+            videoSrc: this.getYoutubeEmbedTrailer(videos.results),
+          },
+          'backdrop',
+        );
+      }),
+    );
+  }
+
+  private getHeroSliderItem(
+    mediaType: HomeSupportedMediaType,
+    id: number,
+  ): Observable<HomeHeroSliderItem> {
+    return forkJoin({
+      details: this.getDetails(mediaType, id).pipe(take(1)),
+      videos: this.getVideos(mediaType, id).pipe(
+        take(1),
+        catchError((error) => {
+          console.error(`Failed to load hero videos for ${mediaType}/${id}:`, error);
+          return of({ results: [] });
+        }),
+      ),
+    }).pipe(
+      map(({ details, videos }) => {
+        return this.toHomeHeroSliderItem(mediaType, details, videos.results);
+      }),
+    );
+  }
+
+  private getDetails(
+    mediaType: HomeSupportedMediaType,
+    id: number,
+  ): Observable<MovieDetailsModel | TvSeriesDetailsModel> {
+    return mediaType === MediaType.MOVIE
+      ? this.mediaMovieService.getMovieDetails(id)
+      : this.mediaTvSeriesService.getTvSeriesDetails(id);
+  }
+
+  private getVideos(mediaType: HomeSupportedMediaType, id: number): Observable<VideoResponse> {
+    return mediaType === MediaType.MOVIE
+      ? this.mediaMovieService.getMovieVideos(id)
+      : this.mediaTvSeriesService.getTvSeriesVideos(id);
+  }
+
+  private getImages(mediaType: HomeSupportedMediaType, id: number): Observable<ImagesResponse> {
+    return mediaType === MediaType.MOVIE
+      ? this.mediaMovieService.getMovieImages(id)
+      : this.mediaTvSeriesService.getTvSeriesImages(id);
+  }
+
+  private getBestBackdropPath(backdrops: BackdropImage[]): string | undefined {
+    return (
+      backdrops.find((backdrop) => backdrop.vote_average > 0)?.file_path ?? backdrops[0]?.file_path
+    );
+  }
+
   private getYoutubeEmbedTrailer(videos: Video[]): string | undefined {
     if (!videos || videos.length === 0) {
       return undefined;
     }
+
     const trailer: Video | undefined = pickYoutubeTrailerFromArray(videos);
+
     if (trailer) {
       return this.youtubeEmbedService.getYoutubeEmbedUrl(trailer.key);
     }
+
     return undefined;
   }
 
   private convertToCarouselItem(
-    item: (MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel) & {
+    item: CarouselSourceItem & {
       videoSrc?: string;
     },
     imgToUse: 'poster' | 'backdrop' = 'poster',
   ): MediaCarouselItem {
-    const title: string =
-      item.media_type === 'movie'
-        ? (item as MovieShortDetailsWithMediaTypeModel).title
-        : (item as TvSeriesShortDetailsModelWithMediaTypeModel).name;
-    const year: number =
-      getYearFromDate(
-        item.media_type === 'movie'
-          ? (item as MovieShortDetailsWithMediaTypeModel).release_date
-          : (item as TvSeriesShortDetailsModelWithMediaTypeModel).first_air_date,
-      ) ?? 0;
-    const imgPath: string = imgToUse === 'poster' ? item.poster_path : item.backdrop_path;
+    const isMovie = item.media_type === MediaType.MOVIE;
+
+    const title: string = isMovie
+      ? (item as MovieShortDetailsWithMediaTypeModel).title
+      : (item as TvSeriesShortDetailsModelWithMediaTypeModel).name;
+
+    const date: string = isMovie
+      ? (item as MovieShortDetailsWithMediaTypeModel).release_date
+      : (item as TvSeriesShortDetailsModelWithMediaTypeModel).first_air_date;
+
+    const imgPath: string | null | undefined =
+      imgToUse === 'poster' ? item.poster_path : item.backdrop_path;
+
     return {
       id: item.id,
-      title: title,
+      title,
       type: item.media_type,
       genres: toGenres(item.genre_ids),
-      imgSrc: `${environment.tmdb.imageBaseUrl}original${imgPath}`,
+      imgSrc: imgPath ? `${environment.tmdb.imageBaseUrl}original${imgPath}` : '',
       rating: item.vote_average,
       videoSrc: item.videoSrc ?? '',
-      year: year,
+      year: getYearFromDate(date) ?? 0,
+    };
+  }
+
+  private toHomeHeroSliderItem(
+    mediaType: HomeSupportedMediaType,
+    item: MovieDetailsModel | TvSeriesDetailsModel,
+    videos: Video[],
+  ): HomeHeroSliderItem {
+    const isMovie = mediaType === MediaType.MOVIE;
+
+    const title: string = isMovie
+      ? (item as MovieDetailsModel).title
+      : (item as TvSeriesDetailsModel).name;
+
+    const date: string = isMovie
+      ? (item as MovieDetailsModel).release_date
+      : (item as TvSeriesDetailsModel).first_air_date;
+
+    const backdropPath: string | null | undefined = item.backdrop_path;
+
+    return {
+      description: item.overview,
+      genres: toGenres(item.genres.map((genre) => genre.id)),
+      id: item.id,
+      imgSrc: backdropPath ? `${environment.tmdb.imageBaseUrl}original${backdropPath}` : '',
+      rating: item.vote_average,
+      title,
+      type: mediaType,
+      videoSrc: this.getYoutubeEmbedTrailer(videos),
+      year: getYearFromDate(date) ?? 0,
     };
   }
 }

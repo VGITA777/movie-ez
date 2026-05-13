@@ -82,3 +82,4 @@ my progress here.
 - Refactored the Playlist Content to have a media type to accommodate TMDB's ID system (TMDB can
   have the same IDs for different media types).
 - Added cleanup service for tombstone playlists.
+- Updated data fetching for Home and Watch pages.
