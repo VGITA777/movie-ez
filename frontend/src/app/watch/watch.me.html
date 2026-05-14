@@ -148,14 +148,10 @@
         <hlm-skeleton class="w-16 h-6 rounded-md"></hlm-skeleton>
 
         <!-- Genres -->
-        @let genreCount = (
-                            bp.md()
-                          ) ? 3 : 1;
-        @let genres = Array.from({length: genreCount}, (value, index) => index);
         <div class="information-specifics__genres flex gap-1 items-center">
-          @for (genre of genres; track genre) {
+          @for (genre of genresSkeletonCount; track genre) {
             <hlm-skeleton class="w-10 h-6 rounded-md"></hlm-skeleton>
-            @if ($index < genres.length - 1 && $index < 2) {
+            @if ($index < genresSkeletonCount.length - 1 && $index < 2) {
               <span class="information-specifics__genre-separator">&middot;</span>
             }
           }
@@ -174,25 +170,23 @@
 
     <!-- Episode Lists -->
     @if (mediaType() === 'tv') {
-      @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
       @if (!bp.sm()) {
         <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
           <div class="episode-picker__list flex flex-col gap-4">
-            @for (_ of episodeSkeletonCount; track $index) {
+            @for (_ of skeletonCount; track $index) {
               <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
             }
           </div>
         </ng-scrollbar>
       } @else {
-        <me-media-carousel [items]="episodeSkeletonCount" [template]="episodeCardSkeletonDesktop" />
+        <me-media-carousel [items]="skeletonCount" [template]="episodeCardSkeletonDesktop" />
       }
     }
 
     <!-- Similar Contents -->
     <div class="similar flex flex-col gap-4">
-      @let similarSkeletonCount = Array.from({length: 10}, (_, index) => index);
       <hlm-skeleton class="font-bold text-2xl" />
-      <me-media-carousel [items]="similarSkeletonCount" [template]="similarCarouselItemSkeleton" />
+      <me-media-carousel [items]="skeletonCount" [template]="similarCarouselItemSkeleton" />
     </div>
   </div>
 </ng-template>

@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { TvSeasonDetailsEpisode, TvSeasonDetailsModel, TvSeriesDetailsModel } from '@shared/models';
 import { TvSeasonData } from '@shared/tv-season-data';
-import { MediaTvSeriesSeasonService } from '../../../shared/services/media/media-tv-series-season.service';
+import { MediaTvSeriesSeasonService } from '@shared/services/media/media-tv-series-season.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { EpisodeCardMe } from '@watch/features/episode-picker/episode-card/episode-card.me';
@@ -31,6 +31,11 @@ import { NgTemplateOutlet } from '@angular/common';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
 import { HlmCard } from '@spartan-ng/helm/card';
 import { MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
+
+type SeasonEntry = {
+  id: number;
+  seasonNumber: number;
+};
 
 @Component({
   selector: 'me-episode-picker',
@@ -67,18 +72,29 @@ export class EpisodePickerMe implements OnDestroy {
   });
 
   protected readonly environment = environment;
+  protected readonly episodeSkeletonCount: number[] = Array.from({ length: 10 }, (_, i) => i);
+  protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly selectedSeason: Signal<number> = computed(() => {
     return this.queryParams.value().season ?? 1;
   });
   protected readonly episodes: Signal<TvSeasonDetailsEpisode[]> = computed(() => {
+    const now: number = Date.now();
     return (
       this.seasonDetails.value()?.episodes?.filter((ep) => {
-        return new Date(ep.air_date) <= new Date();
+        const airDate: number = new Date(ep.air_date).getTime();
+        return !Number.isNaN(airDate) && airDate <= now;
       }) ?? []
     );
   });
   protected readonly isLoading: Signal<boolean> = this.seasonDetails.isLoading;
-  protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
+  protected readonly seasons: Signal<SeasonEntry[]> = computed(() => {
+    return this.item()
+      .seasons.map((season) => ({
+        id: season.id,
+        seasonNumber: season.season_number,
+      }))
+      .filter((season) => season.seasonNumber > 0);
+  });
 
   public readonly item: InputSignal<TvSeriesDetailsModel & { id: number }> = input.required();
   public readonly onEpisodeClicked: OutputEmitterRef<TvSeasonDetailsEpisode> = output();
@@ -103,7 +119,7 @@ export class EpisodePickerMe implements OnDestroy {
   }
 
   protected handleSeasonChange(season: number | null): void {
-    if (season === null) {
+    if (season === null || season === this.selectedSeason()) {
       return;
     }
 
@@ -117,5 +133,9 @@ export class EpisodePickerMe implements OnDestroy {
         replaceUrl: true,
       },
     });
+  }
+
+  protected seasonLabelEncoder(season: number): string {
+    return `Season ${season}`;
   }
 }

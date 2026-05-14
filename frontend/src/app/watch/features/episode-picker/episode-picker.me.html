@@ -13,19 +13,15 @@
     <h3 class="text-2xl font-bold">Episodes</h3>
 
     <!-- Select Seasons -->
-    @let labelConverter = (s) => s ? 'Season ' + s : '';
     <hlm-select
       [value]="selectedSeason()" (valueChange)="handleSeasonChange($event)"
-      [itemToString]="labelConverter" class="w-[20%] min-w-[125px] max-w-[200px]">
+      [itemToString]="seasonLabelEncoder" class="w-[20%] min-w-[125px] max-w-[200px]">
       <hlm-select-trigger>
         <hlm-select-value placeholder="Select Season" />
       </hlm-select-trigger>
       <hlm-select-content *hlmSelectPortal>
         <hlm-select-group>
-          @let seasons = item().seasons.map(s => (
-            {id: s.id, seasonNumber: s.season_number}
-          )).filter(s => s.seasonNumber > 0);
-          @for (season of seasons; track season.id) {
+          @for (season of seasons(); track season.id) {
             <hlm-select-item [value]="season.seasonNumber">
               <span>Season {{ season.seasonNumber }}</span>
             </hlm-select-item>
@@ -37,7 +33,7 @@
 
   <!-- Episodes Container -->
   @if (!bp.sm()) {
-    <ng-scrollbar hlm class="h-[50vh] max-h[500px] rounded-xl" appearance="compact">
+    <ng-scrollbar hlm class="h-[50vh] max-h-[500px] rounded-xl" appearance="compact">
       <div class="episode-picker__list flex flex-col gap-4">
         @for (ep of episodes(); track ep.id; let isLast = $last) {
           <ng-container
@@ -52,9 +48,12 @@
 
 <!-- Episode Cards -->
 <ng-template #episodeCard let-ep let-isLast>
+  @let imgSrc =
+    ep.still_path ? `${environment.tmdb.imageBaseUrl}original${ep.still_path}`
+                  : 'images/placeholder.png';
   @let cardData = {
     episodeNumber: ep.episode_number,
-    imgSrc       : `${environment.tmdb.imageBaseUrl}original${ep.still_path}`,
+    imgSrc       : imgSrc,
     name         : ep.name,
     overview     : ep.overview,
   };
@@ -88,7 +87,6 @@
   </div>
 
   <!-- Episodes Container -->
-  @let episodeSkeletonCount = [1, 2, 3, 4, 5, 6, 7];
   @if (!bp.sm()) {
     <ng-scrollbar hlm class="h-[50vh] rounded-xl" appearance="compact">
       <div class="episode-picker__list flex flex-col gap-4">

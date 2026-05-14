@@ -116,27 +116,15 @@ export class WatchMe implements OnDestroy, AfterViewInit {
       },
     });
 
+  protected readonly skeletonCount: number[] = Array.from({ length: 10 }, (_, i) => i);
+  protected readonly genresSkeletonCount: number[] = Array.from({ length: 2 }, (_, i) => i);
   protected readonly queryParams = queryParams({ schema: watchPageQueryParams });
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly getYearFromDate = getYearFromDate;
-  protected readonly Array = Array;
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly mediaId: Signal<number> = computed(() => this.queryParams.value().id);
   protected readonly mediaType: Signal<WatchMediaType> = computed(() => {
     return this.queryParams.value().type;
-  });
-  protected readonly mediaVideos: ResourceRef<VideosModel> = rxResource({
-    defaultValue: this.emptyVideos(),
-    params: (): WatchMediaParams => this.mediaParams(),
-    stream: ({ params }): Observable<VideosModel> => {
-      return this.getMediaVideos(params).pipe(
-        take(1),
-        catchError((error) => {
-          console.error(`Failed to load videos for ${params.type}/${params.id}:`, error);
-          return of(this.emptyVideos());
-        }),
-      );
-    },
   });
   protected readonly similarMedia: ResourceRef<MovieSimilarModel | TvSeriesSimilarModel> =
     rxResource({
@@ -192,20 +180,6 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     return similar.results
       .filter((item) => item.media_type === MediaType.MOVIE || item.media_type === MediaType.TV)
       .map((item) => this.toSimilarCarouselItem(item));
-  });
-  protected readonly similarMovies: Signal<MovieSimilarModel | undefined> = computed(() => {
-    if (this.mediaType() !== MediaType.MOVIE) {
-      return undefined;
-    }
-
-    return this.similarMedia.value() as MovieSimilarModel;
-  });
-  protected readonly similarTvSeries: Signal<TvSeriesSimilarModel | undefined> = computed(() => {
-    if (this.mediaType() !== MediaType.TV) {
-      return undefined;
-    }
-
-    return this.similarMedia.value() as TvSeriesSimilarModel;
   });
 
   constructor() {
