@@ -80,10 +80,13 @@ type ImagesResponse = {
 
 type PlaylistMediaItem = MediaCarouselItem & { backdropImg: string };
 
+type PlaylistDisplayMode = 'cover' | 'backdrop';
+
 type PlaylistMedia = {
   id: string;
   name: string;
-  items: PlaylistMediaItem[];
+  displayMode: PlaylistDisplayMode;
+  items: MediaCarouselItem[];
 };
 
 @Component({
@@ -113,6 +116,8 @@ export class HomeMe {
   private readonly playlists: Signal<OfflinePlaylist[]> = this.userLocalPlaylist.playlists;
 
   protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
+  protected readonly carouselSkeletonItems: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  protected readonly heroSkeletonItems: number[] = [1];
 
   protected readonly heroItems: Signal<HomeHeroSliderItem[]> = this.toArraySignal(
     from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(
@@ -189,91 +194,118 @@ export class HomeMe {
           })
           .filter((playlist) => playlist.items.length > 0);
       }),
-      // Request for details the videos for each playlist item.
+      // Request for details, videos and images for each playlist item.
       switchMap((playlists) => {
-        const playlistItemsRequests$ = playlists.map((playlist) => {
-          const playlistItemRequests$ = playlist.items.map((media) => {
-            const mediaType: SearchableMediaType = media.mediaType as SearchableMediaType;
-            const trackId: number = Number.parseInt(media.trackId.trim(), 10);
+        const playlistItemsRequests$: Observable<PlaylistMedia>[] = playlists.map(
+          (playlist, playlistIndex): Observable<PlaylistMedia> => {
+            const playlistItemRequests$: Observable<PlaylistMediaItem | null>[] =
+              playlist.items.map((media): Observable<PlaylistMediaItem | null> => {
+                const mediaType: SearchableMediaType = media.mediaType as SearchableMediaType;
+                const trackId: number = Number.parseInt(media.trackId.trim(), 10);
 
-            if (Number.isNaN(trackId)) {
-              console.error(`Invalid track ID for playlist item: ${media.trackId}`);
-              return of(null);
-            }
+                if (Number.isNaN(trackId)) {
+                  console.error(`Invalid track ID for playlist item: ${media.trackId}`);
+                  return of(null);
+                }
 
-            const details$ = this.getDetails(mediaType, trackId).pipe(
-              first(),
-              catchError((error) => {
-                console.error(
-                  `Failed to load details for playlist item: ${media.mediaType}/${media.trackId}`,
-                  error,
+                const details$ = this.getDetails(mediaType, trackId).pipe(
+                  first(),
+                  catchError((error) => {
+                    console.error(
+                      `Failed to load details for playlist item: ${media.mediaType}/${media.trackId}`,
+                      error,
+                    );
+
+                    return of({} as MovieDetailsModel | TvSeriesDetailsModel);
+                  }),
                 );
-                return of({} as MovieDetailsModel | TvSeriesDetailsModel);
-              }),
-            );
 
-            const images$ = this.getImages(mediaType, trackId).pipe(
-              first(),
-              catchError((error) => {
-                console.error(
-                  `Failed to load images for playlist item: ${media.mediaType}/${media.trackId}`,
-                  error,
+                const images$ = this.getImages(mediaType, trackId).pipe(
+                  first(),
+                  catchError((error) => {
+                    console.error(
+                      `Failed to load images for playlist item: ${media.mediaType}/${media.trackId}`,
+                      error,
+                    );
+
+                    return of({ backdrops: [] } as ImagesResponse);
+                  }),
                 );
-                return of({ backdrops: [] } as ImagesResponse);
-              }),
-            );
 
-            const videos$ = this.getVideos(mediaType, trackId).pipe(
-              first(),
-              catchError((error) => {
-                console.error(
-                  `Failed to load videos for playlist item: ${media.mediaType}/${media.trackId}`,
-                  error,
+                const videos$ = this.getVideos(mediaType, trackId).pipe(
+                  first(),
+                  catchError((error) => {
+                    console.error(
+                      `Failed to load videos for playlist item: ${media.mediaType}/${media.trackId}`,
+                      error,
+                    );
+
+                    return of({ results: [] } as VideoResponse);
+                  }),
                 );
-                return of({ results: [] } as VideoResponse);
-              }),
-            );
 
-            return forkJoin({
-              details: details$,
-              videos: videos$,
-              images: images$,
-            }).pipe(
-              map(({ details, videos, images }): PlaylistMediaItem => {
-                const item: MovieDetailsModel | TvSeriesDetailsModel = details;
-                const videoResults: Video[] = videos.results;
-                const backdropPath: string =
-                  this.getBestBackdropPath(images.backdrops) ?? item.backdrop_path;
-                const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videoResults);
-                const mediaCarouselItem = this.toMediaCarouselItem({
-                  item,
-                  mediaType,
-                  videoSrc,
-                });
+                return forkJoin({
+                  details: details$,
+                  videos: videos$,
+                  images: images$,
+                }).pipe(
+                  map(({ details, videos, images }): PlaylistMediaItem => {
+                    const item: MovieDetailsModel | TvSeriesDetailsModel = details;
+                    const videoResults: Video[] = videos.results;
+
+                    const backdropPath: string | undefined =
+                      this.getBestBackdropPath(images.backdrops) ?? item.backdrop_path;
+
+                    const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videoResults);
+
+                    const mediaCarouselItem = this.toMediaCarouselItem({
+                      item,
+                      mediaType,
+                      videoSrc,
+                    });
+
+                    const backdropImg: string = backdropPath
+                      ? `${environment.tmdb.imageBaseUrl}original${backdropPath}`
+                      : mediaCarouselItem.imgSrc;
+
+                    return {
+                      ...mediaCarouselItem,
+                      backdropImg,
+                    };
+                  }),
+                );
+              });
+
+            return this.joinOrEmpty(playlistItemRequests$).pipe(
+              map((items) => {
+                return items.filter((item): item is PlaylistMediaItem => item !== null);
+              }),
+              map((items): PlaylistMedia => {
+                const displayMode: PlaylistDisplayMode =
+                  playlistIndex % 2 === 0 ? 'cover' : 'backdrop';
+
+                const displayItems: MediaCarouselItem[] =
+                  displayMode === 'cover'
+                    ? items
+                    : items.map((item): MediaCarouselItem => {
+                        return {
+                          ...item,
+                          imgSrc: item.backdropImg,
+                        };
+                      });
 
                 return {
-                  ...mediaCarouselItem,
-                  backdropImg: backdropPath,
+                  id: playlist.id,
+                  name: playlist.name,
+                  displayMode,
+                  items: displayItems,
                 };
               }),
             );
-          });
+          },
+        );
 
-          return forkJoin(playlistItemRequests$).pipe(
-            map((items) => {
-              return items.filter((item): item is PlaylistMediaItem => item !== null);
-            }),
-            map((items) => {
-              return {
-                id: playlist.id,
-                name: playlist.name,
-                items: items,
-              };
-            }),
-          );
-        });
-
-        return forkJoin(playlistItemsRequests$);
+        return this.joinOrEmpty(playlistItemsRequests$);
       }),
     ),
     { initialValue: [] },
