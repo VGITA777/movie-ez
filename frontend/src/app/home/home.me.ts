@@ -78,6 +78,14 @@ type ImagesResponse = {
   backdrops: BackdropImage[];
 };
 
+type PlaylistMediaItem = MediaCarouselItem & { backdropImg: string };
+
+type PlaylistMedia = {
+  id: string;
+  name: string;
+  items: PlaylistMediaItem[];
+};
+
 @Component({
   selector: 'me-home',
   imports: [
@@ -167,9 +175,7 @@ export class HomeMe {
     'popular TV shows',
   );
 
-  protected readonly userPlaylistsFullDetails: Signal<
-    { id: string; name: string; items: MediaCarouselItem[] }[]
-  > = toSignal(
+  protected readonly userPlaylistsFullDetails: Signal<PlaylistMedia[]> = toSignal(
     toObservable(this.playlists).pipe(
       // Remove unnecessary properties and filter out empty playlists.
       map((playlists: OfflinePlaylist[]) => {
@@ -186,7 +192,7 @@ export class HomeMe {
       // Request for details the videos for each playlist item.
       switchMap((playlists) => {
         const playlistItemsRequests$ = playlists.map((playlist) => {
-          const detailVideosRequests$ = playlist.items.map((media) => {
+          const playlistItemRequests$ = playlist.items.map((media) => {
             const mediaType: SearchableMediaType = media.mediaType as SearchableMediaType;
             const trackId: number = Number.parseInt(media.trackId.trim(), 10);
 
@@ -206,7 +212,16 @@ export class HomeMe {
               }),
             );
 
-            /* TODO: Add the get Image (To get Images that has media names on it) */
+            const images$ = this.getImages(mediaType, trackId).pipe(
+              first(),
+              catchError((error) => {
+                console.error(
+                  `Failed to load images for playlist item: ${media.mediaType}/${media.trackId}`,
+                  error,
+                );
+                return of({ backdrops: [] } as ImagesResponse);
+              }),
+            );
 
             const videos$ = this.getVideos(mediaType, trackId).pipe(
               first(),
@@ -222,18 +237,31 @@ export class HomeMe {
             return forkJoin({
               details: details$,
               videos: videos$,
+              images: images$,
             }).pipe(
-              map(({ details, videos }) => {
+              map(({ details, videos, images }): PlaylistMediaItem => {
                 const item: MovieDetailsModel | TvSeriesDetailsModel = details;
                 const videoResults: Video[] = videos.results;
-                return this.toHomeHeroSliderItem(mediaType, item, videoResults);
+                const backdropPath: string =
+                  this.getBestBackdropPath(images.backdrops) ?? item.backdrop_path;
+                const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videoResults);
+                const mediaCarouselItem = this.toMediaCarouselItem({
+                  item,
+                  mediaType,
+                  videoSrc,
+                });
+
+                return {
+                  ...mediaCarouselItem,
+                  backdropImg: backdropPath,
+                };
               }),
             );
           });
 
-          return forkJoin(detailVideosRequests$).pipe(
+          return forkJoin(playlistItemRequests$).pipe(
             map((items) => {
-              return items.filter((item): item is HomeHeroSliderItem => item !== null);
+              return items.filter((item): item is PlaylistMediaItem => item !== null);
             }),
             map((items) => {
               return {
@@ -486,6 +514,38 @@ export class HomeMe {
       title,
       type: mediaType,
       videoSrc: this.getYoutubeEmbedTrailer(videos),
+      year: getYearFromDate(date) ?? 0,
+    };
+  }
+
+  private toMediaCarouselItem(input: {
+    item: MovieDetailsModel | TvSeriesDetailsModel;
+    mediaType: HomeSupportedMediaType;
+    imgSrc?: string;
+    videoSrc?: string;
+  }): MediaCarouselItem {
+    const { item, mediaType, imgSrc, videoSrc } = input;
+
+    const title: string =
+      mediaType === MediaType.MOVIE
+        ? (item as MovieDetailsModel).title
+        : (item as TvSeriesDetailsModel).name;
+
+    const date: string =
+      mediaType === MediaType.MOVIE
+        ? (item as MovieDetailsModel).release_date
+        : (item as TvSeriesDetailsModel).first_air_date;
+
+    const imgPath: string | null | undefined = imgSrc ?? item.poster_path;
+
+    return {
+      id: item.id,
+      title,
+      type: mediaType,
+      genres: toGenres(item.genres.map((genre) => genre.id)),
+      imgSrc: imgPath ? `${environment.tmdb.imageBaseUrl}original${imgPath}` : '',
+      rating: item.vote_average,
+      videoSrc: videoSrc ?? '',
       year: getYearFromDate(date) ?? 0,
     };
   }

@@ -14,92 +14,117 @@
     class="sliders-container flex flex-col gap-16 max-w-[1750px] w-[95%] md:w-[90%] lg:w-[85%] -mt-28">
 
     <!-- Top Movies (Cover Carousel)-->
-    <div class="discover-movie flex flex-col gap-4">
-      <h2 class="text-2xl font-bold">Top Rated Movies</h2>
-      @let topMoviesEntries = topMovies();
-      @if (topMoviesEntries.length === 0) {
-        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
-      } @else {
-        <me-media-carousel [items]="topMoviesEntries" [template]="mediaRankingItem" />
-      }
-    </div>
+    @let topMoviesContext = {
+      title           : 'Top Rated Movies',
+      items           : topMovies(),
+      template        : mediaRankingItem,
+      skeletonTemplate: mediaCoverCarouselSkeleton
+    };
+    <ng-container
+      *ngTemplateOutlet="carouselHolder; context: topMoviesContext" />
 
     <hlm-separator />
 
     <!-- Popular Movies (Backdrop Carousel) -->
-    <div class="discover-movie flex flex-col gap-4">
-      <h2 class="text-2xl font-bold">Popular Movies</h2>
-      @let popularMoviesEntries = popularMovies();
-      @if (popularMoviesEntries.length === 0) {
-        <ng-container *ngTemplateOutlet="mediaBackdropCarouselSkeleton"></ng-container>
-      } @else {
-        <me-media-carousel [items]="popularMoviesEntries" [template]="mediaBackdropItem" />
-      }
-    </div>
+    @let popularMoviesContext = {
+      title           : 'Popular Movies',
+      items           : popularMovies(),
+      template        : mediaBackdropItem,
+      skeletonTemplate: mediaBackdropCarouselSkeleton
+    };
+    <ng-container
+      *ngTemplateOutlet="carouselHolder; context: popularMoviesContext" />
 
     <hlm-separator />
 
     <!-- Discover Movies (Cover Carousel) -->
-    <div class="discover-movie flex flex-col gap-4">
-      <h2 class="text-2xl font-bold">Discover Movies</h2>
-      @let discoverMoviesEntries = discoverMovies();
-      @if (discoverMoviesEntries.length === 0) {
-        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
-      } @else {
-        <me-media-carousel [items]="discoverMoviesEntries" [template]="mediaCoverItem" />
-      }
-    </div>
+    @let discoverMoviesContext = {
+      title           : 'Discover Movies',
+      items           : discoverMovies(),
+      template        : mediaCoverItem,
+      skeletonTemplate: mediaCoverCarouselSkeleton
+    };
+    <ng-container
+      *ngTemplateOutlet="carouselHolder; context: discoverMoviesContext" />
 
     <hlm-separator />
 
     <!-- Top TV Shows (Cover Carousel)-->
-    <div class="discover-movie flex flex-col gap-4">
-      <h2 class="text-2xl font-bold">Top Rated Tv Shows</h2>
-      @let topTvShowsEntries = topTvShows();
-      @if (topTvShowsEntries.length === 0) {
-        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
-      } @else {
-        <me-media-carousel [items]="topTvShows()" [template]="mediaRankingItem" />
-      }
-    </div>
+    @let topTvShowsContext = {
+      title           : 'Top Rated Tv Shows',
+      items           : topTvShows(),
+      template        : mediaRankingItem,
+      skeletonTemplate: mediaCoverCarouselSkeleton
+    };
+    <ng-container
+      *ngTemplateOutlet="carouselHolder; context: topTvShowsContext" />
 
     <hlm-separator />
 
     <!-- Popular Tv Shows (Backdrop Carousel) -->
-    <div class="discover-movie flex flex-col gap-4">
-      <h2 class="text-2xl font-bold">Popular Tv Shows</h2>
-      @let popularTvShowsEntries = popularTvShows();
-      @if (popularTvShowsEntries.length === 0) {
-        <ng-container *ngTemplateOutlet="mediaBackdropCarouselSkeleton"></ng-container>
-      } @else {
-        <me-media-carousel [items]="popularTvShows()" [template]="mediaBackdropItem" />
-      }
-    </div>
+    @let popularTvShowsContext = {
+      title           : 'Popular Tv Shows',
+      items           : popularTvShows(),
+      template        : mediaBackdropItem,
+      skeletonTemplate: mediaBackdropCarouselSkeleton
+    };
+    <ng-container
+      *ngTemplateOutlet="carouselHolder; context: popularTvShowsContext" />
 
     <hlm-separator />
 
     <!-- Discover TV Shows (Cover Carousel) -->
-    <div class="discover-tv flex flex-col gap-4">
-      <h2 class="text-2xl font-bold">Discover TV Shows</h2>
-      @let discoverTvShowsEntries = discoverTvShows();
-      @if (discoverTvShowsEntries.length === 0) {
-        <ng-container *ngTemplateOutlet="mediaCoverCarouselSkeleton"></ng-container>
-      } @else {
-        <me-media-carousel [items]="discoverTvShows()" [template]="mediaCoverItem" />
-      }
-    </div>
+    @let discoverContext = {
+      title           : 'Discover TV Shows',
+      items           : discoverTvShows(),
+      template        : mediaCoverItem,
+      skeletonTemplate: mediaCoverCarouselSkeleton
+    };
+    <ng-container
+      *ngTemplateOutlet="carouselHolder; context: discoverContext" />
 
 
-    @if (isAuthenticated()) {
-      <!-- User Playlist -->
+
+    @if (userPlaylistsFullDetails().length > 0) {
+      <!-- User Playlists -->
       <hlm-separator />
 
       @for (playlist of userPlaylistsFullDetails(); track playlist.id) {
 
+        @if (playlist.items.length > 0) {
+          @let playlistContext = {
+            title           : playlist.name,
+            items           : playlist.items,
+            template        : mediaCoverItem,
+            skeletonTemplate: mediaCoverCarouselSkeleton,
+            includeProgress : false
+          };
+          <ng-container
+            *ngTemplateOutlet="carouselHolder; context: playlistContext" />
+
+          @if ($index >= 0 && !$last) {
+            <hlm-separator />
+          }
+        }
       }
     }
   </div>
 </section>
+
+<ng-template
+  #carouselHolder let-title="title" let-items="items" let-template="template"
+  let-includeProgress="includeProgress"
+  let-skeletonTemplate="skeletonTemplate">
+  <div class="carousel-holder flex flex-col gap-4">
+    <h2 class="text-2xl font-bold">{{ title }}</h2>
+    @if (items.length === 0) {
+      <ng-container *ngTemplateOutlet="skeletonTemplate"></ng-container>
+    } @else {
+      <me-media-carousel
+        [items]="items" [template]="template" [includeProgressDots]="includeProgress ?? true" />
+    }
+  </div>
+</ng-template>
 
 <ng-template #mediaCoverItem let-item>
   <me-media-carousel-cover-item
