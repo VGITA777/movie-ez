@@ -2,15 +2,21 @@
   meLongHover (longHover)="handleLongHover($event)" [longHoverDelay]="playOnHoverDelay()"
   class="interactive-media-card relative w-full h-full overflow-hidden">
   @let itemData = item();
+  @let videoUrl = sanitizedVideoSrc();
   <img
-    [ngSrc]="itemData.imgSrc" [alt]="itemData.title" [title]="itemData.title" fill
+    [ngSrc]="itemData.imgSrc"
+    [alt]="itemData.title"
+    [title]="itemData.title"
+    fill
     class="z-0 object-cover">
 
-  @if (startVideo() && item().videoSrc && sanitizedVideoSrc()) {
+  @if (startVideo() && videoUrl) {
     <iframe
-      [src]="sanitizedVideoSrc()"
+      [src]="videoUrl"
       allow="autoplay; encrypted-media"
       class="absolute w-full h-full z-1 pointer-events-none"
-      height="100%" width="100%"></iframe>
+      height="100%"
+      width="100%">
+    </iframe>
   }
 </div>

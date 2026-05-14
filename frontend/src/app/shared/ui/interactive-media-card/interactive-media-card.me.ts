@@ -25,6 +25,8 @@ export interface InteractiveMediaCardItem {
   styleUrl: './interactive-media-card.me.css',
 })
 export class InteractiveMediaCardMe {
+  private readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
+
   public readonly item: InputSignal<InteractiveMediaCardItem> = input.required();
   public readonly playOnHover: InputSignal<boolean> = input(true);
   public readonly playOnHoverDelay: InputSignal<number> = input(500);
@@ -35,10 +37,8 @@ export class InteractiveMediaCardMe {
     if (!videoSrc) {
       return null;
     }
-    return videoSrc ? this.domSanitizer.bypassSecurityTrustResourceUrl(videoSrc) : null;
+    return this.domSanitizer.bypassSecurityTrustResourceUrl(videoSrc);
   });
-
-  private readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
 
   public play(): void {
     this.startVideo.set(true);
@@ -48,11 +48,11 @@ export class InteractiveMediaCardMe {
     this.startVideo.set(false);
   }
 
-  protected sanitizeVideoSrc(videoSrc: string): SafeResourceUrl {
-    return this.domSanitizer.bypassSecurityTrustResourceUrl(videoSrc);
-  }
-
   protected handleLongHover(event: boolean): void {
-    this.startVideo.set(event && this.playOnHover());
+    const shouldStartVideo = event && this.playOnHover();
+    if (this.startVideo() === shouldStartVideo) {
+      return;
+    }
+    this.startVideo.set(shouldStartVideo);
   }
 }
