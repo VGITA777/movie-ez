@@ -4,6 +4,7 @@ import { HlmToasterImports } from '@spartan-ng/helm/sonner';
 import { ExternalToast, toast } from '@spartan-ng/brain/sonner';
 import { routerListener, storage } from '@signality/core';
 import { NavigationMe } from '@app/navigation/navigation.me';
+import { BackToTopMe } from '@shared/ui/back-to-top/back-to-top.me';
 
 export type ToastType = 'error' | 'message' | 'info';
 
@@ -14,7 +15,7 @@ export interface GenericRouteData {
 
 @Component({
   selector: 'me-root',
-  imports: [RouterOutlet, HlmToasterImports, NavigationMe],
+  imports: [RouterOutlet, HlmToasterImports, NavigationMe, BackToTopMe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

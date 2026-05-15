@@ -83,3 +83,7 @@ my progress here.
   have the same IDs for different media types).
 - Added cleanup service for tombstone playlists.
 - Updated data fetching for Home and Watch pages.
+
+### May 15, 2026
+- Created back to top button.
+- Updated the Signality package.

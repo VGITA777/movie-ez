@@ -1,0 +1,12 @@
+@if (isVisible()) {
+  <button
+    hlmBtn
+    variant="secondary"
+    class="back-to-top flex items-center justify-center rounded-full overflow-hidden cursor-pointer fixed bottom-[5%] right-[5%] z-100 w-12 h-12"
+    (click)="goToTop()"
+    animate.enter="enter-slide-animation"
+    animate.leave="leave-slide-animation"
+  >
+    <ng-icon name="lucideArrowUpToLine" class="text-xl" />
+  </button>
+}
