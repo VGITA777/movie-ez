@@ -1,8 +1,9 @@
-import { Component, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
 import { NgOptimizedImage } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideStar } from '@ng-icons/lucide';
+import { MediaCarouselItemBase } from '@shared/ui/media-carousel/media-carousel-item.base';
 
 @Component({
   selector: 'me-media-carousel-cover-item',
@@ -11,7 +12,4 @@ import { lucideStar } from '@ng-icons/lucide';
   styleUrl: './media-carousel-cover-item.me.css',
   providers: [provideIcons({ lucideStar })],
 })
-export class MediaCarouselCoverItemMe {
-  public readonly item: InputSignal<MediaCarouselItem> = input.required();
-  public readonly itemClick: OutputEmitterRef<MediaCarouselItem> = output();
-}
+export class MediaCarouselCoverItemMe extends MediaCarouselItemBase<MediaCarouselItem> {}

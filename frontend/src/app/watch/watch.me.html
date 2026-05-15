@@ -58,14 +58,11 @@
         </div>
 
         <!-- Genres -->
-        @let genres = movieDetails()?.genres ?? tvDetails()?.genres ?? [];
-        @if (genres.length > 0) {
-          @let genresToUse = (
-                               bp.lg()
-                             ) ? genres.slice(0, 2) : genres.slice(0, 1);
+        @let genresToUse = genres();
+        @if (genresToUse.length > 0) {
           <div class="information-specifics__genres flex gap-1 items-center">
             @for (genre of genresToUse; track genre; ) {
-              <span class="information-specifics__genre">{{ genre.name.trim() }}</span>
+              <span class="information-specifics__genre">{{ genre }}</span>
               @if ($index < genresToUse.length - 1 && $index < 2) {
                 <span class="information-specifics__genre-separator">&middot;</span>
               }
@@ -75,12 +72,9 @@
       </div>
 
       <!-- Description -->
-      @let description = movieDetails()?.overview
-        ?? tvDetails()?.overview
-        ?? 'No description available.';
       <me-collapsible-text
         class="information__description text-justify text-md md:text-sm font-light"
-        [text]="description" />
+        [text]="description()" />
 
       <div class="buttons flex gap-4 justify-end md:justify-start">
         <button
@@ -108,10 +102,41 @@
     <hlm-separator />
 
     <!-- Similar Contents -->
-    <div class="similar flex flex-col gap-4">
-      <h3 class="font-bold text-2xl">More Like This</h3>
-      <me-media-carousel [items]="similarMediaCarouselItems()" [template]="similarCarouselItem" />
+    @let context = {
+      title              : 'More Like This',
+      items              : similarMediaCarouselItems(),
+      template           : similarCarouselItem,
+      skeletonTemplate   : similarCarouselItemSkeleton,
+      includeProgressDots: true,
+    };
+    <ng-container *ngTemplateOutlet="carouselEntry context: context">
+
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template
+  #carouselEntry
+  let-title="title"
+  let-items="items"
+  let-template="template"
+  let-skeletonTemplate="skeletonTemplate"
+  let-includeProgressDots="includeProgressDots">
+
+  <div class="carousel-holder flex flex-col gap-4">
+    <div class="title-container flex flex-row gap-2 items-center justify-start">
+      <div class="h-6 w-1 bg-red-500"></div>
+      <h2 class="title text-2xl font-bold line-clamp-1">{{ title }}</h2>
     </div>
+
+    @if (items.length === 0) {
+      <ng-container *ngTemplateOutlet="skeletonTemplate"></ng-container>
+    } @else {
+      <me-media-carousel
+        [items]="items"
+        [template]="template"
+        [includeProgressDots]="includeProgressDots ?? false" />
+    }
   </div>
 </ng-template>
 
@@ -121,6 +146,7 @@
     class="ml-4 self-stretch basis-[175px] md:basis-[200px] shrink-0" [item]="item"
     (itemClick)="navigateToWatchPage($event)" />
 </ng-template>
+
 
 <!-- Page Skeleton -->
 <ng-template #skeleton>

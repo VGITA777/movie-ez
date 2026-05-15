@@ -28,7 +28,12 @@ import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-ser
 import { catchError, Observable, of, take } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
-import { convertRuntimeToHoursAndMinutes, getYearFromDate } from '@shared/utils';
+import {
+  convertRuntimeToHoursAndMinutes,
+  getYearFromDate,
+  normalizeGenres,
+  toGenres,
+} from '@shared/utils';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
 import { lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
@@ -55,8 +60,6 @@ export type WatchMediaParams = {
   type: WatchMediaType;
   id: number;
 };
-
-export type MediaData = WatchMediaParams;
 
 const WATCH_PAGE_MEDIA_TYPES = [MediaType.MOVIE, MediaType.TV] as const;
 
@@ -181,6 +184,17 @@ export class WatchMe implements OnDestroy, AfterViewInit {
       .filter((item) => item.media_type === MediaType.MOVIE || item.media_type === MediaType.TV)
       .map((item) => this.toSimilarCarouselItem(item));
   });
+  protected readonly genres: Signal<string[]> = computed(() => {
+    const genresToUse: string[] = (this.mediaDetails.value()?.genres ?? []).map(
+      (genre) => genre.name,
+    );
+    const totalGenresToUse: number = this.bp.lg() ? 2 : 1;
+    return normalizeGenres(genresToUse).slice(0, totalGenresToUse);
+  });
+  protected readonly description: Signal<string> = computed(
+    () =>
+      this.movieDetails()?.overview ?? this.tvDetails()?.overview ?? 'No description available.',
+  );
 
   constructor() {
     this.errorWatcher = effect(() => {
@@ -285,6 +299,7 @@ export class WatchMe implements OnDestroy, AfterViewInit {
       rating: item.vote_average,
       year: getYearFromDate(date) ?? 0,
       type: item.media_type,
+      genres: toGenres(item.genre_ids),
     };
   }
 
@@ -294,10 +309,6 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     }
 
     return `${environment.tmdb.imageBaseUrl}original${path}`;
-  }
-
-  private emptyVideos(): VideosModel {
-    return {} as VideosModel;
   }
 
   private emptySimilarMedia(): MovieSimilarModel | TvSeriesSimilarModel {

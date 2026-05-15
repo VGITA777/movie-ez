@@ -66,3 +66,20 @@ export function pickYoutubeTrailerFromArray(videos: Video[]): Video | undefined 
   const candidates = videos.filter((video) => video.site === 'YouTube' && video.type === 'Trailer');
   return candidates.find((video) => video.official) ?? candidates[0];
 }
+
+export function normalizeGenres(genres?: string[], separator: string = '&'): string[] {
+  if (!genres) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      genres.flatMap((genre) => {
+        return genre
+          .split(separator)
+          .map((g) => g.trim())
+          .filter((g) => g !== '' && g.length > 0);
+      }),
+    ),
+  ];
+}

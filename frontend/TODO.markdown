@@ -85,5 +85,7 @@ my progress here.
 - Updated data fetching for Home and Watch pages.
 
 ### May 15, 2026
+
 - Created back to top button.
 - Updated the Signality package.
+- Minor UI changes to the homepage and watch page.

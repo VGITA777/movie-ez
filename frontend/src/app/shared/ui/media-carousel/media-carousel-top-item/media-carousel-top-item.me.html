@@ -22,27 +22,34 @@
     <!-- Title -->
     <h3 class="media-item-specific-info__title font-bold leading-none">{{ itemData.title }}</h3>
     <!-- Rating, Genre, Year -->
-    <div class="media-item-specific-info__container flex items-center gap-2 w-full ">
+    <div class="media-item-specific-info__container flex items-center gap-2 w-full min-w-0">
       <!-- Rating -->
-      <div class="media-item-specific-info__rating flex gap-1 items-center">
+      <div class="media-item-specific-info__rating flex gap-1 items-center shrink-0">
         <ng-icon
           class="text-xs text-amber-300 [&_svg]:fill-amber-300" name="lucideStar" />
         <span class="text-sm font-thin">{{ itemData.rating.toFixed(1) }}</span>
       </div>
-      <span>&middot;</span>
 
       <!-- Genre -->
-      @if (itemData.genres !== undefined && itemData.genres.length > 0) {
-        <div class="genres-container flex flex-row gap-1 items-center">
-          @for (genre of itemData.genres.slice(0, 1); track genre) {
-            <span class="media-item-specific-info__genre text-sm font-thin">{{ genre }}</span>
+      @let genresToUse = primaryGenres();
+
+      @if (genresToUse.length > 0) {
+        <span class="shrink-0">&middot;</span>
+
+        <div class="genres-container flex flex-row gap-1 items-center min-w-0">
+          @for (genre of genresToUse; track genre) {
+            <span class="media-item-specific-info__genre text-sm font-thin truncate">
+          {{ genre }}
+        </span>
           }
         </div>
       }
 
       <!-- Year -->
-      <span>&middot;</span>
-      <span class="media-item-specific-info__year text-sm font-thin">{{ itemData.year }}</span>
+      <span class="shrink-0">&middot;</span>
+      <span class="media-item-specific-info__year text-sm font-thin shrink-0">
+    {{ itemData.year }}
+  </span>
     </div>
   </div>
 </div>

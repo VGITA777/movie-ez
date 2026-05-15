@@ -1,10 +1,11 @@
-import { Component, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
 import { lucideClock, lucideStar } from '@ng-icons/lucide';
 import { InteractiveMediaCardMe } from '@shared/ui/interactive-media-card/interactive-media-card.me';
 import { convertRuntimeToHoursAndMinutes } from '@shared/utils';
+import { MediaCarouselItemBase } from '@shared/ui/media-carousel/media-carousel-item.base';
 
 export interface MediaCarouselBackdropItem extends MediaCarouselItem {
   readonly runtime: number;
@@ -17,8 +18,6 @@ export interface MediaCarouselBackdropItem extends MediaCarouselItem {
   styleUrl: './media-carousel-backdrop-item.me.css',
   providers: [provideIcons({ lucideClock, lucideStar })],
 })
-export class MediaCarouselBackdropItemMe {
-  public readonly item: InputSignal<MediaCarouselBackdropItem> = input.required();
-  public readonly itemClick: OutputEmitterRef<MediaCarouselBackdropItem> = output();
+export class MediaCarouselBackdropItemMe extends MediaCarouselItemBase<MediaCarouselBackdropItem> {
   protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
 }
