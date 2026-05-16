@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { environment } from '@environments/environment';
-import { UserSettings, UserSettingService } from '../shared/services/user/user-setting.service';
+import { UserSettings, UserSettingService } from '@shared/services/user/user-setting.service';
 import { inject } from '@angular/core';
 
 export const mediaRequestUserSettingsInterceptor: HttpInterceptorFn = (req, next) => {

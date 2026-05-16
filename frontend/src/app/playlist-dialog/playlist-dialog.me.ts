@@ -26,7 +26,6 @@ import { AutofocusDirective } from '@shared/directives/autofocus-directive';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-manager.service';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
-import { UserPlaylistSyncService } from '@shared/services/user/user-playlist-sync.service';
 import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
 
 @Component({
@@ -73,7 +72,6 @@ export class PlaylistDialogMe implements OnInit {
   private readonly dialogContext: ShowPlaylistsDirectiveContext =
     injectBrnDialogContext<ShowPlaylistsDirectiveContext>();
   private readonly authFacadeService: AuthFacadeService = inject(AuthFacadeService);
-  private readonly playlistSyncService: UserPlaylistSyncService = inject(UserPlaylistSyncService);
 
   protected readonly localPlaylists: Signal<OfflinePlaylist[]> =
     this.localPlaylistService.playlists;
@@ -243,7 +241,7 @@ export class PlaylistDialogMe implements OnInit {
       next: () => {
         toast.success(`Playlists synced successfully.`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
       },
-      error: (e) => {
+      error: (_) => {
         toast.error(`Failed to sync playlists.`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
       },
     });

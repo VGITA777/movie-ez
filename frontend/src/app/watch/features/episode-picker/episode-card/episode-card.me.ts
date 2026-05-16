@@ -1,4 +1,4 @@
-import { Component, effect, input, InputSignal } from '@angular/core';
+import { Component, input, InputSignal } from '@angular/core';
 import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 import { breakpoints } from '@signality/core';

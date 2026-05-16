@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,10 +24,10 @@ public class AuthentikUserSyncFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+  protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
       throws ServletException, IOException {
 
-    var token = extractToken(request);
+    var token = extractToken();
 
     if (token == null) {
       filterChain.doFilter(request, response);
@@ -46,7 +47,7 @@ public class AuthentikUserSyncFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  private Jwt extractToken(HttpServletRequest request) {
+  private Jwt extractToken() {
     var context = SecurityContextHolder.getContext();
     if (context.getAuthentication() == null) {
       return null;

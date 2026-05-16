@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 
@@ -115,6 +114,7 @@ public class TvSeriesDetailsModel extends MediaDetailsModel {
     private double vote_average;
   }
 
+  @SuppressWarnings("SameReturnValue")
   public MediaType getMedia_type() {
     return MediaType.TV;
   }

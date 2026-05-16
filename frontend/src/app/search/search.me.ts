@@ -25,7 +25,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmScrollAreaImports } from '@spartan-ng/helm/scroll-area';
-import { MediaSearchService } from '../shared/services/media/media-search-service';
+import { MediaSearchService } from '@shared/services/media/media-search-service';
 import { FormsModule } from '@angular/forms';
 import { debounced } from '@signality/core';
 import { rxResource } from '@angular/core/rxjs-interop';

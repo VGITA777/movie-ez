@@ -4,13 +4,11 @@ import dev.prince.movieez.media.json.deserializers.StringToMediaTypeDeserializer
 import dev.prince.movieez.media.json.serializers.MediaTypeToStringSerializer;
 import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.media.models.shared.MediaDetailsModel;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 
@@ -50,6 +48,7 @@ public class MovieDetailsModel extends MediaDetailsModel {
     private String backdrop_path;
   }
 
+  @SuppressWarnings("SameReturnValue")
   public MediaType getMedia_type() {
     return MediaType.MOVIE;
   }

@@ -75,10 +75,6 @@ export class UserSettingService {
       return false;
     }
 
-    if (typeof settings.includeAdult !== 'boolean') {
-      return false;
-    }
-
-    return true;
+    return typeof settings.includeAdult === 'boolean';
   }
 }

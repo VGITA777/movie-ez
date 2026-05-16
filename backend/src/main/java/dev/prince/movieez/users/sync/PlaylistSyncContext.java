@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import lombok.Getter;
 
+@Getter
 public class PlaylistSyncContext {
 
   private final Map<UUID, PlaylistModel> remoteById;
@@ -23,22 +25,6 @@ public class PlaylistSyncContext {
     this.remoteById = remoteById;
     this.remoteActiveByName = remoteActiveByName;
     this.user = user;
-  }
-
-  public Map<UUID, PlaylistModel> getRemoteById() {
-    return remoteById;
-  }
-
-  public Map<String, PlaylistModel> getRemoteActiveByName() {
-    return remoteActiveByName;
-  }
-
-  public UserModel getUser() {
-    return user;
-  }
-
-  public List<PlaylistIdMapping> getIdMappings() {
-    return idMappings;
   }
 
   public void addIdMapping(UUID localId, UUID canonicalServerId) {

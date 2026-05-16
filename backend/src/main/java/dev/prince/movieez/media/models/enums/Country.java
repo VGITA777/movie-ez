@@ -3,7 +3,9 @@ package dev.prince.movieez.media.models.enums;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
+@Getter
 public enum Country {
   ANDORRA("AD"),
   UNITED_ARAB_EMIRATES("AE"),
@@ -293,7 +295,4 @@ public enum Country {
     return ISO_TO_COUNTRIES_MAP.get(code.toUpperCase());
   }
 
-  public String getIsoCode() {
-    return isoCode;
-  }
 }
