@@ -50,7 +50,7 @@
 <ng-template #episodeCard let-ep let-isLast>
   @let imgSrc =
     ep.still_path ? `${environment.tmdb.imageBaseUrl}original${ep.still_path}`
-                  : 'images/placeholder.png';
+                  : '/images/placeholder.png';
   @let cardData = {
     episodeNumber: ep.episode_number,
     imgSrc       : imgSrc,
