@@ -30,6 +30,7 @@
       "@home/*": ["./src/app/home/*"],
       "@watch/*": ["./src/app/watch/*"],
       "@search/*": ["./src/app/search/*"],
+      "@playlists/*": ["./src/app/playlists/*"],
       "@notfound/*": ["./src/app/not-found/*"],
       "@shared/*": ["./src/app/shared/*"],
       "@models/*": ["./src/app/shared/model/*"],
