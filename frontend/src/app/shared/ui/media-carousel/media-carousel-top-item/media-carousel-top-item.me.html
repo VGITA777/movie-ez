@@ -12,9 +12,9 @@
       }}</span>
 
     <img
-      [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill
+      [ngSrc]="itemData.imgSrc" [alt]="itemData.title" loading="lazy" fill
       class="object-cover overflow-hidden rounded-xl transition-transform duration-300 ease-out group-hover:scale-102"
-      [title]="itemData.title">
+      [title]="itemData.title" >
   </button>
 
   <!-- Media Information -->

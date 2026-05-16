@@ -6,7 +6,7 @@
     (click)="itemClick.emit(itemData)"
     class="media-item-img__container group relative w-full aspect-2/3 overflow-hidden rounded-xl">
     <img
-      [ngSrc]="itemData.imgSrc" [alt]="itemData.title" fill
+      [ngSrc]="itemData.imgSrc" [alt]="itemData.title" loading="lazy" fill
       class="object-cover transition-transform duration-300 ease-out group-hover:scale-102"
       [title]="itemData.title">
   </button>

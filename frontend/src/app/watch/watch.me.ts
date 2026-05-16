@@ -144,6 +144,7 @@ export class WatchMe implements OnDestroy, AfterViewInit {
       },
     });
   protected readonly isLoading: Signal<boolean> = this.mediaDetails.isLoading;
+  protected readonly isSimilarMediaLoading: Signal<boolean> = this.similarMedia.isLoading;
   protected readonly error: Signal<Error | undefined> = computed(() => {
     return this.mediaDetails.error();
   });
