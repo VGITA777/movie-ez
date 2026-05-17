@@ -1,5 +1,5 @@
 <section class="playlists mt-[80px] w-full flex flex-col justify-center items-center">
-  <div class="playlists-content-wrapper w-[95%] max-w-[1750px]">
+  <div class="playlists-content-wrapper w-[95%] max-w-[1750px] flex flex-col gap-8">
 
     <div class="playlists-content__header flex flex-col gap-2">
       <h1 class="text-5xl font-black tracking-tight">Your Playlists</h1>
@@ -8,7 +8,15 @@
         personal media vault, organized neatly in a single place</p>
     </div>
 
-    <div class="playlists-content__body">
+    <div
+      class="playlists-content__body grid
+      grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
+      min-[582px]:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]
+      min-[991px]:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]
+      gap-4 w-full">
+      @for (playlist of playlists(); track playlist.id) {
+        <me-playlists-entry [playlist]="playlist" />
+      }
     </div>
 
   </div>
