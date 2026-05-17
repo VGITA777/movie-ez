@@ -49,4 +49,19 @@ export class NavigationFacade {
       })
       .then(() => input?.onNavigate?.());
   }
+
+  public navigateToPlaylistsPage(input?: {
+    messages?: GenericRouteData[];
+    extras?: NavigationExtras;
+    onNavigate?: () => void;
+  }): void {
+    this.router
+      .navigate(['/playlists'], {
+        ...input?.extras,
+        state: {
+          messages: input?.messages ?? [],
+        },
+      })
+      .then(() => input?.onNavigate?.());
+  }
 }
