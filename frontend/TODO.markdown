@@ -21,9 +21,9 @@
 - [X] Create a Local User Playlist functionality (using local storage).
 - [X] Implement the User Playlist Dialog.
 - [X] Implement a Playlist Syncing feature.
+- [X] Test if the User Playlist and Profile Services created by the AI are functioning properly.
+- [X] Create a way to sync user's playlists with the backend
 - [ ] Implement User Profile Page (Playlists).
-- [ ] Test if the User Playlist and Profile Services created by the AI are functioning properly.
-- [ ] Create a way to sync user's playlists with the backend
 
 ---
 
@@ -89,3 +89,14 @@ my progress here.
 - Created back to top button.
 - Updated the Signality package.
 - Minor UI changes to the homepage and watch page.
+- Finished the Playlist Syncing feature.
+
+### May 17, 2026
+
+- Minor improvements with overall code and UI quality.
+- Started to create the Playlists Page and Started to create the Playlists Entry Component.
+
+### May 18, 2026
+
+- Some updates with the Playlists Page.
+-
