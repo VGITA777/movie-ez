@@ -9,13 +9,13 @@
           loading="lazy"
           fill>
       </div>
-    } @else if (imagesToUse.length >= 1 && imagesToUse.length <= 3) {
+    } @else if ((imagesToUse.length >= 1 && imagesToUse.length <= 3) || multipleImages().length < 4) {
       <div class="playlist-entry__image w-full h-full relative">
         <img [ngSrc]="singleImage()" class="object-cover" alt="Cover Image" loading="lazy" fill>
       </div>
     } @else {
       <div class="playlist-entry__images-grid grid grid-cols-2 grid-rows-2 w-full h-full">
-        @for (image of fourImages(); track image) {
+        @for (image of multipleImages(); track image) {
           <div class="playlist-entry__image w-full h-full relative">
             <img [ngSrc]="image" class="object-cover" alt="Cover Image" loading="lazy" fill>
           </div>

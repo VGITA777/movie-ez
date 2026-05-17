@@ -40,7 +40,7 @@ export class PlaylistsEntryMe {
     params: (): OfflinePlaylistContent[] => this.playlist().items,
     stream: (data): Observable<PlaylistItemWithImagesAndDetails[]> => {
       const requests$ = data.params
-        .slice(0, 4) // Limit to 4 items.
+        .slice(0, 5) // Limit to first 5 items.
         .map((item) => {
           const trackId: number = parseInt(item.trackId, 10);
           const mediaType: SearchableMediaType = item.mediaType as SearchableMediaType;
@@ -73,21 +73,24 @@ export class PlaylistsEntryMe {
       '/images/placeholder.png'
     );
   });
-  protected readonly fourImages: Signal<string[]> = computed(() => {
-    const posters: string[] = this.images.value()?.map((item) => {
-      if (item.images.posters.length > 0) {
-        return `${environment.tmdb.imageBaseUrl}original${item.images.posters[0].file_path}`;
-      }
-      return '/images/placeholder.png';
-    });
+  protected readonly multipleImages: Signal<string[]> = computed(() => {
+    const posters: string[] =
+      this.images
+        .value()
+        ?.map((item) => {
+          const poster = item.images.posters.find((poster) => !!poster.file_path);
+          const backdrop = item.images.backdrops.find((backdrop) => !!backdrop.file_path);
 
-    // Ensure we always return an array of 4 images, filling in placeholders as needed.
-    const filledPosters: string[] = posters ? [...posters] : [];
-    while (filledPosters.length < 4) {
-      filledPosters.push('/images/placeholder.png');
-    }
-
-    return filledPosters.slice(0, 4);
+          if (poster) {
+            return this.getTmdbImageUrl(poster.file_path);
+          } else if (backdrop) {
+            return this.getTmdbImageUrl(backdrop.file_path);
+          } else {
+            return null;
+          }
+        })
+        .filter((poster): poster is string => poster !== null) ?? [];
+    return posters.slice(0, 4);
   });
   protected readonly lastModificationLabel: Signal<string> = computed(() => {
     const timestamp = this.playlist().lastEditTimestamp;
@@ -144,5 +147,9 @@ export class PlaylistsEntryMe {
       case MediaType.TV:
         return this.mediaTvSeriesService.getTvSeriesImages(trackId);
     }
+  }
+
+  private getTmdbImageUrl(filePath: string, size: string = 'original'): string {
+    return `${environment.tmdb.imageBaseUrl}${size}${filePath}`;
   }
 }
