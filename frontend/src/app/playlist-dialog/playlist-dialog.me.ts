@@ -82,7 +82,7 @@ export class PlaylistDialogMe implements OnInit {
 
   public ngOnInit(): void {
     this.localPlaylistService
-      .createPlaylist(crypto.randomUUID(), PlaylistDialogMe.DEFAULT_PLAYLIST_NAME)
+      .createIfNotExists(crypto.randomUUID(), PlaylistDialogMe.DEFAULT_PLAYLIST_NAME)
       .subscribe();
     console.debug(`Current dialog context:`, this.dialogContext);
   }

@@ -47,8 +47,7 @@
 <ng-template #playlistEntryControlsDropdown>
   <hlm-dropdown-menu>
     <hlm-dropdown-menu-group>
-      <!-- TODO: Implment a Name Edit Functionality -->
-      <button hlmDropdownMenuItem>
+      <button hlmDropdownMenuItem [hlmDialogTriggerFor]="editPlaylistNameDialog">
         <span>Edit</span>
       </button>
       <button
@@ -60,6 +59,34 @@
   </hlm-dropdown-menu>
 </ng-template>
 
+<hlm-dialog #editPlaylistNameDialog>
+  <hlm-dialog-content *hlmDialogPortal="let ctx">
+    <hlm-dialog-header>
+      <h2 hlmDialogTitle>Edit playlist name</h2>
+    </hlm-dialog-header>
+
+    <div class="flex flex-col gap-2">
+      @let playlistName = playlist().name;
+      <input
+        #newPlaylistName
+        id="playlist-name" type="text" hlmInput [value]="playlistName" [placeholder]="playlistName"
+        (keydown.enter)="updatePlaylistName(newPlaylistName.value, ctx)"
+        (keydown.esc)="ctx.close()"
+        class="w-full">
+    </div>
+
+    <hlm-dialog-footer>
+      <div class="flex flex-row gap-2 w-full">
+        <button hlmBtn variant="outline" class="w-1/2" (click)="ctx.close()">
+          Cancel
+        </button>
+        <button hlmBtn class="w-1/2" (click)="updatePlaylistName(newPlaylistName.value, ctx)">
+          Save
+        </button>
+      </div>
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>
 
 <hlm-alert-dialog #deletePlaylistAlertDialog>
   <hlm-alert-dialog-content *hlmAlertDialogPortal="let ctx">

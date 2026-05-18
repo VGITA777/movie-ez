@@ -12,7 +12,7 @@ import {
 import { storage } from '@signality/core';
 import { Serializer } from '@signality/core/browser/storage';
 import { Observable, of } from 'rxjs';
-import { USER_LOCAL_STORAGE_PLAYLIST_KEY } from '@shared/keys';
+import { USER_LOCAL_STORAGE_PLAYLIST_KEY } from '@shared/constants';
 
 export interface PlaylistService {
   createPlaylist(
@@ -244,6 +244,16 @@ export class UserLocalPlaylistService implements PlaylistService {
 
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
     return of(newPlaylist);
+  }
+
+  public createIfNotExists(id: string, name: string): Observable<OfflinePlaylist> {
+    const existing = this.findActivePlaylistByName(name);
+
+    if (existing) {
+      return of(existing);
+    }
+
+    return this.createPlaylist(id, name);
   }
 
   public createBlankPlaylist(): Observable<OfflinePlaylist> {

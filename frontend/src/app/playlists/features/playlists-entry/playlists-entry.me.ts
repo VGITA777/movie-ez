@@ -28,6 +28,10 @@ import { lucideEllipsisVertical } from '@ng-icons/lucide';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
+import { HlmDialogImports } from '@spartan-ng/helm/dialog';
+import { HlmInputImports } from '@spartan-ng/helm/input';
+import { toast } from '@spartan-ng/brain/sonner';
+import { DEFAULT_PLAYLIST_CONFIG, MAX_PLAYLIST_NAME_LENGTH } from '@shared/constants';
 
 type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
   images: ImagesModel;
@@ -41,6 +45,8 @@ type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
     HlmIconImports,
     HlmDropdownMenuImports,
     HlmAlertDialogImports,
+    HlmDialogImports,
+    HlmInputImports,
   ],
   templateUrl: './playlists-entry.me.html',
   styleUrl: './playlists-entry.me.css',
@@ -172,5 +178,24 @@ export class PlaylistsEntryMe {
 
   protected deletePlaylist(): void {
     this.localPlaylistService.deletePlaylist(this.playlist().id);
+  }
+
+  protected updatePlaylistName(value: string, ctx: any) {
+    const trimmedValue = value.trim();
+
+    if (trimmedValue.length === 0) {
+      toast.info('Playlist name cannot be empty.', DEFAULT_PLAYLIST_CONFIG);
+      return;
+    }
+
+    if (trimmedValue.length > MAX_PLAYLIST_NAME_LENGTH) {
+      toast.info(
+        `Playlist name cannot exceed ${MAX_PLAYLIST_NAME_LENGTH} characters.`,
+        DEFAULT_PLAYLIST_CONFIG,
+      );
+      return;
+    }
+    this.localPlaylistService.renamePlaylist(this.playlist().id, trimmedValue);
+    ctx.close();
   }
 }
