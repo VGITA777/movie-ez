@@ -18,7 +18,7 @@ export class UserPlaylistManagerService {
 
   public readonly isSyncing: Signal<boolean> = this._isSyncing.asReadonly();
 
-  public sync(callbacks: {
+  public sync(callbacks?: {
     next?: () => void;
     error?: (e: unknown) => void;
     complete?: () => void;
@@ -50,14 +50,14 @@ export class UserPlaylistManagerService {
       )
       .subscribe({
         next: () => {
-          callbacks.next?.();
+          callbacks?.next?.();
         },
         error: (error: unknown) => {
-          callbacks.error?.(error);
+          callbacks?.error?.(error);
           console.error('Playlist sync failed', error);
         },
         complete: () => {
-          callbacks.complete?.();
+          callbacks?.complete?.();
         },
       });
   }
