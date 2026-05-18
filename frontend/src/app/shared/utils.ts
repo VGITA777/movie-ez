@@ -1,5 +1,6 @@
 import { GENRE_MAP } from '@shared/shared-types';
 import { Video, VideosModel } from '@shared/models';
+import { forkJoin, Observable, of } from 'rxjs';
 
 export function convertRuntimeToHoursAndMinutes(runtime: number): string {
   const hours: number = Math.floor(runtime / 60);
@@ -82,4 +83,12 @@ export function normalizeGenres(genres?: string[], separator: string = '&'): str
       }),
     ),
   ];
+}
+
+export function forkJoinOrEmpty<T>(observables: Observable<T>[]): Observable<T[]> {
+  if (observables.length === 0) {
+    return of([]);
+  } else {
+    return forkJoin(observables);
+  }
 }

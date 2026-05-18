@@ -8,6 +8,8 @@
         personal media vault, organized neatly in a single place</p>
     </div>
 
+    <hlm-separator />
+
     <div
       class="playlists-content__body grid
       grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
@@ -17,7 +19,18 @@
       @for (playlist of playlists(); track playlist.id) {
         <me-playlists-entry [playlist]="playlist" />
       }
+      <ng-container *ngTemplateOutlet="newPlaylist" />
     </div>
 
   </div>
 </section>
+
+<ng-template #newPlaylist>
+  <button class="new-playlist flex flex-col gap-2 w-full h-full" (click)="createNewPlaylist()">
+    <div
+      class="new-playlist__img flex flex-col gap-0.5 justify-center bg-accent/20 items-center border border-dashed border-accent aspect-square w-full rounded-lg transition-all hover:cursor-pointer hover:bg-accent/30">
+      <ng-icon name="lucideCirclePlus" class="text-2xl" />
+      <span class="text-accent-foreground text-sm font-light">Create New</span>
+    </div>
+  </button>
+</ng-template>

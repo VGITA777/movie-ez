@@ -31,19 +31,13 @@
     </hlm-dialog-content>
   </hlm-dialog>
   <div class="settings-container">
-    @if (authService.isAuthenticated()) {
-      <ng-container *ngTemplateOutlet="provileNavigation"></ng-container>
-    } @else {
-      <button hlmBtn hlmTooltip="Login" variant="default" class="rounded-full" (click)="login()">
-        <ng-icon name="lucideLogIn" class="text-sm" />
-      </button>
-    }
+    <ng-container *ngTemplateOutlet="provileNavigation"></ng-container>
   </div>
 </nav>
 
 
 <ng-template #provileNavigation>
-  <nav hlmNavigationMenu orientation="vertical" openOn="click">
+  <nav hlmNavigationMenu orientation="vertical" openOn="hover">
     <ul hlmNavigationMenuList>
       <li hlmNavigationMenuItem>
         <button hlmNavigationMenuTrigger class="w-fit p-0 rounded-full">
@@ -55,10 +49,17 @@
           </hlm-avatar>
         </button>
 
-        <div hlmNavigationMenuContent *hlmNavigationMenuPortal class=" min-w-[150px]">
+          <div hlmNavigationMenuContent *hlmNavigationMenuPortal class=" min-w-[150px]">
           <ul>
             <li>
-              <a hlmNavigationMenuLink (click)="logout()">Logout</a>
+              @if (authService.isAuthenticated()) {
+                <a hlmNavigationMenuLink (click)="logout()">Logout</a>
+              } @else {
+                <a hlmNavigationMenuLink (click)="login()">Login</a>
+              }
+            </li>
+            <li>
+              <a hlmNavigationMenuLink [routerLink]="['/playlists']">Playlists</a>
             </li>
           </ul>
         </div>

@@ -230,11 +230,9 @@ export class UserLocalPlaylistService implements PlaylistService {
     name: string,
     items: OfflinePlaylistContent[] = [],
   ): Observable<OfflinePlaylist> {
-    const nameTrimmed = name.trim();
-    const existing = this.findActivePlaylistByName(nameTrimmed);
-
-    if (existing) {
-      return of(existing);
+    const nameTrimmed: string = name.trim();
+    if (nameTrimmed === '' || nameTrimmed.length > 25) {
+      throw new Error('Playlist name must be between 1 and 25 characters long.');
     }
 
     const newPlaylist: OfflinePlaylist = {
@@ -246,6 +244,10 @@ export class UserLocalPlaylistService implements PlaylistService {
 
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
     return of(newPlaylist);
+  }
+
+  public createBlankPlaylist(): Observable<OfflinePlaylist> {
+    return this.createPlaylist(crypto.randomUUID(), 'New Playlist');
   }
 
   public deletePlaylist(id: string): Observable<void> {

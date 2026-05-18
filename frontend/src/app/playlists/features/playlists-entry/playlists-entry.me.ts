@@ -16,10 +16,18 @@ import {
 } from '@shared/models';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
-import { first, forkJoin, map, Observable } from 'rxjs';
+import { first, map, Observable } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
 import { environment } from '@environments/environment';
+import { forkJoinOrEmpty } from '@shared/utils';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
+import { provideIcons } from '@ng-icons/core';
+import { lucideEllipsisVertical } from '@ng-icons/lucide';
+import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
+import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
+import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 
 type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
   images: ImagesModel;
@@ -27,13 +35,22 @@ type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
 
 @Component({
   selector: 'me-playlists-entry',
-  imports: [NgOptimizedImage],
+  imports: [
+    NgOptimizedImage,
+    HlmButtonImports,
+    HlmIconImports,
+    HlmDropdownMenuImports,
+    HlmAlertDialogImports,
+  ],
   templateUrl: './playlists-entry.me.html',
   styleUrl: './playlists-entry.me.css',
+  providers: [provideIcons({ lucideEllipsisVertical })],
 })
 export class PlaylistsEntryMe {
   private readonly mediaMovieService: MediaMovieService = inject(MediaMovieService);
   private readonly mediaTvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
+  private readonly localPlaylistService: UserLocalPlaylistService =
+    inject(UserLocalPlaylistService);
 
   protected readonly images: ResourceRef<PlaylistItemWithImagesAndDetails[]> = rxResource({
     defaultValue: [],
@@ -64,7 +81,7 @@ export class PlaylistsEntryMe {
             request !== undefined,
         );
 
-      return forkJoin(requests$);
+      return forkJoinOrEmpty(requests$);
     },
   });
   protected readonly singleImage: Signal<string> = computed(() => {
@@ -151,5 +168,9 @@ export class PlaylistsEntryMe {
 
   private getTmdbImageUrl(filePath: string, size: string = 'original'): string {
     return `${environment.tmdb.imageBaseUrl}${size}${filePath}`;
+  }
+
+  protected deletePlaylist(): void {
+    this.localPlaylistService.deletePlaylist(this.playlist().id);
   }
 }
