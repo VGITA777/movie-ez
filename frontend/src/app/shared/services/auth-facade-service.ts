@@ -33,10 +33,6 @@ export class AuthFacadeService {
     return this.auth.userData().userData as User;
   });
 
-  constructor() {
-    this.auth.checkAuth().subscribe();
-  }
-
   public login(): void {
     this.auth.authorizeWithPopUp().subscribe();
   }
