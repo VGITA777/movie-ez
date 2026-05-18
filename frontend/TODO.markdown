@@ -99,4 +99,4 @@ my progress here.
 ### May 18, 2026
 
 - Some updates with the Playlists Page.
--
+- Updated the Playlist Entry component (Added a way to edit and delete playlists).
