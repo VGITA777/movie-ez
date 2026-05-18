@@ -23,6 +23,7 @@
 - [X] Implement a Playlist Syncing feature.
 - [X] Test if the User Playlist and Profile Services created by the AI are functioning properly.
 - [X] Create a way to sync user's playlists with the backend
+- [ ] Add Creation date for playlists.
 - [ ] Implement User Profile Page (Playlists).
 
 ---
@@ -100,3 +101,7 @@ my progress here.
 
 - Some updates with the Playlists Page.
 - Updated the Playlist Entry component (Added a way to edit and delete playlists).
+
+### May 19, 2026
+
+- Added a way to sync playlists from the Playlists Page and some minor UI improvements.

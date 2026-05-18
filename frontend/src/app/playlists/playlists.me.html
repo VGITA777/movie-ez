@@ -1,11 +1,36 @@
 <section class="playlists mt-[80px] w-full flex flex-col justify-center items-center">
-  <div class="playlists-content-wrapper w-[95%] max-w-[1750px] flex flex-col gap-8">
+  <div class="playlists-content-wrapper w-[95%] max-w-[1750px] flex flex-col gap-4">
 
     <div class="playlists-content__header flex flex-col gap-2">
       <h1 class="text-5xl font-black tracking-tight">Your Playlists</h1>
       <p class="max-w-[575px] text-accent-foreground tracking-wider text-sm">
         Access your own curated Movies, Films, and TV shows. Your
         personal media vault, organized neatly in a single place</p>
+    </div>
+
+    <div class="playlist-content__controls flex flex-row gap-4">
+      <button hlmBtn (click)="createNewPlaylist()">
+        <ng-icon name="lucideCirclePlus" />
+        @if (bp.sm()) {
+          <span class="text-xs tracking-wide font-light">New Playlist</span>
+        }
+      </button>
+
+      @if (isAuthenticated()) {
+        <button
+          hlmBtn
+          variant="outline" [disabled]="isSyncing() || !isAuthenticated()"
+
+          (click)="syncPlaylists()">
+          <ng-icon
+            [name]="(isSyncing()) ? 'lucideRefreshCw' : 'lucideCloudSync'"
+            [class.animate-spin]="isSyncing()" />
+          @if (bp.sm()) {
+            <span class="text-xs tracking-wide font-light">Sync</span>
+          }
+        </button>
+      }
+
     </div>
 
     <hlm-separator />
@@ -16,10 +41,16 @@
       min-[582px]:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]
       min-[991px]:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]
       gap-4 w-full">
-      @for (playlist of playlists(); track playlist.id) {
-        <me-playlists-entry [playlist]="playlist" />
+      @if (isSyncing()) {
+        @for (i of playlistEntrySkeletonCount; track i) {
+          <ng-container *ngTemplateOutlet="playlistEntrySkeleton" />
+        }
+      } @else {
+        @for (playlist of playlists(); track playlist.id) {
+          <me-playlists-entry [playlist]="playlist" />
+        }
+        <ng-container *ngTemplateOutlet="newPlaylist" />
       }
-      <ng-container *ngTemplateOutlet="newPlaylist" />
     </div>
 
   </div>
@@ -33,4 +64,14 @@
       <span class="text-accent-foreground text-sm font-light">Create New</span>
     </div>
   </button>
+</ng-template>
+
+<ng-template #playlistEntrySkeleton>
+  <div class="playlist-entry-skeleton flex flex-col gap-2 w-full h-full">
+    <hlm-skeleton class="aspect-square w-full rounded-lg" />
+    <div class="playlist-entry-skeleton__meta flex flex-col gap-1 w-full">
+      <hlm-skeleton class="w-3/4 h-4 rounded" />
+      <hlm-skeleton class="w-1/2 h-3 rounded" />
+    </div>
+  </div>
 </ng-template>
