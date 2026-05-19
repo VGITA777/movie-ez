@@ -1,32 +1,33 @@
 package dev.prince.movieez.users.models.models;
 
 import dev.prince.movieez.media.models.enums.MediaType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Client/offline playlist content used during sync.
+ * <p>
+ * TMDB IDs are not globally unique across media types. Example: - movie 123 - tv 123
+ * <p>
+ * Therefore, playlist content identity is trackId + mediaType.
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class OfflinePlaylistContentModel {
 
-  /*
-   * TMDB IDs are not globally unique across media types.
-   *
-   * Example:
-   * - movie id 123
-   * - tv id 123
-   *
-   * Because of that, playlist content identity must be:
-   * trackId + mediaType
-   */
+  @NotBlank(message = "{validation.playlist.trackId.notBlank}")
   private String trackId;
 
-  /*
-   * Default to MOVIE for older local data that was created before mediaType existed.
-   */
-  @Builder.Default
-  private MediaType mediaType = MediaType.MOVIE;
+  @NotNull(message = "{validation.playlist.mediaType.notNull}")
+  private MediaType mediaType;
+
+  @NotNull(message = "{validation.playlist.addedOn.notNull}")
+  private Instant addedOn;
 }

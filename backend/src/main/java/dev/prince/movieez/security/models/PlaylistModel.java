@@ -49,6 +49,9 @@ public class PlaylistModel {
   )
   private Instant lastEditTimestamp;
 
+  @Column(name = "created_on", nullable = false, updatable = false)
+  private Instant createdOn;
+
   @Column(name = "deleted_on")
   private Instant deletedOn;
 

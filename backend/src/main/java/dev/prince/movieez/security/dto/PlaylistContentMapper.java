@@ -32,8 +32,9 @@ public final class PlaylistContentMapper {
         model.getPlaylist() != null ? model
                                       .getPlaylist()
                                       .getId() : null,
+        model.getTrackId(),
         model.getMediaType(),
-        model.getTrackId()
+        model.getAddedOn()
     );
   }
 

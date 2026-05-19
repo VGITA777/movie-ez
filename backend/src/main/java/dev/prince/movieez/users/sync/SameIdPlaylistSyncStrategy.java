@@ -19,16 +19,14 @@ public class SameIdPlaylistSyncStrategy implements PlaylistSyncStrategy {
 
   @Override
   public boolean supports(OfflinePlaylistModel offline, PlaylistSyncContext context) {
-    return offline != null && offline.getId() != null && context
-        .getRemoteById()
-        .containsKey(offline.getId());
+    return offline != null
+        && offline.getId() != null
+        && context.getRemoteById().containsKey(offline.getId());
   }
 
   @Override
   public void apply(OfflinePlaylistModel offline, PlaylistSyncContext context) {
-    PlaylistModel remote = context
-        .getRemoteById()
-        .get(offline.getId());
+    PlaylistModel remote = context.getRemoteById().get(offline.getId());
 
     var offlineDeleted = support.isDeleted(offline);
     var remoteDeleted = support.isDeleted(remote);
@@ -44,7 +42,10 @@ public class SameIdPlaylistSyncStrategy implements PlaylistSyncStrategy {
     }
 
     if (remoteDeleted) {
-      // Server tombstone wins. Client will delete/hide locally from returned DTO.
+      /*
+       * Server tombstone wins.
+       * The returned synced payload tells the client to delete/hide this playlist locally.
+       */
       return;
     }
 
@@ -60,19 +61,33 @@ public class SameIdPlaylistSyncStrategy implements PlaylistSyncStrategy {
     }
   }
 
-  private void softDeleteRemote(OfflinePlaylistModel offline, PlaylistModel remote, PlaylistSyncContext context) {
+  private void softDeleteRemote(
+      OfflinePlaylistModel offline,
+      PlaylistModel remote,
+      PlaylistSyncContext context
+  ) {
     remote.setDeletedOn(offline.getDeletedOn() != null ? offline.getDeletedOn() : Instant.now());
 
     support.removeActiveName(remote, context);
     support.saveAndRefresh(remote);
   }
 
-  private void mergeActiveSameId(OfflinePlaylistModel offline, PlaylistModel remote, PlaylistSyncContext context) {
+  private void mergeActiveSameId(
+      OfflinePlaylistModel offline,
+      PlaylistModel remote,
+      PlaylistSyncContext context
+  ) {
     var offlineTimestamp = offline.getLastEditTimestamp();
     var remoteTimestamp = remote.getLastEditTimestamp();
 
-    // If the remote playlist is newer or has the same timestamp, then keep the remote version.
-    // Otherwise, replace the remote version with the offline version.
+    /*
+     * If remote is newer or equal, keep the server version.
+     * If client is newer, replace mutable fields from offline:
+     * - name
+     * - playlist contents
+     *
+     * createdOn is not replaced because it is creation metadata.
+     */
     if (support.compareInstants(offlineTimestamp, remoteTimestamp) <= 0) {
       return;
     }

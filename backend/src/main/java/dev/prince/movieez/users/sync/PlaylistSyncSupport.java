@@ -12,6 +12,7 @@ import jakarta.persistence.PersistenceContext;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -31,15 +32,17 @@ public class PlaylistSyncSupport {
     this.playlistRepository = playlistRepository;
   }
 
-  /*
-   * Internal sync identity for playlist content.
+  /**
+   * Internal identity for playlist contents.
    *
-   * trackId alone is no longer enough because TMDB can reuse the same numeric ID
-   * across different media types.
+   * addedOn is intentionally not part of the identity.
+   * The database uniqueness should be:
+   * UNIQUE (playlist_id, track_id, media_type)
    */
-  private record PlaylistContentKey(String trackId,
-                                    MediaType mediaType) {
-
+  private record PlaylistContentKey(
+      String trackId,
+      MediaType mediaType
+  ) {
   }
 
   public PlaylistModel createFromOffline(OfflinePlaylistModel offline, UserModel user) {
@@ -49,6 +52,10 @@ public class PlaylistSyncSupport {
 
     if (!hasValidName(offline.getName())) {
       throw new IllegalArgumentException("Offline playlist name is required");
+    }
+
+    if (offline.getCreatedOn() == null) {
+      throw new IllegalArgumentException("Offline playlist createdOn is required");
     }
 
     if (offline.getId() != null) {
@@ -61,14 +68,14 @@ public class PlaylistSyncSupport {
 
     var playlist = new PlaylistModel();
     playlist.setId(offline.getId() != null ? offline.getId() : UUID.randomUUID());
-    playlist.setName(offline
-                         .getName()
-                         .trim());
+    playlist.setName(offline.getName().trim());
+    playlist.setCreatedOn(offline.getCreatedOn());
     playlist.setUser(user);
 
-    var items = extractContentKeys(offline.getItems())
+    var items = extractOfflineContentMap(offline.getItems())
+        .values()
         .stream()
-        .map(key -> toPlaylistContentModel(key, playlist))
+        .map(item -> toPlaylistContentModel(item, playlist))
         .collect(Collectors.toCollection(ArrayList::new));
 
     playlist.setItems(items);
@@ -98,78 +105,66 @@ public class PlaylistSyncSupport {
     var oldNameKey = normalizeName(remote.getName());
     var newName = offline.getName();
 
-    if (hasValidName(newName) && !Objects.equals(remote.getName(), newName) &&
-        canUseNameForCurrentPlaylist(newName, remote.getId(), context)) {
+    if (hasValidName(newName)
+        && !Objects.equals(remote.getName(), newName)
+        && canUseNameForCurrentPlaylist(newName, remote.getId(), context)) {
 
-      /*
-       * Keep the active-name lookup map in sync when the remote playlist name changes.
-       */
       if (oldNameKey != null) {
-        context
-            .getRemoteActiveByName()
-            .remove(oldNameKey);
+        context.getRemoteActiveByName().remove(oldNameKey);
       }
 
       remote.setName(newName.trim());
-      context
-          .getRemoteActiveByName()
-          .put(normalizeName(newName), remote);
+      context.getRemoteActiveByName().put(normalizeName(newName), remote);
     }
 
     replaceTracks(remote, offline.getItems());
   }
 
-  /*
+  /**
    * Replace remote playlist contents using a diff instead of clear()+add().
    *
-   * Why:
-   * The DB has UNIQUE(playlist_id, track_id, media_type).
-   * Calling clear() and then adding new entities can cause Hibernate to INSERT
-   * before DELETE, which can temporarily violate the unique constraint.
-   *
-   * This method:
-   * - removes only contents that are no longer desired
-   * - adds only contents that are missing
-   * - compares by trackId + mediaType
+   * This avoids temporary UNIQUE(playlist_id, track_id, media_type)
+   * violations where Hibernate may insert before deleting old rows.
    */
-  public void replaceTracks(PlaylistModel playlist, List<OfflinePlaylistContentModel> offlineItems) {
-    var desiredKeys = extractContentKeys(offlineItems);
+  public void replaceTracks(
+      PlaylistModel playlist,
+      List<OfflinePlaylistContentModel> offlineItems
+  ) {
+    var desiredContent = extractOfflineContentMap(offlineItems);
+    var desiredKeys = desiredContent.keySet();
     var existingKeys = extractContentKeysFromRemote(playlist);
 
-    playlist
-        .getItems()
-        .removeIf(item -> !desiredKeys.contains(toContentKey(item)));
+    playlist.getItems().removeIf(item -> !desiredKeys.contains(toContentKey(item)));
 
     var keysToAdd = new HashSet<>(desiredKeys);
     keysToAdd.removeAll(existingKeys);
 
     for (var key : keysToAdd) {
-      playlist
-          .getItems()
-          .add(toPlaylistContentModel(key, playlist));
+      var offlineContent = desiredContent.get(key);
+
+      playlist.getItems().add(toPlaylistContentModel(offlineContent, playlist));
     }
   }
 
-  /*
-   * Merge playlist contents into the canonical remote playlist.
+  /**
+   * Merge offline contents into the canonical remote playlist.
    *
    * Used when the offline playlist has a different ID but the same active name.
-   * Since the server playlist is canonical, we only add missing contents and do not remove
-   * remote contents.
+   * The server playlist is canonical, so this only adds missing contents.
    */
   public boolean mergeTracksIntoCanonical(
       PlaylistModel canonicalRemote,
       List<OfflinePlaylistContentModel> offlineItems
   ) {
-    var offlineKeys = extractContentKeys(offlineItems);
+    var offlineContent = extractOfflineContentMap(offlineItems);
 
-    if (offlineKeys.isEmpty()) {
+    if (offlineContent.isEmpty()) {
       return false;
     }
 
     var remoteKeys = extractContentKeysFromRemote(canonicalRemote);
 
-    var keysToAdd = new HashSet<>(offlineKeys);
+    var keysToAdd = new HashSet<>(offlineContent.keySet());
     keysToAdd.removeAll(remoteKeys);
 
     if (keysToAdd.isEmpty()) {
@@ -179,36 +174,46 @@ public class PlaylistSyncSupport {
     for (var key : keysToAdd) {
       canonicalRemote
           .getItems()
-          .add(toPlaylistContentModel(key, canonicalRemote));
+          .add(toPlaylistContentModel(offlineContent.get(key), canonicalRemote));
     }
 
     return true;
   }
 
-  /*
-   * Extract unique offline playlist content keys.
+  /**
+   * Extract unique offline playlist contents.
    *
-   * This automatically removes duplicates from the client payload.
+   * Dedupe rule:
+   * - identity is trackId + mediaType
+   * - if duplicates exist, keep the earliest addedOn
    */
-  private Set<PlaylistContentKey> extractContentKeys(List<OfflinePlaylistContentModel> items) {
+  private LinkedHashMap<PlaylistContentKey, OfflinePlaylistContentModel> extractOfflineContentMap(
+      List<OfflinePlaylistContentModel> items
+  ) {
+    var result = new LinkedHashMap<PlaylistContentKey, OfflinePlaylistContentModel>();
+
     if (items == null || items.isEmpty()) {
-      return new HashSet<>();
+      return result;
     }
 
-    return items
-        .stream()
-        .map(this::toContentKey)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toCollection(HashSet::new));
+    for (var item : items) {
+      if (!isValidOfflineContent(item)) {
+        continue;
+      }
+
+      var key = toContentKey(item);
+      var existing = result.get(key);
+
+      if (existing == null || item.getAddedOn().isBefore(existing.getAddedOn())) {
+        result.put(key, normalizedOfflineContent(item));
+      }
+    }
+
+    return result;
   }
 
-  /*
-   * Extract unique remote playlist content keys.
-   */
   private Set<PlaylistContentKey> extractContentKeysFromRemote(PlaylistModel playlist) {
-    if (playlist == null || playlist.getItems() == null || playlist
-        .getItems()
-        .isEmpty()) {
+    if (playlist == null || playlist.getItems() == null || playlist.getItems().isEmpty()) {
       return new HashSet<>();
     }
 
@@ -221,45 +226,73 @@ public class PlaylistSyncSupport {
   }
 
   private PlaylistContentKey toContentKey(OfflinePlaylistContentModel item) {
-    if (item == null || item.getTrackId() == null || item
-        .getTrackId()
-        .isBlank()) {
+    if (item == null || item.getTrackId() == null || item.getTrackId().isBlank()) {
       return null;
     }
 
+    if (item.getMediaType() == null) {
+      throw new IllegalArgumentException("Playlist content mediaType is required");
+    }
+
     return new PlaylistContentKey(
-        item
-            .getTrackId()
-            .trim(), resolveMediaType(item.getMediaType())
+        item.getTrackId().trim(),
+        item.getMediaType()
     );
   }
 
   private PlaylistContentKey toContentKey(PlaylistContentModel item) {
-    if (item == null || item.getTrackId() == null || item
-        .getTrackId()
-        .isBlank()) {
+    if (item == null || item.getTrackId() == null || item.getTrackId().isBlank()) {
+      return null;
+    }
+
+    if (item.getMediaType() == null) {
       return null;
     }
 
     return new PlaylistContentKey(
-        item
-            .getTrackId()
-            .trim(), resolveMediaType(item.getMediaType())
+        item.getTrackId().trim(),
+        item.getMediaType()
     );
   }
 
-  private MediaType resolveMediaType(MediaType mediaType) {
-    /*
-     * MOVIE fallback protects older local data and older DB rows.
-     */
-    return mediaType != null ? mediaType : MediaType.MOVIE;
+  private OfflinePlaylistContentModel normalizedOfflineContent(OfflinePlaylistContentModel item) {
+    return OfflinePlaylistContentModel
+        .builder()
+        .trackId(item.getTrackId().trim())
+        .mediaType(item.getMediaType())
+        .addedOn(item.getAddedOn())
+        .build();
   }
 
-  private PlaylistContentModel toPlaylistContentModel(PlaylistContentKey key, PlaylistModel playlistModel) {
+  private boolean isValidOfflineContent(OfflinePlaylistContentModel item) {
+    if (item == null) {
+      return false;
+    }
+
+    if (item.getTrackId() == null || item.getTrackId().isBlank()) {
+      return false;
+    }
+
+    if (item.getMediaType() == null) {
+      throw new IllegalArgumentException("Playlist content mediaType is required");
+    }
+
+    if (item.getAddedOn() == null) {
+      throw new IllegalArgumentException("Playlist content addedOn is required");
+    }
+
+    return true;
+  }
+
+  private PlaylistContentModel toPlaylistContentModel(
+      OfflinePlaylistContentModel item,
+      PlaylistModel playlistModel
+  ) {
     return PlaylistContentModel
         .builder()
-        .trackId(key.trackId())
-        .mediaType(key.mediaType())
+        .trackId(item.getTrackId().trim())
+        .mediaType(item.getMediaType())
+        .addedOn(item.getAddedOn())
         .playlist(playlistModel)
         .build();
   }
@@ -313,16 +346,18 @@ public class PlaylistSyncSupport {
     return left.isAfter(right) ? left : right;
   }
 
-  public boolean canUseNameForCurrentPlaylist(String name, UUID currentPlaylistId, PlaylistSyncContext context) {
+  public boolean canUseNameForCurrentPlaylist(
+      String name,
+      UUID currentPlaylistId,
+      PlaylistSyncContext context
+  ) {
     var key = normalizeName(name);
 
     if (key == null) {
       return false;
     }
 
-    var existing = context
-        .getRemoteActiveByName()
-        .get(key);
+    var existing = context.getRemoteActiveByName().get(key);
 
     return existing == null || Objects.equals(existing.getId(), currentPlaylistId);
   }
@@ -335,9 +370,7 @@ public class PlaylistSyncSupport {
     var key = normalizeName(playlist.getName());
 
     if (key != null) {
-      context
-          .getRemoteActiveByName()
-          .remove(key);
+      context.getRemoteActiveByName().remove(key);
     }
   }
 }

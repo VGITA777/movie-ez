@@ -22,44 +22,67 @@ public class SameActiveNameDifferentIdsPlaylistSyncStrategy implements PlaylistS
     }
 
     var key = support.normalizeName(offline.getName());
-    var remoteByName = key != null ? context
-                                     .getRemoteActiveByName()
-                                     .get(key) : null;
+    var remoteByName = key != null ? context.getRemoteActiveByName().get(key) : null;
 
-    return remoteByName != null && (offline.getId() == null || !Objects.equals(remoteByName.getId(), offline.getId()));
+    return remoteByName != null
+        && (offline.getId() == null || !Objects.equals(remoteByName.getId(), offline.getId()));
   }
 
   @Override
   public void apply(OfflinePlaylistModel offline, PlaylistSyncContext context) {
     var key = support.normalizeName(offline.getName());
-    var canonicalRemote = context
-        .getRemoteActiveByName()
-        .get(key);
+    var canonicalRemote = context.getRemoteActiveByName().get(key);
 
     if (canonicalRemote == null || support.isDeleted(canonicalRemote)) {
       return;
     }
 
-    // Merge tracks from the offline playlists into the canonical remote playlists.
+    /*
+     * Same active name but different IDs:
+     * server playlist becomes canonical.
+     *
+     * We merge missing content using identity:
+     * trackId + mediaType.
+     *
+     * addedOn is preserved for newly added content.
+     */
     var changed = support.mergeTracksIntoCanonical(canonicalRemote, offline.getItems());
 
     var offlineTimestamp = offline.getLastEditTimestamp();
     var remoteTimestamp = canonicalRemote.getLastEditTimestamp();
 
-    // Change the name on the server if the offline playlist is newer and has a valid name, and the names are not yet the same.
-    if (support.compareInstants(offlineTimestamp, remoteTimestamp) > 0 && support.hasValidName(offline.getName()) &&
-        !Objects.equals(canonicalRemote.getName(), offline.getName())) {
+    /*
+     * For same normalized name, allow case/format update from newer client.
+     * Example:
+     * "favorites" -> "Favorites"
+     */
+    if (support.compareInstants(offlineTimestamp, remoteTimestamp) > 0
+        && support.hasValidName(offline.getName())
+        && !Objects.equals(canonicalRemote.getName(), offline.getName())) {
+
       var oldKey = support.normalizeName(canonicalRemote.getName());
       var newKey = support.normalizeName(offline.getName());
 
-      if (Objects.equals(oldKey, newKey) &&
-          support.canUseNameForCurrentPlaylist(offline.getName(), canonicalRemote.getId(), context)) {
-        canonicalRemote.setName(offline.getName());
+      if (Objects.equals(oldKey, newKey)
+          && support.canUseNameForCurrentPlaylist(
+          offline.getName(),
+          canonicalRemote.getId(),
+          context
+      )) {
+        canonicalRemote.setName(offline.getName().trim());
+
+        if (oldKey != null) {
+          context.getRemoteActiveByName().remove(oldKey);
+        }
+
+        context.getRemoteActiveByName().put(newKey, canonicalRemote);
         changed = true;
       }
     }
 
-    // Map the offline playlist ID to the canonical remote playlist ID, so that client can update local ID if needed.
+    /*
+     * Tell the client to replace its local ID with the canonical server ID.
+     */
     context.addIdMapping(offline.getId(), canonicalRemote.getId());
 
     if (changed) {

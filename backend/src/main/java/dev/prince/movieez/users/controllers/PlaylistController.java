@@ -1,22 +1,22 @@
 package dev.prince.movieez.users.controllers;
 
 import dev.prince.movieez.ServerResponse;
-import dev.prince.movieez.media.models.enums.MediaType;
 import dev.prince.movieez.security.SecurityUtils;
 import dev.prince.movieez.security.dto.PlaylistContentDto;
 import dev.prince.movieez.security.dto.PlaylistContentMapper;
 import dev.prince.movieez.security.dto.PlaylistDto;
 import dev.prince.movieez.security.dto.PlaylistMapper;
+import dev.prince.movieez.users.models.inputs.CreatePlaylistInput;
 import dev.prince.movieez.users.models.inputs.CreatePlaylistsInput;
 import dev.prince.movieez.users.models.inputs.NewNameInput;
-import dev.prince.movieez.users.models.inputs.PlaylistAndTracksInput;
+import dev.prince.movieez.users.models.inputs.PlaylistTrackIdentitiesInput;
+import dev.prince.movieez.users.models.inputs.PlaylistTrackIdentityInput;
+import dev.prince.movieez.users.models.inputs.PlaylistTrackInfoInput;
 import dev.prince.movieez.users.models.inputs.PlaylistTracksInput;
 import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
 import dev.prince.movieez.users.services.PlaylistService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,8 +48,7 @@ public class PlaylistController {
         .map(PlaylistMapper::toDto)
         .toList();
 
-    var response = ServerResponse.success(playlists);
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(ServerResponse.success(playlists));
   }
 
   @GetMapping("/{id}")
@@ -59,10 +58,11 @@ public class PlaylistController {
       @NotNull(message = "{validation.playlist.id.notNull}")
       UUID id
   ) {
-    var data = playlistService.findNotDeleted(id, SecurityUtils.getUserId());
-    var playlist = data.map(PlaylistMapper::toDto);
-    var response = ServerResponse.success(playlist);
-    return ResponseEntity.ok(response);
+    var playlist = playlistService
+        .findNotDeleted(id, SecurityUtils.getUserId())
+        .map(PlaylistMapper::toDto);
+
+    return ResponseEntity.ok(ServerResponse.success(playlist));
   }
 
   @GetMapping("/{id}/tracks")
@@ -82,26 +82,26 @@ public class PlaylistController {
         .map(PlaylistContentMapper::toDto)
         .toList();
 
-    var response = ServerResponse.success(contents);
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(ServerResponse.success(contents));
   }
 
-  @PostMapping("/{name}")
+  /*
+   * Enhanced create endpoint.
+   *
+   * Name is now in the request body instead of the path because the body also owns:
+   * - playlistId
+   * - createdOn
+   * - tracks
+   */
+  @PostMapping
   public ResponseEntity<ServerResponse<PlaylistDto>> createPlaylist(
-      @PathVariable
       @Valid
-      @NotBlank(message = "{validation.playlist.name.notBlank}")
-      String name,
-      @Valid
-      @NotNull(message = "{validation.playlist.tracksInput.notNull}")
+      @NotNull(message = "{validation.playlist.createInput.notNull}")
       @RequestBody
-      PlaylistAndTracksInput input
+      CreatePlaylistInput input
   ) {
-    var userId = SecurityUtils.getUserId();
-    var playlistId = input.playlistId();
-    var saved = playlistService.createPlaylist(name, new HashSet<>(input.trackIds()), playlistId, userId);
-    var response = ServerResponse.success(PlaylistMapper.toDto(saved));
-    return ResponseEntity.ok(response);
+    var saved = playlistService.createPlaylist(input, SecurityUtils.getUserId());
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(saved)));
   }
 
   @PostMapping("/create/batch")
@@ -111,13 +111,14 @@ public class PlaylistController {
       @RequestBody
       CreatePlaylistsInput input
   ) {
-    var userId = SecurityUtils.getUserId();
-    var saved = playlistService.createPlaylists(input.playlists(), userId);
-    var response = ServerResponse.success(saved
-                                              .stream()
-                                              .map(PlaylistMapper::toDto)
-                                              .toList());
-    return ResponseEntity.ok(response);
+    var saved = playlistService.createPlaylists(input.playlists(), SecurityUtils.getUserId());
+
+    var response = saved
+        .stream()
+        .map(PlaylistMapper::toDto)
+        .toList();
+
+    return ResponseEntity.ok(ServerResponse.success(response));
   }
 
   @PatchMapping("/{id}/name")
@@ -129,11 +130,15 @@ public class PlaylistController {
       @RequestBody
       @Valid
       @NotNull(message = "{validation.playlist.newNameInput.notNull}")
-      NewNameInput newName
+      NewNameInput input
   ) {
-    var updated = playlistService.updatePlaylistName(id, newName.name(), SecurityUtils.getUserId());
-    var response = ServerResponse.success(PlaylistMapper.toDto(updated));
-    return ResponseEntity.ok(response);
+    var updated = playlistService.updatePlaylistName(
+        id,
+        input.name(),
+        SecurityUtils.getUserId()
+    );
+
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(updated)));
   }
 
   @PostMapping("/{id}/update")
@@ -148,38 +153,58 @@ public class PlaylistController {
       PlaylistUpdateInput input
   ) {
     var updated = playlistService.updatePlaylist(id, input, SecurityUtils.getUserId());
-    var response = ServerResponse.success(PlaylistMapper.toDto(updated));
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(updated)));
   }
 
-  @PostMapping("/{id}/tracks/{trackId}/{mediaType}")
+  /*
+   * Add one playlist content.
+   *
+   * Body must include:
+   * - trackId
+   * - mediaType
+   * - addedOn
+   */
+  @PostMapping("/{id}/tracks")
   public ResponseEntity<ServerResponse<PlaylistDto>> addTrackToPlaylist(
       @PathVariable
       @Valid
       @NotNull(message = "{validation.playlist.id.notNull}")
       UUID id,
-      @PathVariable
-      String trackId,
-      @PathVariable
-      MediaType mediaType
+      @RequestBody
+      @Valid
+      @NotNull(message = "{validation.playlist.trackInput.notNull}")
+      PlaylistTrackInfoInput input
   ) {
-    var updated = playlistService.addToPlaylist(id, trackId, mediaType, SecurityUtils.getUserId());
-    var response = ServerResponse.success(PlaylistMapper.toDto(updated));
-    return ResponseEntity.ok(response);
+    var updated = playlistService.addToPlaylist(
+        id,
+        input,
+        SecurityUtils.getUserId()
+    );
+
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(updated)));
   }
 
-  @PostMapping("/{id}/tracks")
+  /*
+   * Add many playlist contents.
+   */
+  @PostMapping("/{id}/tracks/batch")
   public ResponseEntity<ServerResponse<PlaylistDto>> addAllTracksToPlaylist(
       @PathVariable
       @Valid
       @NotNull(message = "{validation.playlist.id.notNull}")
       UUID id,
       @RequestBody
+      @Valid
+      @NotNull(message = "{validation.playlist.tracksInput.notNull}")
       PlaylistTracksInput input
   ) {
-    var updated = playlistService.addToPlaylist(id, new HashSet<>(input.tracksIds()), SecurityUtils.getUserId());
-    var response = ServerResponse.success(PlaylistMapper.toDto(updated));
-    return ResponseEntity.ok(response);
+    var updated = playlistService.addToPlaylist(
+        id,
+        input.tracks(),
+        SecurityUtils.getUserId()
+    );
+
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(updated)));
   }
 
   @DeleteMapping("/{id}")
@@ -193,20 +218,37 @@ public class PlaylistController {
     return ResponseEntity.ok(ServerResponse.success("Playlist deleted successfully", null));
   }
 
-  @DeleteMapping("/{id}/tracks/{trackId}")
-  public ResponseEntity<ServerResponse<?>> deleteTrackFromPlaylist(
+  /*
+   * Delete one playlist content.
+   *
+   * Body only needs:
+   * - trackId
+   * - mediaType
+   */
+  @DeleteMapping("/{id}/tracks")
+  public ResponseEntity<ServerResponse<PlaylistDto>> deleteTrackFromPlaylist(
       @PathVariable
       @Valid
       @NotNull(message = "{validation.playlist.id.notNull}")
       UUID id,
-      @PathVariable
-      String trackId
+      @RequestBody
+      @Valid
+      @NotNull(message = "{validation.playlist.trackInput.notNull}")
+      PlaylistTrackIdentityInput input
   ) {
-    var response = playlistService.deleteTrackFromPlaylist(id, trackId, SecurityUtils.getUserId());
-    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(response)));
+    var updated = playlistService.deleteTrackFromPlaylist(
+        id,
+        input,
+        SecurityUtils.getUserId()
+    );
+
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(updated)));
   }
 
-  @DeleteMapping("/{id}/tracks")
+  /*
+   * Delete many playlist contents.
+   */
+  @DeleteMapping("/{id}/tracks/batch")
   public ResponseEntity<ServerResponse<PlaylistDto>> deleteTracksFromPlaylist(
       @PathVariable
       @Valid
@@ -214,12 +256,16 @@ public class PlaylistController {
       UUID id,
       @RequestBody
       @Valid
-      PlaylistAndTracksInput input
+      @NotNull(message = "{validation.playlist.tracksInput.notNull}")
+      PlaylistTrackIdentitiesInput input
   ) {
-    var userId = SecurityUtils.getUserId();
-    var playlist = playlistService.deleteAllTracksFromPlaylist(id, new HashSet<>(input.trackIds()), userId);
-    var response = ServerResponse.success(PlaylistMapper.toDto(playlist));
-    return ResponseEntity.ok(response);
+    var playlist = playlistService.deleteAllTracksFromPlaylist(
+        id,
+        input.tracks(),
+        SecurityUtils.getUserId()
+    );
+
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(playlist)));
   }
 
   @DeleteMapping("/{id}/tracks/all")
@@ -229,10 +275,11 @@ public class PlaylistController {
       @NotNull(message = "{validation.playlist.id.notNull}")
       UUID id
   ) {
-    var userId = SecurityUtils.getUserId();
-    var playlist = playlistService.deleteAllTracksFromPlaylist(id, userId);
-    var response = ServerResponse.success(PlaylistMapper.toDto(playlist));
-    return ResponseEntity.ok(response);
+    var playlist = playlistService.deleteAllTracksFromPlaylist(
+        id,
+        SecurityUtils.getUserId()
+    );
+
+    return ResponseEntity.ok(ServerResponse.success(PlaylistMapper.toDto(playlist)));
   }
 }
-

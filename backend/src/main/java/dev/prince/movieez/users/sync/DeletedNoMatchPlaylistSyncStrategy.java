@@ -21,7 +21,11 @@ public class DeletedNoMatchPlaylistSyncStrategy implements PlaylistSyncStrategy 
 
   @Override
   public void apply(OfflinePlaylistModel offline, PlaylistSyncContext context) {
-    // No-op.
-    // A deleted local playlist that does not exist on the server does not need to be created as a tombstone.
+    /*
+     * No-op.
+     *
+     * A deleted local playlist that does not exist on the server does not need
+     * to be created as a tombstone.
+     */
   }
 }

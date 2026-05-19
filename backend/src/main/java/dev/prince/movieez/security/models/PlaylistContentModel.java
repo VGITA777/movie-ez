@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,4 +54,7 @@ public class PlaylistContentModel {
   @Column(name = "track_id", nullable = false, length = Integer.MAX_VALUE)
   @EqualsAndHashCode.Include
   private String trackId;
+
+  @Column(name = "added_on", nullable = false, updatable = false)
+  private Instant addedOn;
 }

@@ -9,7 +9,6 @@ import dev.prince.movieez.users.models.models.OfflinePlaylistModel;
 import dev.prince.movieez.users.models.responses.PlaylistSyncResponse;
 import dev.prince.movieez.users.sync.PlaylistSyncContext;
 import dev.prince.movieez.users.sync.PlaylistSyncStrategy;
-import dev.prince.movieez.users.sync.PlaylistSyncSupport;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.HashMap;
@@ -24,21 +23,24 @@ public class PlaylistSyncService {
 
   private final PlaylistRepository playlistRepository;
   private final UserRepository userRepository;
-  private final PlaylistSyncSupport support;
   private final List<PlaylistSyncStrategy> strategies;
 
   public PlaylistSyncService(
       PlaylistRepository playlistRepository,
       UserRepository userRepository,
-      PlaylistSyncSupport support,
       List<PlaylistSyncStrategy> strategies
   ) {
     this.playlistRepository = playlistRepository;
     this.userRepository = userRepository;
-    this.support = support;
     this.strategies = strategies;
   }
 
+  /**
+   * Syncs offline client playlists into the server, then returns the canonical server playlist state.
+   * <p>
+   * Important sync identities: - Playlist identity: playlist id - Active-name conflict identity: normalized playlist
+   * name - Playlist content identity: trackId + mediaType
+   */
   @Transactional
   public PlaylistSyncResponse syncPlaylists(List<OfflinePlaylistModel> offlinePlaylists, UUID userId) {
     var safeOfflinePlaylists = offlinePlaylists != null ? offlinePlaylists : List.<OfflinePlaylistModel>of();
@@ -47,6 +49,9 @@ public class PlaylistSyncService {
         .findById(userId)
         .orElseThrow(() -> new UserNotFoundException("User with ID: '" + userId + "' not found"));
 
+    /*
+     * Include deleted playlists here because tombstones are required for sync.
+     */
     var remotePlaylists = playlistRepository.findAllByUserId(userId);
 
     var remoteById = remotePlaylists
@@ -60,13 +65,15 @@ public class PlaylistSyncService {
 
     var remoteActiveByName = remotePlaylists
         .stream()
-        .filter(playlist -> !support.isDeleted(playlist))
-        .filter(playlist -> support.hasValidName(playlist.getName()))
+        .filter(playlist -> playlist.getDeletedOn() == null)
+        .filter(playlist -> playlist.getName() != null && !playlist
+            .getName()
+            .isBlank())
         .collect(Collectors.toMap(
-            playlist -> support.normalizeName(playlist.getName()),
-            Function.identity(),
-            (existing, ignored) -> existing,
-            HashMap::new
+            playlist -> playlist
+                .getName()
+                .trim()
+                .toLowerCase(), Function.identity(), (existing, ignored) -> existing, HashMap::new
         ));
 
     var context = new PlaylistSyncContext(remoteById, remoteActiveByName, user);
@@ -78,17 +85,17 @@ public class PlaylistSyncService {
 
       strategies
           .stream()
-          .filter(syncStrategy -> syncStrategy.supports(offline, context))
+          .filter(strategy -> strategy.supports(offline, context))
           .findFirst()
           .ifPresent(strategy -> strategy.apply(offline, context));
     }
 
-    var syncedPlaylists = playlistRepository
-        .findAllByUserId(userId)
-        .stream()
-        .map(PlaylistMapper::toDto)
-        .toList();
+    /*
+     * Return all server playlists, including tombstones.
+     * The client needs tombstones to delete/hide local playlists correctly.
+     */
+    var syncedPlaylists = playlistRepository.findAllByUserId(userId);
 
-    return new PlaylistSyncResponse(syncedPlaylists, context.getIdMappings(), Instant.now());
+    return new PlaylistSyncResponse(PlaylistMapper.toDtoList(syncedPlaylists), context.getIdMappings(), Instant.now());
   }
 }

@@ -11,17 +11,22 @@ import dev.prince.movieez.security.models.UserModel;
 import dev.prince.movieez.security.repositories.PlaylistContentRepository;
 import dev.prince.movieez.security.repositories.PlaylistRepository;
 import dev.prince.movieez.security.repositories.UserRepository;
+import dev.prince.movieez.users.models.inputs.CreatePlaylistInput;
 import dev.prince.movieez.users.models.inputs.PlaylistInput;
+import dev.prince.movieez.users.models.inputs.PlaylistTrackIdentityInput;
+import dev.prince.movieez.users.models.inputs.PlaylistTrackInfoInput;
 import dev.prince.movieez.users.models.inputs.PlaylistUpdateInput;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -46,45 +51,197 @@ public class PlaylistService {
     this.playlistContentRepository = playlistContentRepository;
   }
 
-  @Transactional
-  public PlaylistModel updatePlaylistName(UUID id, String newName, UUID userId) {
-    var playlist = findNotDeleted(id, userId).orElseThrow(() -> new PlaylistNotFoundException("Playlist not found"));
-    if (isPlaylistExisting(newName, userId)) {
-      var msg = "Playlist with name: '" + newName + "' already exists";
-      throw new PlaylistAlreadyExistsException(msg);
-    }
-    playlist.setName(newName);
-    return savePlaylistAndGetResult(playlist);
+  /*
+   * Composite identity for playlist contents.
+   *
+   * trackId alone is not enough because TMDB can reuse the same ID
+   * across movie, tv, and person records.
+   */
+  private record TrackKey(
+      String trackId,
+      MediaType mediaType
+  ) {
   }
 
   @Transactional
-  public PlaylistModel createPlaylist(String name, Collection<String> trackIds, UUID playlistId, UUID userId) {
-    if (playlistId != null) {
-      var existingPlaylist = findNotDeleted(playlistId, userId);
+  public PlaylistModel createPlaylist(CreatePlaylistInput input, UUID userId) {
+    if (input.playlistId() != null) {
+      var existingPlaylist = findNotDeleted(input.playlistId(), userId);
 
       if (existingPlaylist.isPresent()) {
         return existingPlaylist.get();
       }
     }
 
-    var existingPlaylist = findNotDeleted(name, userId);
+    var existingPlaylist = findNotDeleted(input.name(), userId);
 
     if (existingPlaylist.isPresent()) {
       return existingPlaylist.get();
     }
 
+    var user = getUser(userId);
+
     var playlistModel = new PlaylistModel();
-    playlistModel.setName(name);
-    setId(playlistModel, playlistId);
+    playlistModel.setName(input.name().trim());
+    playlistModel.setCreatedOn(input.createdOn());
+    playlistModel.setUser(user);
+    setId(playlistModel, input.playlistId());
 
-    var tracks = trackIds
-        .stream()
-        .filter(trackId -> !trackId.isBlank())
-        .map(trackId -> toPlaylistContentModel(trackId, playlistModel))
-        .collect(Collectors.toCollection(java.util.ArrayList::new));
+    playlistModel.setItems(toPlaylistContentModels(input.tracks(), playlistModel));
 
-    playlistModel.setItems(tracks);
     return savePlaylistAndGetResult(playlistModel);
+  }
+
+  @Transactional
+  public Collection<PlaylistModel> createPlaylists(List<PlaylistInput> playlists, UUID userId) {
+    var safePlaylists = playlists != null ? playlists : List.<PlaylistInput>of();
+    var user = getUser(userId);
+
+    var activePlaylists = playlistRepository.findAllByUserIdAndDeletedOnIsNull(userId);
+
+    var existingIds = activePlaylists
+        .stream()
+        .map(PlaylistModel::getId)
+        .collect(Collectors.toSet());
+
+    var existingNames = activePlaylists
+        .stream()
+        .map(playlist -> normalizeName(playlist.getName()))
+        .collect(Collectors.toSet());
+
+    var playlistsToCreate = safePlaylists
+        .stream()
+        .filter(Objects::nonNull)
+        .filter(input -> !existingIds.contains(input.id()))
+        .filter(input -> !existingNames.contains(normalizeName(input.name())))
+        .map(input -> toPlaylistModel(input, user))
+        .collect(Collectors.toCollection(ArrayList::new));
+
+    playlistRepository.saveAllAndFlush(playlistsToCreate);
+
+    return findAllByUserIdAndNotDeleted(userId);
+  }
+
+  @Transactional
+  public PlaylistModel updatePlaylistName(UUID id, String newName, UUID userId) {
+    var playlist = getPlaylist(id, userId);
+    applyPlaylistNameUpdate(playlist, newName, userId);
+    return savePlaylistAndGetResult(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel addToPlaylist(
+      UUID id,
+      PlaylistTrackInfoInput input,
+      UUID userId
+  ) {
+    var playlist = getPlaylist(id, userId);
+    var normalizedTrackId = normalizeTrackId(input.trackId());
+
+    boolean alreadyExists = playlistContentRepository.existsByPlaylistIdAndTrackIdAndMediaType(
+        playlist.getId(),
+        normalizedTrackId,
+        input.mediaType()
+    );
+
+    if (alreadyExists) {
+      throw new PlaylistContentAlreadyExistsException(
+          "Track with ID: '" + normalizedTrackId + "' and media type: '" + input.mediaType()
+              + "' already exists in this playlist"
+      );
+    }
+
+    playlist
+        .getItems()
+        .add(toPlaylistContentModel(input, playlist));
+
+    return savePlaylistAndGetResult(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel addToPlaylist(
+      UUID id,
+      Collection<PlaylistTrackInfoInput> tracks,
+      UUID userId
+  ) {
+    var playlist = getPlaylist(id, userId);
+    addTracks(playlist, tracks);
+    return savePlaylistAndGetResult(playlist);
+  }
+
+  @Transactional
+  public void delete(UUID id, UUID userId) {
+    var playlist = playlistRepository
+        .findByIdAndUserIdAndDeletedOnIsNull(id, userId)
+        .orElseThrow(() -> new PlaylistNotFoundException("Playlist not found"));
+
+    playlist.setDeletedOn(java.time.Instant.now());
+    playlistRepository.saveAndFlush(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel deleteTrackFromPlaylist(
+      UUID id,
+      PlaylistTrackIdentityInput input,
+      UUID userId
+  ) {
+    var playlist = getPlaylist(id, userId);
+    removeTracks(playlist, Set.of(input));
+    return savePlaylistAndGetResult(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel deleteAllTracksFromPlaylist(
+      UUID id,
+      Collection<PlaylistTrackIdentityInput> tracks,
+      UUID userId
+  ) {
+    var playlist = getPlaylist(id, userId);
+    removeTracks(playlist, tracks);
+    return savePlaylistAndGetResult(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel deleteAllTracksFromPlaylist(UUID id, UUID userId) {
+    var playlist = getPlaylist(id, userId);
+    playlist.getItems().clear();
+    return savePlaylistAndGetResult(playlist);
+  }
+
+  @Transactional
+  public PlaylistModel updatePlaylist(UUID id, PlaylistUpdateInput input, UUID userId) {
+    var playlist = getPlaylist(id, userId);
+
+    var oldName = playlist.getName();
+    var newName = input.newName();
+
+    if (newName != null && !newName.isBlank() && !normalizeName(newName).equals(normalizeName(oldName))) {
+      applyPlaylistNameUpdate(playlist, newName, userId);
+    } else if (newName != null && !newName.isBlank() && !newName.equals(oldName)) {
+      /*
+       * Allows case/format-only changes like:
+       * "favorites" -> "Favorites"
+       */
+      playlist.setName(newName.trim());
+    }
+
+    /*
+     * Full replacement takes precedence over incremental add/remove.
+     */
+    if (input.newTracks() != null) {
+      overrideTracks(playlist, input.newTracks());
+      return savePlaylistAndGetResult(playlist);
+    }
+
+    if (input.tracksToRemove() != null) {
+      removeTracks(playlist, input.tracksToRemove());
+    }
+
+    if (input.tracksToAdd() != null) {
+      addTracks(playlist, input.tracksToAdd());
+    }
+
+    return savePlaylistAndGetResult(playlist);
   }
 
   public Optional<PlaylistModel> findNotDeleted(UUID id, UUID userId) {
@@ -95,232 +252,206 @@ public class PlaylistService {
     return playlistRepository.findByNameIgnoreCaseAndUserIdAndDeletedOnIsNull(name, userId);
   }
 
-  public List<PlaylistModel> findAllByUserIdAndNotDeleted(UUID uuid) {
-    return playlistRepository.findAllByUserIdAndDeletedOnIsNull(uuid);
-  }
-
-  @Transactional
-  public PlaylistModel addToPlaylist(UUID id, String trackId, MediaType mediaType, UUID userId) {
-    var playlist = getPlaylist(id, userId);
-
-    boolean alreadyExists = playlistContentRepository.existsByPlaylistIdAndTrackIdAndMediaType(
-        playlist.getId(),
-        trackId,
-        mediaType
-    );
-
-    if (alreadyExists) {
-      throw new PlaylistContentAlreadyExistsException(
-          "Track with ID: '" + trackId + "' already exists in this playlist");
-    }
-
-    var track = toPlaylistContentModel(trackId, playlist);
-    playlist
-        .getItems()
-        .add(track);
-    return savePlaylistAndGetResult(playlist);
-  }
-
-  @Transactional
-  public PlaylistModel addToPlaylist(UUID id, Collection<String> trackIds, UUID userId) {
-    var playlist = getPlaylist(id, userId);
-    var existingTracks = playlist
-        .getItems()
-        .stream()
-        .map(PlaylistContentModel::getTrackId)
-        .filter(trackId -> !trackId.isBlank())
-        .collect(Collectors.toSet());
-    var tracksToAdd = new HashSet<>(trackIds);
-    tracksToAdd.removeAll(existingTracks);
-
-    var trackModels = tracksToAdd
-        .stream()
-        .map(track -> toPlaylistContentModel(track, playlist))
-        .collect(Collectors.toCollection(java.util.ArrayList::new));
-    playlist
-        .getItems()
-        .addAll(trackModels);
-
-    return savePlaylistAndGetResult(playlist);
-  }
-
-  @Transactional
-  public void delete(UUID id, UUID userId) {
-    var existing = playlistRepository
-        .findByIdAndUserIdAndDeletedOnIsNull(id, userId)
-        .orElseThrow(() -> new PlaylistNotFoundException("Playlist not found"));
-    existing.setDeletedOn(Instant.now());
-    playlistRepository.save(existing);
-  }
-
-  @Transactional
-  public PlaylistModel deleteTrackFromPlaylist(UUID id, String trackId, UUID userId) {
-    var playlist = getPlaylist(id, userId);
-    playlist
-        .getItems()
-        .removeIf(item -> item
-            .getTrackId()
-            .equals(trackId));
-    return savePlaylistAndGetResult(playlist);
-  }
-
-  @Transactional
-  public PlaylistModel deleteAllTracksFromPlaylist(UUID id, Collection<String> trackIds, UUID userId) {
-    var playlist = getPlaylist(id, userId);
-    playlist
-        .getItems()
-        .removeIf(item -> trackIds.contains(item.getTrackId()));
-    return savePlaylistAndGetResult(playlist);
-  }
-
-  @Transactional
-  public PlaylistModel deleteAllTracksFromPlaylist(UUID id, UUID userId) {
-    var playlist = getPlaylist(id, userId);
-    playlist
-        .getItems()
-        .clear();
-    return savePlaylistAndGetResult(playlist);
-  }
-
-  @Transactional
-  public PlaylistModel updatePlaylist(UUID id, PlaylistUpdateInput input, UUID userId) {
-    var playlist = getPlaylist(id, userId);
-    var oldName = playlist.getName();
-    var newName = input.newName();
-    var newTracks = input.newTracks();
-    var tracksToRemove = input.tracksToRemove();
-    var tracksToAdd = input.tracksToAdd();
-
-    if (newName != null && !newName.isBlank() && !newName.equals(oldName)) {
-      applyPlaylistNameUpdate(playlist, newName, userId);
-    }
-
-    // If newTracks is provided, it takes precedence over tracksToAdd and tracksToRemove
-    if (newTracks != null) {
-      overrideTracks(playlist, newTracks);
-      return savePlaylistAndGetResult(playlist);
-    }
-
-    if (tracksToRemove != null) {
-      removeTracks(playlist, tracksToRemove);
-    }
-
-    if (tracksToAdd != null) {
-      addTracks(playlist, tracksToAdd);
-    }
-
-    return savePlaylistAndGetResult(playlist);
-  }
-
-  @Transactional
-  public Collection<PlaylistModel> createPlaylists(List<PlaylistInput> playlists, UUID userId) {
-    var user = userRepository
-        .findById(userId)
-        .orElseThrow(() -> new UserNotFoundException("User with ID: '" + userId + "' not found"));
-    var userPlaylists = user.getPlaylistModels();
-    var existingPlaylistNames = userPlaylists
-        .stream()
-        .map(PlaylistModel::getName)
-        .collect(Collectors.toSet());
-    // Skip all playlists that already exist and create only the new ones
-    var playlistsToCreate = playlists
-        .stream()
-        .filter(playlist -> !existingPlaylistNames.contains(playlist.name()))
-        .map(playlist -> toPlaylistModel(playlist, user))
-        .collect(Collectors.toCollection(ArrayList::new));
-
-    userPlaylists.addAll(playlistsToCreate);
-    userRepository.saveAndFlush(user);
-    return findAllByUserIdAndNotDeleted(userId);
+  public List<PlaylistModel> findAllByUserIdAndNotDeleted(UUID userId) {
+    return playlistRepository.findAllByUserIdAndDeletedOnIsNull(userId);
   }
 
   private PlaylistModel toPlaylistModel(PlaylistInput input, UserModel user) {
     var playlistModel = new PlaylistModel();
-    playlistModel.setName(input.name());
-    setId(playlistModel, input.id());
+    playlistModel.setName(input.name().trim());
+    playlistModel.setCreatedOn(input.createdOn());
     playlistModel.setUser(user);
-    var trackModels = toPlaylistContentModels(input.trackIds(), playlistModel);
-    playlistModel.setItems(trackModels);
+    setId(playlistModel, input.id());
+
+    playlistModel.setItems(toPlaylistContentModels(input.tracks(), playlistModel));
+
     return playlistModel;
   }
 
-  private List<PlaylistContentModel> toPlaylistContentModels(Collection<String> trackIds, PlaylistModel playlist) {
-    return trackIds
+  private List<PlaylistContentModel> toPlaylistContentModels(
+      Collection<PlaylistTrackInfoInput> tracks,
+      PlaylistModel playlist
+  ) {
+    var uniqueTracks = dedupeTrackInputs(tracks);
+
+    return uniqueTracks
+        .values()
         .stream()
-        .filter(trackId -> !trackId.isBlank())
-        .map(trackId -> toPlaylistContentModel(trackId, playlist))
+        .map(track -> toPlaylistContentModel(track, playlist))
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  private void removeTracks(PlaylistModel playlist, Collection<String> trackIds) {
-    playlist
-        .getItems()
-        .removeIf(item -> trackIds.contains(item.getTrackId()));
-  }
-
-  private void addTracks(PlaylistModel playlist, Collection<String> trackIds) {
-    var existingTrackIds = playlist
+  private void addTracks(
+      PlaylistModel playlist,
+      Collection<PlaylistTrackInfoInput> tracks
+  ) {
+    var existingKeys = playlist
         .getItems()
         .stream()
-        .map(PlaylistContentModel::getTrackId)
-        .collect(Collectors.toSet());
-    var newTracksToAdd = trackIds
-        .stream()
-        .filter(trackId -> !trackId.isBlank())
-        .filter(trackId -> !existingTrackIds.contains(trackId))
-        .map(trackId -> toPlaylistContentModel(trackId, playlist))
-        .collect(Collectors.toSet());
-    playlist
-        .getItems()
-        .addAll(newTracksToAdd);
-  }
-
-  private void overrideTracks(PlaylistModel playlist, Collection<String> trackIds) {
-    var existingTrackIds = playlist
-        .getItems()
-        .stream()
-        .map(PlaylistContentModel::getTrackId)
-        .collect(Collectors.toSet());
-    var tracksToAdd = trackIds
-        .stream()
-        .filter(trackId -> !trackId.isBlank())
-        .filter(trackId -> !existingTrackIds.contains(trackId))
-        .map(trackId -> toPlaylistContentModel(trackId, playlist))
+        .map(this::toTrackKey)
         .collect(Collectors.toCollection(HashSet::new));
+
+    var uniqueTracks = dedupeTrackInputs(tracks);
+
+    var tracksToAdd = uniqueTracks
+        .entrySet()
+        .stream()
+        .filter(entry -> !existingKeys.contains(entry.getKey()))
+        .map(entry -> toPlaylistContentModel(entry.getValue(), playlist))
+        .collect(Collectors.toCollection(ArrayList::new));
+
+    playlist.getItems().addAll(tracksToAdd);
+  }
+
+  private void removeTracks(
+      PlaylistModel playlist,
+      Collection<PlaylistTrackIdentityInput> tracks
+  ) {
+    var keysToRemove = tracks == null
+        ? Set.<TrackKey>of()
+        : tracks
+            .stream()
+            .filter(this::isValidTrackIdentityInput)
+            .map(this::toTrackKey)
+            .collect(Collectors.toCollection(HashSet::new));
+
+    if (keysToRemove.isEmpty()) {
+      return;
+    }
+
     playlist
         .getItems()
-        .removeIf(item -> {
-          var trackId = item.getTrackId();
-          return !trackIds.contains(trackId);
-        });
+        .removeIf(item -> keysToRemove.contains(toTrackKey(item)));
+  }
+
+  /*
+   * Replace tracks using a diff instead of clear()+add().
+   *
+   * This avoids temporary UNIQUE(playlist_id, track_id, media_type)
+   * violations where Hibernate may insert before deleting old rows.
+   */
+  private void overrideTracks(
+      PlaylistModel playlist,
+      Collection<PlaylistTrackInfoInput> tracks
+  ) {
+    var desiredTracks = dedupeTrackInputs(tracks);
+    var desiredKeys = desiredTracks.keySet();
+
+    var existingKeys = playlist
+        .getItems()
+        .stream()
+        .map(this::toTrackKey)
+        .collect(Collectors.toCollection(HashSet::new));
+
     playlist
         .getItems()
-        .addAll(tracksToAdd);
+        .removeIf(item -> !desiredKeys.contains(toTrackKey(item)));
+
+    var keysToAdd = new HashSet<>(desiredKeys);
+    keysToAdd.removeAll(existingKeys);
+
+    for (var key : keysToAdd) {
+      var input = desiredTracks.get(key);
+      playlist
+          .getItems()
+          .add(toPlaylistContentModel(input, playlist));
+    }
   }
 
   private void applyPlaylistNameUpdate(PlaylistModel playlist, String newName, UUID userId) {
-    if (isPlaylistExisting(newName, userId)) {
-      var msg = "Playlist with name: '" + newName + "' already exists";
+    var trimmedName = newName.trim();
+
+    if (!normalizeName(trimmedName).equals(normalizeName(playlist.getName()))
+        && isPlaylistExisting(trimmedName, userId)) {
+      var msg = "Playlist with name: '" + trimmedName + "' already exists";
       throw new PlaylistAlreadyExistsException(msg);
     }
-    playlist.setName(newName);
+
+    playlist.setName(trimmedName);
   }
 
   private PlaylistModel getPlaylist(UUID id, UUID userId) {
     return playlistRepository
-        .findByIdAndUserId(id, userId)
+        .findByIdAndUserIdAndDeletedOnIsNull(id, userId)
         .orElseThrow(() -> {
           var msg = "Playlist with ID '" + id + "' not found";
           return new PlaylistNotFoundException(msg);
         });
   }
 
-  private PlaylistContentModel toPlaylistContentModel(String track, PlaylistModel playlistModel) {
+  private UserModel getUser(UUID userId) {
+    return userRepository
+        .findById(userId)
+        .orElseThrow(() -> new UserNotFoundException("User with ID: '" + userId + "' not found"));
+  }
+
+  private PlaylistContentModel toPlaylistContentModel(
+      PlaylistTrackInfoInput input,
+      PlaylistModel playlistModel
+  ) {
     return PlaylistContentModel
         .builder()
-        .trackId(track)
+        .trackId(normalizeTrackId(input.trackId()))
+        .mediaType(input.mediaType())
+        .addedOn(input.addedOn())
         .playlist(playlistModel)
         .build();
+  }
+
+  private TrackKey toTrackKey(PlaylistTrackInfoInput input) {
+    return new TrackKey(
+        normalizeTrackId(input.trackId()),
+        input.mediaType()
+    );
+  }
+
+  private TrackKey toTrackKey(PlaylistTrackIdentityInput input) {
+    return new TrackKey(
+        normalizeTrackId(input.trackId()),
+        input.mediaType()
+    );
+  }
+
+  private TrackKey toTrackKey(PlaylistContentModel content) {
+    return new TrackKey(
+        normalizeTrackId(content.getTrackId()),
+        content.getMediaType()
+    );
+  }
+
+  private LinkedHashMap<TrackKey, PlaylistTrackInfoInput> dedupeTrackInputs(
+      Collection<PlaylistTrackInfoInput> tracks
+  ) {
+    var result = new LinkedHashMap<TrackKey, PlaylistTrackInfoInput>();
+
+    if (tracks == null) {
+      return result;
+    }
+
+    for (var track : tracks) {
+      if (!isValidTrackInfoInput(track)) {
+        continue;
+      }
+
+      result.putIfAbsent(toTrackKey(track), track);
+    }
+
+    return result;
+  }
+
+  private boolean isValidTrackInfoInput(PlaylistTrackInfoInput input) {
+    return input != null
+        && input.trackId() != null
+        && !input.trackId().isBlank()
+        && input.mediaType() != null
+        && input.addedOn() != null;
+  }
+
+  private boolean isValidTrackIdentityInput(PlaylistTrackIdentityInput input) {
+    return input != null
+        && input.trackId() != null
+        && !input.trackId().isBlank()
+        && input.mediaType() != null;
   }
 
   private boolean isPlaylistExisting(String name, UUID userId) {
@@ -328,12 +459,18 @@ public class PlaylistService {
   }
 
   private void setId(PlaylistModel playlistModel, UUID id) {
-    playlistModel.setId((id != null) ? id : UUID.randomUUID());
+    playlistModel.setId(id != null ? id : UUID.randomUUID());
   }
 
-  private PlaylistModel savePlaylistAndGetResult(
-      PlaylistModel playlist
-  ) {
+  private String normalizeTrackId(String trackId) {
+    return trackId.trim();
+  }
+
+  private String normalizeName(String name) {
+    return name == null ? "" : name.trim().toLowerCase();
+  }
+
+  private PlaylistModel savePlaylistAndGetResult(PlaylistModel playlist) {
     var saved = playlistRepository.saveAndFlush(playlist);
     entityManager.refresh(saved);
     return saved;

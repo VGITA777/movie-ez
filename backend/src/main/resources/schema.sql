@@ -11,6 +11,7 @@ CREATE TABLE playlists
     user_id             UUID         NOT NULL REFERENCES users (id),
     last_edit_timestamp TIMESTAMPTZ  NOT NULL             DEFAULT NOW(),
     name                VARCHAR(100) NOT NULL,
+    created_on          TIMESTAMPTZ  NOT NULL             DEFAULT NOW(),
     deleted_on          TIMESTAMPTZ
 );
 
@@ -23,6 +24,7 @@ CREATE TABLE playlist_content
     playlist_id UUID        NOT NULL REFERENCES playlists (id)
         ON DELETE CASCADE,
     track_id    TEXT        NOT NULL,
+    added_on    TIMESTAMPTZ NOT NULL             DEFAULT NOW(),
     media_type  VARCHAR(20) NOT NULL             DEFAULT 'MOVIE'
         CHECK ( media_type IN ('MOVIE', 'TV', 'PERSON')),
     CONSTRAINT single_entry UNIQUE (playlist_id, track_id, media_type)
