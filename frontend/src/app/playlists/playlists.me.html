@@ -8,28 +8,45 @@
         personal media vault, organized neatly in a single place</p>
     </div>
 
-    <div class="playlist-content__controls flex flex-row gap-4">
-      <button hlmBtn (click)="createNewPlaylist()">
-        <ng-icon name="lucideCirclePlus" />
-        @if (bp.sm()) {
-          <span class="text-xs tracking-wide font-light">New Playlist</span>
-        }
-      </button>
-
-      @if (isAuthenticated()) {
-        <button
-          hlmBtn
-          variant="outline" [disabled]="isSyncing() || !isAuthenticated()"
-
-          (click)="syncPlaylists()">
-          <ng-icon
-            [name]="(isSyncing()) ? 'lucideRefreshCw' : 'lucideCloudSync'"
-            [class.animate-spin]="isSyncing()" />
+    <div class="playlist-content__controls flex flex-row gap-4 w-full justify-between">
+      <div class="playlist-content__controls__left flex flex-row gap-2 sm:gap-4">
+        <button hlmBtn (click)="createNewPlaylist()">
+          <ng-icon name="lucideCirclePlus" />
           @if (bp.sm()) {
-            <span class="text-xs tracking-wide font-light">Sync</span>
+            <span class="text-xs tracking-wide font-light">New Playlist</span>
           }
         </button>
-      }
+
+        @if (isAuthenticated()) {
+          <button
+            hlmBtn
+            variant="outline" [disabled]="isSyncing() || !isAuthenticated()"
+
+            (click)="syncPlaylists()">
+            <ng-icon
+              [name]="(isSyncing()) ? 'lucideRefreshCw' : 'lucideCloudSync'"
+              [class.animate-spin]="isSyncing()" />
+            @if (bp.sm()) {
+              <span class="text-xs tracking-wide font-light">Sync</span>
+            }
+          </button>
+        }
+      </div>
+
+      <div class="playlist-content__controls__right flex flex-row gap-4">
+        <div hlmButtonGroup>
+          <button hlmBtn variant="outline" class="rounded-full" (click)="toggleSortingDirection()">
+            <ng-icon
+              [name]="(selectedSortingDirection() === 'asc') ? 'lucideArrowUpNarrowWide' : 'lucideArrowDownWideNarrow'"
+            />
+          </button>
+          <button
+            hlmBtn [hlmDropdownMenuTrigger]="sortOptionDropDown" variant="outline"
+            class="rounded-full">
+            <ng-icon name="lucideArrowUpDown" />
+          </button>
+        </div>
+      </div>
 
     </div>
 
@@ -46,7 +63,7 @@
           <ng-container *ngTemplateOutlet="playlistEntrySkeleton" />
         }
       } @else {
-        @for (playlist of playlists(); track playlist.id) {
+        @for (playlist of sortedPlaylists(); track playlist.id) {
           <me-playlists-entry [playlist]="playlist" />
         }
         <ng-container *ngTemplateOutlet="newPlaylist" />
@@ -74,4 +91,20 @@
       <hlm-skeleton class="w-1/2 h-3 rounded" />
     </div>
   </div>
+</ng-template>
+
+<ng-template #sortOptionDropDown>
+  <hlm-dropdown-menu class="w-[150px]">
+    <hlm-dropdown-menu-group>
+      @for (sortOption of sortingOptions; track sortOption.value) {
+        <button
+          hlmDropdownMenuRadio
+          (triggered)="updatedSelectedSortingOption(sortOption)"
+          [checked]="selectedSortingOption().value === sortOption.value">
+          <hlm-dropdown-menu-radio-indicator />
+          {{ sortOption.label }}
+        </button>
+      }
+    </hlm-dropdown-menu-group>
+  </hlm-dropdown-menu>
 </ng-template>
