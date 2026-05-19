@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Router } from '@angular/router';
 
 export interface User {
   readonly iss: string;
@@ -22,6 +23,7 @@ export interface User {
 })
 export class AuthFacadeService {
   private readonly auth: OidcSecurityService = inject(OidcSecurityService);
+  private readonly router: Router = inject(Router);
 
   public readonly isAuthenticated: Signal<boolean> = computed(
     () => this.auth.authenticated().isAuthenticated,
@@ -33,8 +35,16 @@ export class AuthFacadeService {
     return this.auth.userData().userData as User;
   });
 
-  public login(): void {
-    this.auth.authorizeWithPopUp().subscribe();
+  public login(redirect?: string): void {
+    sessionStorage.setItem('postLoginRedirect', redirect ?? '/');
+
+    this.auth.authorizeWithPopUp().subscribe(({ isAuthenticated }) => {
+      if (isAuthenticated) {
+        const redirect: string = sessionStorage.getItem('postLoginRedirect') ?? '/';
+        sessionStorage.removeItem('postLoginRedirect');
+        this.router.navigate([redirect]).then((_) => {});
+      }
+    });
   }
 
   public logout(): void {

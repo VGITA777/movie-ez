@@ -20,8 +20,6 @@ import { HlmDialog, HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { SearchMe } from '@search/search.me';
 import { RouterLink } from '@angular/router';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
-import { HlmButtonImports } from '@spartan-ng/helm/button';
-import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
 import { HlmNavigationMenuImports } from '@spartan-ng/helm/navigation-menu';
 
 @Component({
@@ -34,8 +32,6 @@ import { HlmNavigationMenuImports } from '@spartan-ng/helm/navigation-menu';
     HlmDialogImports,
     SearchMe,
     RouterLink,
-    HlmButtonImports,
-    HlmTooltipImports,
     HlmNavigationMenuImports,
     NgTemplateOutlet,
   ],
@@ -63,7 +59,7 @@ export class NavigationMe {
   }
 
   protected login(): void {
-    this.authService.login();
+    this.authService.login(window.location.pathname);
   }
 
   protected logout(): void {
