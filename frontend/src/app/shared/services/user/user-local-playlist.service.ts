@@ -12,7 +12,7 @@ import {
 import { storage } from '@signality/core';
 import { Serializer } from '@signality/core/browser/storage';
 import { Observable, of } from 'rxjs';
-import { USER_LOCAL_STORAGE_PLAYLIST_KEY } from '@shared/constants';
+import { MAX_PLAYLIST_NAME_LENGTH, USER_LOCAL_STORAGE_PLAYLIST_KEY } from '@shared/constants';
 
 export interface PlaylistService {
   createPlaylist(
@@ -20,18 +20,23 @@ export interface PlaylistService {
     name: string,
     items?: OfflinePlaylistContent[],
   ): Observable<Playlist>;
+
   deletePlaylist(playlistId: string): Observable<void>;
+
   getPlaylist(playlistId: string): Observable<Playlist | null>;
+
   removeFromPlaylist(
     playlistId: string,
     trackId: string,
     mediaType: MediaType,
   ): Observable<Playlist | null>;
+
   addToPlaylist(
     playlistId: string,
     trackId: string,
     mediaType: MediaType,
   ): Observable<Playlist | null>;
+
   renamePlaylist(playlistId: string, newName: string): Observable<Playlist | null>;
 }
 
@@ -50,20 +55,27 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
 
       return parsed
         .filter((playlist) => this.isValidPlaylist(playlist))
-        .map((playlist) => ({
-          id: playlist.id ?? crypto.randomUUID(),
-          name: playlist.name.trim(),
-          lastEditTimestamp: this.normalizeTimestamp(playlist.lastEditTimestamp),
-          deletedOn: this.normalizeOptionalTimestamp(playlist.deletedOn),
-          items: this.toUniqueContents(
-            playlist.items
-              .filter((content: unknown) => this.isValidContent(content))
-              .map((content: any) => ({
-                trackId: content.trackId.trim(),
-                mediaType: this.normalizeMediaType(content.mediaType),
-              })),
-          ),
-        }));
+        .map((playlist: any) => {
+          const createdOn = this.normalizeTimestamp(playlist.createdOn);
+          const lastEditTimestamp = this.normalizeTimestamp(playlist.lastEditTimestamp);
+
+          return {
+            id: playlist.id ?? crypto.randomUUID(),
+            name: playlist.name.trim(),
+            createdOn,
+            lastEditTimestamp,
+            deletedOn: this.normalizeOptionalTimestamp(playlist.deletedOn),
+            items: this.toUniqueContents(
+              playlist.items
+                .filter((content: unknown) => this.isValidContent(content))
+                .map((content: any) => ({
+                  trackId: content.trackId.trim(),
+                  mediaType: this.normalizeMediaType(content.mediaType),
+                  addedOn: this.normalizeTimestamp(content.addedOn),
+                })),
+            ),
+          };
+        });
     } catch {
       return [];
     }
@@ -109,9 +121,18 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
       const normalized: OfflinePlaylistContent = {
         trackId: content.trackId.trim(),
         mediaType: this.normalizeMediaType(content.mediaType),
+        addedOn: this.normalizeTimestamp(content.addedOn),
       };
 
-      byKey.set(this.contentKey(normalized), normalized);
+      const key = this.contentKey(normalized);
+      const existing = byKey.get(key);
+
+      /**
+       * If duplicates exist, keep the earliest addedOn.
+       */
+      if (!existing || this.isBefore(normalized.addedOn, existing.addedOn)) {
+        byKey.set(key, normalized);
+      }
     }
 
     return [...byKey.values()];
@@ -119,6 +140,10 @@ class LocalUserPlaylistsSerializer implements Serializer<OfflinePlaylist[]> {
 
   private contentKey(content: OfflinePlaylistContent): string {
     return `${content.mediaType}:${content.trackId}`;
+  }
+
+  private isBefore(left: string, right: string): boolean {
+    return new Date(left).getTime() < new Date(right).getTime();
   }
 }
 
@@ -203,7 +228,7 @@ export class UserLocalPlaylistService implements PlaylistService {
       return of(currentPlaylist);
     }
 
-    if (newNameTrimmed === '' || newNameTrimmed.length > 25) {
+    if (newNameTrimmed === '' || newNameTrimmed.length > MAX_PLAYLIST_NAME_LENGTH) {
       return of(null);
     }
 
@@ -231,15 +256,24 @@ export class UserLocalPlaylistService implements PlaylistService {
     items: OfflinePlaylistContent[] = [],
   ): Observable<OfflinePlaylist> {
     const nameTrimmed: string = name.trim();
-    if (nameTrimmed === '' || nameTrimmed.length > 25) {
+
+    if (nameTrimmed === '' || nameTrimmed.length > MAX_PLAYLIST_NAME_LENGTH) {
       throw new Error('Playlist name must be between 1 and 25 characters long.');
     }
+
+    const now: string = this.nowIso();
 
     const newPlaylist: OfflinePlaylist = {
       id,
       name: nameTrimmed,
-      items: this.toUniqueContents(items),
-      lastEditTimestamp: this.nowIso(),
+      items: this.toUniqueContents(
+        items.map((item) => ({
+          ...item,
+          addedOn: item.addedOn ?? now,
+        })),
+      ),
+      createdOn: now,
+      lastEditTimestamp: now,
     };
 
     this.userPlaylist.update((playlists) => [...playlists, newPlaylist]);
@@ -318,7 +352,8 @@ export class UserLocalPlaylistService implements PlaylistService {
     mediaType: MediaType,
   ): Observable<OfflinePlaylist | null> {
     const currentPlaylist = this.findPlaylistById(id);
-    const contentToAdd = this.normalizeContent({ trackId, mediaType });
+    const now = this.nowIso();
+    const contentToAdd = this.normalizeContent({ trackId, mediaType, addedOn: now });
 
     if (!currentPlaylist || currentPlaylist.deletedOn || !contentToAdd) {
       return of(null);
@@ -333,7 +368,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     const updatedPlaylist: OfflinePlaylist = {
       ...currentPlaylist,
       items: this.toUniqueContents([...currentPlaylist.items, contentToAdd]),
-      lastEditTimestamp: this.nowIso(),
+      lastEditTimestamp: now,
     };
 
     this.updateExistingPlaylistById(id, updatedPlaylist);
@@ -388,7 +423,8 @@ export class UserLocalPlaylistService implements PlaylistService {
 
       updated[playlistIndex] = {
         ...newPlaylist,
-        lastEditTimestamp: newPlaylist.lastEditTimestamp ?? this.nowIso(),
+        createdOn: this.normalizeTimestamp(newPlaylist.createdOn),
+        lastEditTimestamp: this.normalizeTimestamp(newPlaylist.lastEditTimestamp),
         items: this.toUniqueContents(newPlaylist.items),
       };
 
@@ -400,6 +436,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     return {
       id: playlist.id,
       name: playlist.name.trim(),
+      createdOn: this.normalizeTimestamp(playlist.createdOn),
       lastEditTimestamp: this.normalizeTimestamp(playlist.lastEditTimestamp),
       deletedOn: this.normalizeOptionalTimestamp(playlist.deletedOn),
       items: this.toUniqueContents(playlist.items ?? []),
@@ -416,7 +453,15 @@ export class UserLocalPlaylistService implements PlaylistService {
         continue;
       }
 
-      byKey.set(this.contentKey(normalized), normalized);
+      const key = this.contentKey(normalized);
+      const existing = byKey.get(key);
+
+      /**
+       * If duplicates exist, keep the earliest addedOn.
+       */
+      if (!existing || this.isBefore(normalized.addedOn, existing.addedOn)) {
+        byKey.set(key, normalized);
+      }
     }
 
     return [...byKey.values()];
@@ -434,6 +479,7 @@ export class UserLocalPlaylistService implements PlaylistService {
     return {
       trackId,
       mediaType: this.normalizeMediaType(content.mediaType),
+      addedOn: this.normalizeTimestamp(content.addedOn),
     };
   }
 
@@ -461,6 +507,7 @@ export class UserLocalPlaylistService implements PlaylistService {
 
     return {
       ...newest,
+      createdOn: this.oldestTimestamp(first.createdOn, second.createdOn),
       deletedOn: this.newestOptionalTimestamp(first.deletedOn, second.deletedOn),
       items: this.toUniqueContents([...first.items, ...second.items]),
       lastEditTimestamp: this.newestTimestamp(first.lastEditTimestamp, second.lastEditTimestamp),
@@ -521,6 +568,22 @@ export class UserLocalPlaylistService implements PlaylistService {
     }
 
     return new Date(left).getTime() >= new Date(right).getTime() ? left : right;
+  }
+
+  private oldestTimestamp(left?: string, right?: string): string {
+    if (!left) {
+      return right ?? this.nowIso();
+    }
+
+    if (!right) {
+      return left;
+    }
+
+    return new Date(left).getTime() <= new Date(right).getTime() ? left : right;
+  }
+
+  private isBefore(left: string, right: string): boolean {
+    return new Date(left).getTime() < new Date(right).getTime();
   }
 
   private nowIso(): string {

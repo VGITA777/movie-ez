@@ -1,4 +1,4 @@
-import { LanguageCode, MediaType, OfflinePlaylist, OfflinePlaylistContent } from '@shared/models';
+import { LanguageCode, MediaType, OfflinePlaylist } from '@shared/models';
 
 export interface SearchMultiInput {
   page: number;
@@ -33,10 +33,6 @@ export interface DiscoverTvInput {
   firstAirDateYear?: number;
 }
 
-export interface GetUserPlaylistInput {
-  id: string;
-}
-
 export interface TvSeasonDetailsInput {
   seriesId: number;
   seasonNumber: number;
@@ -59,21 +55,45 @@ export interface GetUserPlaylistInput {
   id: string;
 }
 
-export interface CreateUserPlaylistInput {
-  name: string;
-  playlistId: string;
-  items?: OfflinePlaylistContent[];
+/**
+ * Create/add payload.
+ *
+ * Backend requires all 3 fields:
+ * - trackId
+ * - mediaType
+ * - addedOn
+ */
+export interface PlaylistTrackInfoInput {
+  trackId: string;
+  mediaType: MediaType;
+  addedOn: string;
 }
 
-export interface AddTrackToPlaylistInput {
-  playlistId: string;
+/**
+ * Delete/remove payload.
+ *
+ * Deleting does not need addedOn.
+ * It only needs the content identity.
+ */
+export interface PlaylistTrackIdentityInput {
   trackId: string;
   mediaType: MediaType;
 }
 
+export interface CreateUserPlaylistInput {
+  playlistId: string;
+  name: string;
+  createdOn: string;
+  tracks?: PlaylistTrackInfoInput[];
+}
+
+export interface AddTrackToPlaylistInput extends PlaylistTrackInfoInput {
+  playlistId: string;
+}
+
 export interface AddTracksToPlaylistInput {
   playlistId: string;
-  items: OfflinePlaylistContent[];
+  tracks: PlaylistTrackInfoInput[];
 }
 
 export interface DeletePlaylistInput {
@@ -82,13 +102,11 @@ export interface DeletePlaylistInput {
 
 export interface DeleteAllTracksFromPlaylistInput {
   playlistId: string;
-  items: OfflinePlaylistContent[];
+  tracks: PlaylistTrackIdentityInput[];
 }
 
-export interface DeleteTrackFromPlaylistInput {
+export interface DeleteTrackFromPlaylistInput extends PlaylistTrackIdentityInput {
   playlistId: string;
-  trackId: string;
-  mediaType: MediaType;
 }
 
 export interface PlaylistUpdateInput {
@@ -96,37 +114,40 @@ export interface PlaylistUpdateInput {
 
   /**
    * Full replacement list.
+   * Backend requires addedOn for every new/replaced content.
    */
-  newTracks?: OfflinePlaylistContent[] | null;
+  newTracks?: PlaylistTrackInfoInput[] | null;
 
   /**
    * Incremental removals.
+   * Only trackId + mediaType are needed.
    */
-  tracksToRemove?: OfflinePlaylistContent[] | null;
+  tracksToRemove?: PlaylistTrackIdentityInput[] | null;
 
   /**
    * Incremental additions.
+   * Backend requires addedOn for every content.
    */
-  tracksToAdd?: OfflinePlaylistContent[] | null;
+  tracksToAdd?: PlaylistTrackInfoInput[] | null;
 }
 
 export interface PlaylistInput {
   id: string;
   name: string;
-  items: OfflinePlaylistContent[];
+  createdOn: string;
+  tracks: PlaylistTrackInfoInput[];
 }
 
 export interface CreatePlaylistsInput {
   playlists: PlaylistInput[];
 }
 
-export interface PlaylistAndTracksInput {
-  playlistId: string;
-  items: OfflinePlaylistContent[];
+export interface PlaylistTracksInput {
+  tracks: PlaylistTrackInfoInput[];
 }
 
-export interface PlaylistTracksInput {
-  items: OfflinePlaylistContent[];
+export interface PlaylistTrackIdentitiesInput {
+  tracks: PlaylistTrackIdentityInput[];
 }
 
 export interface PlaylistSyncInput {
