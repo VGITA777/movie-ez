@@ -163,19 +163,6 @@ export class PlaylistsEntryMe {
 
   public readonly playlist: InputSignal<OfflinePlaylist> = input.required();
 
-  private getMediaImages(trackId: number, mediaType: SearchableMediaType): Observable<ImagesModel> {
-    switch (mediaType) {
-      case MediaType.MOVIE:
-        return this.mediaMovieService.getMovieImages(trackId);
-      case MediaType.TV:
-        return this.mediaTvSeriesService.getTvSeriesImages(trackId);
-    }
-  }
-
-  private getTmdbImageUrl(filePath: string, size: string = 'original'): string {
-    return `${environment.tmdb.imageBaseUrl}${size}${filePath}`;
-  }
-
   protected deletePlaylist(): void {
     this.localPlaylistService.deletePlaylist(this.playlist().id);
   }
@@ -197,5 +184,18 @@ export class PlaylistsEntryMe {
     }
     this.localPlaylistService.renamePlaylist(this.playlist().id, trimmedValue);
     ctx.close();
+  }
+
+  private getMediaImages(trackId: number, mediaType: SearchableMediaType): Observable<ImagesModel> {
+    switch (mediaType) {
+      case MediaType.MOVIE:
+        return this.mediaMovieService.getMovieImages(trackId);
+      case MediaType.TV:
+        return this.mediaTvSeriesService.getTvSeriesImages(trackId);
+    }
+  }
+
+  private getTmdbImageUrl(filePath: string, size: string = 'original'): string {
+    return `${environment.tmdb.imageBaseUrl}${size}${filePath}`;
   }
 }

@@ -64,7 +64,11 @@
         }
       } @else {
         @for (playlist of sortedPlaylists(); track playlist.id) {
-          <me-playlists-entry [playlist]="playlist" />
+          <me-playlists-entry
+            [playlist]="playlist"
+            [style.--animation-delay]="`${$index * 50}ms`"
+            animate.enter="enter-animation"
+          />
         }
         <ng-container *ngTemplateOutlet="newPlaylist" />
       }

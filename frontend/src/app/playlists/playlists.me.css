@@ -1,0 +1,14 @@
+@keyframes fadeAndSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.enter-animation {
+  animation: fadeAndSlideIn 0.5s ease-in-out var(--animation-delay, 0s) backwards;
+}
