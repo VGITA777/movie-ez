@@ -107,3 +107,9 @@ my progress here.
 - Added a way to sync playlists from the Playlists Page and some minor UI improvements.
 - Added createdOn for Playlists and addedOn for Playlist Content.
 - Added a feature for sorting playlists in the Playlists Page.
+
+### May 20, 2026
+- Started to create the Playlist Content Page
+
+### May 21, 2026
+- Updated the Playlist Content Page.

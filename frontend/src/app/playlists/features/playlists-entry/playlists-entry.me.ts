@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -18,9 +19,7 @@ import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
 import { first, map, Observable } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { NgOptimizedImage } from '@angular/common';
-import { environment } from '@environments/environment';
-import { forkJoinOrEmpty } from '@shared/utils';
+import { forkJoinOrEmpty, getUpdateLabel } from '@shared/utils';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
@@ -33,6 +32,8 @@ import { HlmInputImports } from '@spartan-ng/helm/input';
 import { toast } from '@spartan-ng/brain/sonner';
 import { DEFAULT_PLAYLIST_CONFIG, MAX_PLAYLIST_NAME_LENGTH } from '@shared/constants';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
+import { PlaylistEntryCoverMe } from './ui/playlist-entry-cover/playlist-entry-cover.me';
+import { environment } from '@environments/environment';
 
 type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
   images: ImagesModel;
@@ -41,7 +42,7 @@ type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
 @Component({
   selector: 'me-playlists-entry',
   imports: [
-    NgOptimizedImage,
+    PlaylistEntryCoverMe,
     HlmButtonImports,
     HlmIconImports,
     HlmDropdownMenuImports,
@@ -52,6 +53,7 @@ type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
   templateUrl: './playlists-entry.me.html',
   styleUrl: './playlists-entry.me.css',
   providers: [provideIcons({ lucideEllipsisVertical })],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlaylistsEntryMe {
   private readonly navigationFacade: NavigationFacade = inject(NavigationFacade);
@@ -92,62 +94,17 @@ export class PlaylistsEntryMe {
       return forkJoinOrEmpty(requests$);
     },
   });
-  protected readonly singleImage: Signal<string> = computed(() => {
+  protected readonly coverImages: Signal<string[]> = computed(() => {
     return (
-      `${environment.tmdb.imageBaseUrl}original${this.images.value()?.[0]?.images?.posters?.[0]?.file_path}` ||
-      '/images/placeholder.png'
-    );
-  });
-  protected readonly multipleImages: Signal<string[]> = computed(() => {
-    const posters: string[] =
       this.images
         .value()
-        ?.map((item) => {
-          const poster = item.images.posters.find((poster) => !!poster.file_path);
-          const backdrop = item.images.backdrops.find((backdrop) => !!backdrop.file_path);
-
-          if (poster) {
-            return this.getTmdbImageUrl(poster.file_path);
-          } else if (backdrop) {
-            return this.getTmdbImageUrl(backdrop.file_path);
-          } else {
-            return null;
-          }
-        })
-        .filter((poster): poster is string => poster !== null) ?? [];
-    return posters.slice(0, 4);
+        ?.map((item) => this.resolveCoverImageUrl(item.images))
+        .filter((url): url is string => url !== null) ?? []
+    );
   });
   protected readonly lastModificationLabel: Signal<string> = computed(() => {
     const timestamp = this.playlist().lastEditTimestamp;
-    const parsedTime = Date.parse(timestamp);
-
-    // Fallback in case the timestamp is invalid or missing
-    if (isNaN(parsedTime)) {
-      return 'Unknown';
-    }
-
-    const editDate = new Date(parsedTime);
-    const today = new Date();
-
-    editDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    const diffInMs = today.getTime() - editDate.getTime();
-    const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
-
-    if (diffInDays === 0) {
-      return 'Today';
-    }
-
-    if (diffInDays === 1) {
-      return 'Yesterday';
-    }
-
-    if (diffInDays > 1 && diffInDays <= 5) {
-      return `${diffInDays} Days Ago`;
-    }
-
-    return 'Long time ago';
+    return getUpdateLabel(timestamp);
   });
   protected readonly itemsCountLabel: Signal<string> = computed(() => {
     const count: number = this.playlist().items.length;
@@ -199,6 +156,18 @@ export class PlaylistsEntryMe {
       case MediaType.TV:
         return this.mediaTvSeriesService.getTvSeriesImages(trackId);
     }
+  }
+
+  private resolveCoverImageUrl(images: ImagesModel): string | null {
+    const poster = images.posters.find((item) => !!item.file_path);
+
+    if (poster?.file_path) {
+      return this.getTmdbImageUrl(poster.file_path);
+    }
+
+    const backdrop = images.backdrops.find((item) => !!item.file_path);
+
+    return backdrop?.file_path ? this.getTmdbImageUrl(backdrop.file_path) : null;
   }
 
   private getTmdbImageUrl(filePath: string, size: string = 'original'): string {

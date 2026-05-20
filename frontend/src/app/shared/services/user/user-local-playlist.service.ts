@@ -322,6 +322,10 @@ export class UserLocalPlaylistService implements PlaylistService {
     return of(this.findPlaylistById(id));
   }
 
+  public getPlaylistNotObservable(id: string): OfflinePlaylist | null {
+    return this.findPlaylistById(id);
+  }
+
   public removeFromPlaylist(
     id: string,
     trackId: string,

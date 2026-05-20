@@ -3,29 +3,7 @@
     class="playlists-entry__images w-full aspect-square rounded-lg overflow-hidden border-2 border-card brightness-90"
     (click)="navigateToPlaylistPage()"
   >
-    @let imagesToUse = images.value();
-    @if (imagesToUse.length === 0) {
-      <div class="playlist-entry__image w-full h-full relative">
-        <img
-          ngSrc="/images/placeholder-empty-playlist.png" class="object-cover" alt="Cover Image"
-          loading="lazy"
-          fill>
-      </div>
-    } @else if ((
-      imagesToUse.length >= 1 && imagesToUse.length <= 3
-    ) || multipleImages().length < 4) {
-      <div class="playlist-entry__image w-full h-full relative">
-        <img [ngSrc]="singleImage()" class="object-cover" alt="Cover Image" loading="lazy" fill>
-      </div>
-    } @else {
-      <div class="playlist-entry__images-grid grid grid-cols-2 grid-rows-2 w-full h-full">
-        @for (image of multipleImages(); track image) {
-          <div class="playlist-entry__image w-full h-full relative">
-            <img [ngSrc]="image" class="object-cover" alt="Cover Image" loading="lazy" fill>
-          </div>
-        }
-      </div>
-    }
+    <me-playlist-entry-cover [images]="coverImages()" />
   </button>
   <div class="playlists-entry__info relative flex flex-col">
     <div class="playlists-entry__info__header flex flex-row justify-between items-end">

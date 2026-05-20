@@ -1,3 +1,45 @@
-<section class="playlist">
+<section class="playlist-contents mt-18 flex justify-center">
+  <div class="playlist-contents__wrapper w-[95%] h-full flex flex-col gap-4 relative">
+    <div class="header flex flex-col items-center gap-4 sm:flex-row sm:items-end">
+      <!-- Playlist Image Cover -->
+      <me-playlist-entry-cover
+        [images]="coverImages()"
+        class="w-full aspect-square max-w-[200px] sm:max-w-[225px] md:max-w-[250px] rounded-md overflow-hidden" />
+
+      <!-- Playlist Meta -->
+      <div class="header-meta flex flex-col items-center gap-1 sm:items-start">
+        <!-- Title -->
+        <h1 class="font-bold text-4xl tracking-tight">{{
+            currentPlaylist()?.name ?? 'Unknown'
+          }}</h1>
+        <!-- Total Items, Last Modification Date-->
+        <div class="header-meta flex gap-4 text-sm text-muted-foreground font-light tracking-wide">
+          <span>{{ currentPlaylist()?.items?.length ?? 0 }} Items</span>
+          <span class="font-black">&middot;</span>
+          <span>Updated {{ lastModificationLabel() }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <!-- Add Controls Here -->
+      <span>Controls Here</span>
+    </div>
+
+    <hlm-separator />
+
+    <div
+      class="body grid gap-4 sm:gap-5 lg:gap-6
+      grid-cols-[repeat(auto-fill,minmax(150px,1fr))]
+      sm:grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
+      lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]
+      ">
+      @for (playlistItem of currentPlaylistInfo(); track playlistItem.id) {
+        <me-media-carousel-cover-item [item]="playlistItem" />
+      }
+    </div>
+  </div>
 
 </section>

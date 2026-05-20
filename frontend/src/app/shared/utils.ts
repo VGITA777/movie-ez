@@ -1,6 +1,7 @@
 import { GENRE_MAP } from '@shared/shared-types';
 import { Video, VideosModel } from '@shared/models';
 import { forkJoin, Observable, of } from 'rxjs';
+import { environment } from '@environments/environment';
 
 export function convertRuntimeToHoursAndMinutes(runtime: number): string {
   const hours: number = Math.floor(runtime / 60);
@@ -22,6 +23,14 @@ export function toGenres(genreIds: number[] | undefined): string[] {
   }
 
   return genreIds.map((genreId) => GENRE_MAP[genreId] ?? '').filter((genre) => genre !== '');
+}
+
+export function toTmdbImageUrl(path: string | null, size: string = 'original'): string {
+  if (!path) {
+    return '/images/placeholder-poster.png';
+  }
+
+  return `${environment.tmdb.imageBaseUrl ?? 'https://image.tmdb.org/t/p/'}${size}${path}`;
 }
 
 export async function loadFile<T>(filePath: string): Promise<T> {
@@ -91,4 +100,40 @@ export function forkJoinOrEmpty<T>(observables: Observable<T>[]): Observable<T[]
   } else {
     return forkJoin(observables);
   }
+}
+
+export function getUpdateLabel(timestamp: string): string {
+  if (!timestamp || timestamp.trim().length === 0) {
+    return 'Unknown';
+  }
+
+  const parsedTime = Date.parse(timestamp.trim());
+
+  // Fallback in case the timestamp is invalid or missing
+  if (isNaN(parsedTime)) {
+    return 'Unknown';
+  }
+
+  const editDate = new Date(parsedTime);
+  const today = new Date();
+
+  editDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  const diffInMs = today.getTime() - editDate.getTime();
+  const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInDays === 0) {
+    return 'Today';
+  }
+
+  if (diffInDays === 1) {
+    return 'Yesterday';
+  }
+
+  if (diffInDays > 1 && diffInDays <= 5) {
+    return `${diffInDays} Days Ago`;
+  }
+
+  return 'Long time ago';
 }
