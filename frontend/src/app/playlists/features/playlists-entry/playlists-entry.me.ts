@@ -32,6 +32,7 @@ import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { HlmInputImports } from '@spartan-ng/helm/input';
 import { toast } from '@spartan-ng/brain/sonner';
 import { DEFAULT_PLAYLIST_CONFIG, MAX_PLAYLIST_NAME_LENGTH } from '@shared/constants';
+import { NavigationFacade } from '@shared/services/navigation-facade.service';
 
 type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
   images: ImagesModel;
@@ -53,6 +54,7 @@ type PlaylistItemWithImagesAndDetails = OfflinePlaylistContent & {
   providers: [provideIcons({ lucideEllipsisVertical })],
 })
 export class PlaylistsEntryMe {
+  private readonly navigationFacade: NavigationFacade = inject(NavigationFacade);
   private readonly mediaMovieService: MediaMovieService = inject(MediaMovieService);
   private readonly mediaTvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
   private readonly localPlaylistService: UserLocalPlaylistService =
@@ -184,6 +186,10 @@ export class PlaylistsEntryMe {
     }
     this.localPlaylistService.renamePlaylist(this.playlist().id, trimmedValue);
     ctx.close();
+  }
+
+  protected navigateToPlaylistPage(): void {
+    this.navigationFacade.navigateToPlaylistPage(this.playlist().id);
   }
 
   private getMediaImages(trackId: number, mediaType: SearchableMediaType): Observable<ImagesModel> {

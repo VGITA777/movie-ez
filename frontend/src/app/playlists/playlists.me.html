@@ -78,9 +78,10 @@
 </section>
 
 <ng-template #newPlaylist>
-  <button class="new-playlist flex flex-col gap-2 w-full h-full" (click)="createNewPlaylist()">
+  <button
+    class="new-playlist flex flex-col gap-2 w-full aspect-square" (click)="createNewPlaylist()">
     <div
-      class="new-playlist__img flex flex-col gap-0.5 justify-center bg-accent/20 items-center border border-dashed border-accent aspect-square w-full rounded-lg transition-all hover:cursor-pointer hover:bg-accent/30">
+      class="new-playlist__img flex flex-col gap-0.5 justify-center bg-accent/20 items-center border border-dashed border-accent h-full w-full rounded-lg transition-all hover:cursor-pointer hover:bg-accent/30">
       <ng-icon name="lucideCirclePlus" class="text-2xl" />
       <span class="text-accent-foreground text-sm font-light">Create New</span>
     </div>

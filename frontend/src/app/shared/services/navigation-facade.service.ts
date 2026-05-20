@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { GenericRouteData } from '@app/app';
 import { MediaType } from '@shared/models';
+import { UUID_REGEX } from '@shared/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +58,31 @@ export class NavigationFacade {
   }): void {
     this.router
       .navigate(['/playlists'], {
+        ...input?.extras,
+        state: {
+          messages: input?.messages ?? [],
+        },
+      })
+      .then(() => input?.onNavigate?.());
+  }
+
+  navigateToPlaylistPage(
+    id: string,
+    input?: {
+      messages?: GenericRouteData[];
+      extras?: NavigationExtras;
+      onNavigate?: () => void;
+    },
+  ): void {
+    const checkedId: string = id.trim();
+
+    if (checkedId.length === 0 || !UUID_REGEX.test(checkedId)) {
+      console.warn(`Invalid playlist ID: ${id}`);
+      return;
+    }
+
+    this.router
+      .navigate([`/playlists/${checkedId}`], {
         ...input?.extras,
         state: {
           messages: input?.messages ?? [],
