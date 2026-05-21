@@ -113,3 +113,4 @@ my progress here.
 
 ### May 21, 2026
 - Updated the Playlist Content Page.
+- Improved UI fro Playlst and Playlist Content Pages.
