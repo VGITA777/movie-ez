@@ -115,3 +115,19 @@ button:hover, a:hover, [role="button"]:hover, [role="link"]:hover {
     @apply text-[0.875rem] md:text-[0.9rem] lg:text-[1rem];
   }
 }
+
+/* Animations */
+@keyframes slide-up-fade-in-keyframes {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up-fade-in-animation {
+  animation: slide-up-fade-in-keyframes var(--animation-duration, 0.8s) ease-in-out var(--animation-delay, 0s) backwards;
+}

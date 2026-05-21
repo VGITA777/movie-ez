@@ -48,7 +48,7 @@
       lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]
       ">
       @for (playlistItem of sortedPlaylistContents(); track playlistItem.id) {
-        <me-media-carousel-cover-item [item]="playlistItem" />
+        <me-media-carousel-cover-item [item]="playlistItem" [style.--animation-delay]="`${$index * 100}ms`" animate.enter="slide-up-fade-in-animation" />
       }
     </div>
   </div>

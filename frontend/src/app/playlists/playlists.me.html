@@ -67,7 +67,7 @@
           <me-playlists-entry
             [playlist]="playlist"
             [style.--animation-delay]="`${$index * 50}ms`"
-            animate.enter="enter-animation"
+            animate.enter="slide-up-fade-in-animation"
           />
         }
         <ng-container *ngTemplateOutlet="newPlaylist" />
