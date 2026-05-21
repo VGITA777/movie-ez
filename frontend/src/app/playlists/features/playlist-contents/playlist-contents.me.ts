@@ -36,6 +36,7 @@ import {
   lucideArrowUpDown,
   lucideArrowUpNarrowWide,
 } from '@ng-icons/lucide';
+import { NavigationFacade } from '@shared/services/navigation-facade.service';
 
 export interface PlaylistContentsRouteParams {
   readonly playlistId: string;
@@ -87,10 +88,11 @@ const DEFAULT_STORED_SORTING_OPTION: StoredSortingOption<SortingOption> = {
 export class PlaylistContentsMe {
   private readonly userLocalPlaylistService: UserLocalPlaylistService =
     inject(UserLocalPlaylistService);
-  private readonly params: Signal<PlaylistContentsRouteParams> =
-    params<PlaylistContentsRouteParams>();
   private readonly mediaMovieService: MediaMovieService = inject(MediaMovieService);
   private readonly mediaTvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
+  private readonly navigationFacade: NavigationFacade = inject(NavigationFacade);
+  private readonly params: Signal<PlaylistContentsRouteParams> =
+    params<PlaylistContentsRouteParams>();
   private readonly storedSortingOption: WritableSignal<StoredSortingOption<SortingOption>> =
     storage(PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY, DEFAULT_STORED_SORTING_OPTION);
 
@@ -167,6 +169,13 @@ export class PlaylistContentsMe {
 
   protected toggleSortingDirection() {
     this.selectedSortingDirection.update((current) => (current === 'asc' ? 'desc' : 'asc'));
+  }
+
+  protected navigateToWatchPage(item: SharedMediaDetails): void {
+    this.navigationFacade.navigateToWatchPage({
+      mediaId: item.id,
+      mediaType: item.type,
+    });
   }
 
   private getMediaDetails(
