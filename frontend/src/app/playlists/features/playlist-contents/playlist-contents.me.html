@@ -2,7 +2,7 @@
   <!-- Header -->
   <om-aurora
     class="w-full flex justify-center items-center" styleClass="flex justify-center items-center">
-    <div class="playlist-contents__wrapper__header pt-24 w-[95%]">
+    <div class="playlist-contents__wrapper__header pt-24 w-[95%] max-w-[1750px] ">
       <div class="header flex flex-col items-center gap-4 sm:flex-row sm:items-end">
         <!-- Playlist Image Cover -->
         <me-playlist-entry-cover
@@ -12,7 +12,7 @@
         <!-- Playlist Meta -->
         <div class="header-meta flex flex-col items-center gap-1 sm:items-start">
           <!-- Title -->
-          <h1 class="font-bold text-4xl tracking-tight">{{
+          <h1 class="font-bold text-4xl tracking-tight line-clamp-1">{{
               currentPlaylist()?.name ?? 'Unknown'
             }}</h1>
           <!-- Total Items, Last Modification Date-->
@@ -29,7 +29,8 @@
   </om-aurora>
 
   <!-- Body -->
-  <div class="playlist-contents__wrapper w-[95%] h-full flex flex-col gap-4 relative">
+  <div
+    class="playlist-contents__wrapper w-[95%] max-w-[1750px] h-full flex flex-col gap-4 relative">
 
     <!-- Controls -->
     <div class="controls flex flex-row items-center justify-between">

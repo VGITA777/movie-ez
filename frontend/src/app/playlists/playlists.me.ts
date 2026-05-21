@@ -28,6 +28,8 @@ import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
 import { PLAYLIST_SORT_OPTION_STORAGE_KEY } from '@shared/constants';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 import { HlmButtonGroupImports } from '@spartan-ng/helm/button-group';
+import { NgxAuroraComponent } from '@omnedia/ngx-aurora';
+import { NgxBorderBeamComponent } from '@omnedia/ngx-border-beam';
 
 type SortingOption = 'name' | 'creation' | 'modification' | 'tracksCount';
 
@@ -62,6 +64,8 @@ const DEFAULT_STORED_SORTING_OPTION: StoredSortingOption<SortingOption> = {
     HlmSkeletonImports,
     HlmDropdownMenuImports,
     HlmButtonGroupImports,
+    NgxAuroraComponent,
+    NgxBorderBeamComponent,
   ],
   templateUrl: './playlists.me.html',
   styleUrl: './playlists.me.css',

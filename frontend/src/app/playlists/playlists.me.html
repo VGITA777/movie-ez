@@ -1,57 +1,61 @@
-<section class="playlists mt-[80px] w-full flex flex-col justify-center items-center">
-  <div class="playlists-content-wrapper w-[95%] max-w-[1750px] flex flex-col gap-4">
+<section class="playlists w-full flex flex-col justify-center items-center gap-4">
 
-    <div class="playlists-content__header flex flex-col gap-2">
-      <h1 class="text-5xl font-black tracking-tight">Your Playlists</h1>
-      <p class="max-w-[575px] text-accent-foreground tracking-wider text-sm">
-        Access your own curated Movies, Films, and TV shows. Your
-        personal media vault, organized neatly in a single place</p>
-    </div>
+  <om-aurora class="w-full" styleClass="flex flex-col justify-center items-center pt-24">
+    <div class="header-controls__wrapper w-[95%] max-w-[1750px] flex flex-col gap-4">
+      <div class="playlists-content__header flex flex-col gap-2">
+        <h1 class="text-5xl font-black tracking-tight">Your Playlists</h1>
+        <p class="max-w-[575px] text-accent-foreground tracking-wider text-sm">
+          Access your own curated Movies, Films, and TV shows. Your
+          personal media vault, organized neatly in a single place</p>
+      </div>
 
-    <div class="playlist-content__controls flex flex-row gap-4 w-full justify-between">
-      <div class="playlist-content__controls__left flex flex-row gap-2 sm:gap-4">
-        <button hlmBtn (click)="createNewPlaylist()">
-          <ng-icon name="lucideCirclePlus" />
-          @if (bp.sm()) {
-            <span class="text-xs tracking-wide font-light">New Playlist</span>
-          }
-        </button>
-
-        @if (isAuthenticated()) {
-          <button
-            hlmBtn
-            variant="outline" [disabled]="isSyncing() || !isAuthenticated()"
-
-            (click)="syncPlaylists()">
-            <ng-icon
-              [name]="(isSyncing()) ? 'lucideRefreshCw' : 'lucideCloudSync'"
-              [class.animate-spin]="isSyncing()" />
+      <div class="playlist-content__controls flex flex-row gap-4 w-full justify-between">
+        <div class="playlist-content__controls__left flex flex-row gap-2 sm:gap-4">
+          <button hlmBtn (click)="createNewPlaylist()">
+            <ng-icon name="lucideCirclePlus" />
             @if (bp.sm()) {
-              <span class="text-xs tracking-wide font-light">Sync</span>
+              <span class="text-xs tracking-wide font-light">New Playlist</span>
             }
           </button>
-        }
-      </div>
 
-      <div class="playlist-content__controls__right flex flex-row gap-4">
-        <div hlmButtonGroup>
-          <button hlmBtn variant="outline" class="rounded-full" (click)="toggleSortingDirection()">
-            <ng-icon
-              [name]="(selectedSortingDirection() === 'asc') ? 'lucideArrowUpNarrowWide' : 'lucideArrowDownWideNarrow'"
-            />
-          </button>
-          <button
-            hlmBtn [hlmDropdownMenuTrigger]="sortOptionDropDown" variant="outline"
-            class="rounded-full">
-            <ng-icon name="lucideArrowUpDown" />
-          </button>
+          @if (isAuthenticated()) {
+            <button
+              hlmBtn
+              variant="outline" [disabled]="isSyncing() || !isAuthenticated()"
+
+              (click)="syncPlaylists()">
+              <ng-icon
+                [name]="(isSyncing()) ? 'lucideRefreshCw' : 'lucideCloudSync'"
+                [class.animate-spin]="isSyncing()" />
+              @if (bp.sm()) {
+                <span class="text-xs tracking-wide font-light">Sync</span>
+              }
+            </button>
+          }
         </div>
+
+        <div class="playlist-content__controls__right flex flex-row gap-4">
+          <div hlmButtonGroup>
+            <button
+              hlmBtn variant="outline" class="rounded-full" (click)="toggleSortingDirection()">
+              <ng-icon
+                [name]="(selectedSortingDirection() === 'asc') ? 'lucideArrowUpNarrowWide' : 'lucideArrowDownWideNarrow'"
+              />
+            </button>
+            <button
+              hlmBtn [hlmDropdownMenuTrigger]="sortOptionDropDown" variant="outline"
+              class="rounded-full">
+              <ng-icon name="lucideArrowUpDown" />
+            </button>
+          </div>
+        </div>
+
       </div>
-
     </div>
+  </om-aurora>
 
+  <div class="playlists-content-wrapper w-[95%] max-w-[1750px] flex flex-col gap-4">
     <hlm-separator />
-
     <div
       class="playlists-content__body grid
       grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
@@ -78,14 +82,16 @@
 </section>
 
 <ng-template #newPlaylist>
-  <button
-    class="new-playlist flex flex-col gap-2 w-full aspect-square" (click)="createNewPlaylist()">
-    <div
-      class="new-playlist__img flex flex-col gap-0.5 justify-center bg-accent/20 items-center border border-dashed border-accent h-full w-full rounded-lg transition-all hover:cursor-pointer hover:bg-accent/30">
-      <ng-icon name="lucideCirclePlus" class="text-2xl" />
-      <span class="text-accent-foreground text-sm font-light">Create New</span>
-    </div>
-  </button>
+  <om-border-beam animationDuration="8s">
+    <button
+      class="new-playlist flex flex-col gap-2 w-full aspect-square" (click)="createNewPlaylist()">
+      <div
+        class="new-playlist__img flex flex-col gap-0.5 justify-center bg-accent/20 items-center border border-dashed border-accent h-full w-full rounded-lg transition-all hover:cursor-pointer hover:bg-accent/30">
+        <ng-icon name="lucideCirclePlus" class="text-2xl" />
+        <span class="text-accent-foreground text-sm font-light">Create New</span>
+      </div>
+    </button>
+  </om-border-beam>
 </ng-template>
 
 <ng-template #playlistEntrySkeleton>
