@@ -1,6 +1,11 @@
 import { Component, computed, inject, linkedSignal, Signal, WritableSignal } from '@angular/core';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
-import { OfflinePlaylist } from '@shared/models';
+import {
+  OfflinePlaylist,
+  SortingDirection,
+  SortingOptionEntry,
+  StoredSortingOption,
+} from '@shared/models';
 import { PlaylistsEntryMe } from '@playlists/features/playlists-entry/playlists-entry.me';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
@@ -24,31 +29,24 @@ import { PLAYLIST_SORT_OPTION_STORAGE_KEY } from '@shared/constants';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 import { HlmButtonGroupImports } from '@spartan-ng/helm/button-group';
 
-export type SortingOption = 'name' | 'creation' | 'modification' | 'tracksCount';
-export type SortingDirection = 'asc' | 'desc';
+type SortingOption = 'name' | 'creation' | 'modification' | 'tracksCount';
 
-export interface StoredSortingOption {
-  readonly sortingOption: SortingOption;
-  readonly direction: SortingDirection;
-}
-
-export interface SortingOptionEntry {
-  readonly label: string;
-  readonly value: SortingOption;
-}
-
-export const SORTING_OPTIONS: SortingOptionEntry[] = [
+const SORTING_OPTIONS: SortingOptionEntry<SortingOption>[] = [
   { label: 'Name', value: 'name' },
   { label: 'Creation Date', value: 'creation' },
   { label: 'Last Update', value: 'modification' },
   { label: 'Tracks Count', value: 'tracksCount' },
 ];
 
-export const SORTING_OPTIONS_MAP: Record<SortingOption, SortingOptionEntry> = Object.fromEntries(
-  SORTING_OPTIONS.map((option) => [option.value, option]),
-) as Record<SortingOption, SortingOptionEntry>;
+const SORTING_OPTIONS_MAP: Record<
+  SortingOption,
+  SortingOptionEntry<SortingOption>
+> = Object.fromEntries(SORTING_OPTIONS.map((option) => [option.value, option])) as Record<
+  SortingOption,
+  SortingOptionEntry<SortingOption>
+>;
 
-export const DEFAULT_STORED_SORTING_OPTION: StoredSortingOption = {
+const DEFAULT_STORED_SORTING_OPTION: StoredSortingOption<SortingOption> = {
   sortingOption: 'name',
   direction: 'asc',
 };
@@ -86,21 +84,18 @@ export class PlaylistsMe {
   private readonly userPlaylistManagerService: UserPlaylistManagerService = inject(
     UserPlaylistManagerService,
   );
-  private readonly storedSortingOption: WritableSignal<StoredSortingOption> = storage(
-    PLAYLIST_SORT_OPTION_STORAGE_KEY,
-    DEFAULT_STORED_SORTING_OPTION,
-  );
+  private readonly storedSortingOption: WritableSignal<StoredSortingOption<SortingOption>> =
+    storage(PLAYLIST_SORT_OPTION_STORAGE_KEY, DEFAULT_STORED_SORTING_OPTION);
 
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
-  protected readonly sortingOptions: SortingOptionEntry[] = SORTING_OPTIONS;
-  protected readonly selectedSortingOption: WritableSignal<SortingOptionEntry> = linkedSignal(
-    () => {
+  protected readonly sortingOptions: SortingOptionEntry<SortingOption>[] = SORTING_OPTIONS;
+  protected readonly selectedSortingOption: WritableSignal<SortingOptionEntry<SortingOption>> =
+    linkedSignal(() => {
       const storedValue: SortingOption =
         this.storedSortingOption().sortingOption ?? DEFAULT_STORED_SORTING_OPTION.sortingOption;
 
       return SORTING_OPTIONS_MAP[storedValue] ?? SORTING_OPTIONS_MAP.name;
-    },
-  );
+    });
   protected readonly selectedSortingDirection: WritableSignal<SortingDirection> = linkedSignal(
     () => {
       return this.storedSortingOption().direction ?? DEFAULT_STORED_SORTING_OPTION.direction;
@@ -137,7 +132,7 @@ export class PlaylistsMe {
     this.updateSortingDirection(nextDirection);
   }
 
-  protected updatedSelectedSortingOption(data: SortingOptionEntry): void {
+  protected updatedSelectedSortingOption(data: SortingOptionEntry<SortingOption>): void {
     this.selectedSortingOption.set(data);
 
     this.storedSortingOption.set({

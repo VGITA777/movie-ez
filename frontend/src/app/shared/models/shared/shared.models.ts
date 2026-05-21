@@ -1,5 +1,17 @@
 import { MediaType } from '@shared/models';
 
+export type SortingDirection = 'asc' | 'desc';
+
+export interface SortingOptionEntry<T> {
+  readonly label: string;
+  readonly value: T;
+}
+
+export interface StoredSortingOption<T> {
+  readonly sortingOption: T;
+  readonly direction: SortingDirection;
+}
+
 export interface Genre {
   id: number;
   name: string;

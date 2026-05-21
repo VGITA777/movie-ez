@@ -23,9 +23,20 @@
     </div>
 
     <!-- Controls -->
-    <div class="controls">
+    <div class="controls flex flex-row items-center justify-end">
       <!-- Add Controls Here -->
-      <span>Controls Here</span>
+      <div hlmButtonGroup>
+        <button hlmBtn variant="outline" class="rounded-full" (click)="toggleSortingDirection()">
+          <ng-icon
+            [name]="(selectedSortingDirection() === 'asc') ? 'lucideArrowUpNarrowWide' : 'lucideArrowDownWideNarrow'"
+          />
+        </button>
+        <button
+          hlmBtn [hlmDropdownMenuTrigger]="sortOptionsDropdown" variant="outline"
+          class="rounded-full">
+          <ng-icon name="lucideArrowUpDown" />
+        </button>
+      </div>
     </div>
 
     <hlm-separator />
@@ -36,10 +47,26 @@
       sm:grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
       lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]
       ">
-      @for (playlistItem of currentPlaylistInfo(); track playlistItem.id) {
+      @for (playlistItem of sortedPlaylistContents(); track playlistItem.id) {
         <me-media-carousel-cover-item [item]="playlistItem" />
       }
     </div>
   </div>
 
 </section>
+
+<ng-template #sortOptionsDropdown>
+  <hlm-dropdown-menu>
+    <hlm-dropdown-menu-group>
+      @for (sortOption of sortingOptions; track sortOption.value) {
+        <button
+          hlmDropdownMenuRadio [checked]="selectedSortingOption().value === sortOption.value"
+          (triggered)="updateSortingOption(sortOption)">
+          {{ sortOption.label }}
+          <hlm-dropdown-menu-radio-indicator />
+        </button>
+
+      }
+    </hlm-dropdown-menu-group>
+  </hlm-dropdown-menu>
+</ng-template>
