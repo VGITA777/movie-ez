@@ -1,41 +1,68 @@
-<section class="playlist-contents mt-18 flex justify-center">
-  <div class="playlist-contents__wrapper w-[95%] h-full flex flex-col gap-4 relative">
-    <div class="header flex flex-col items-center gap-4 sm:flex-row sm:items-end">
-      <!-- Playlist Image Cover -->
-      <me-playlist-entry-cover
-        [images]="coverImages()"
-        class="w-full aspect-square max-w-[200px] sm:max-w-[225px] md:max-w-[250px] rounded-md overflow-hidden" />
+<section class="playlist-contents flex flex-col gap-4 items-center">
+  <!-- Header -->
+  <om-aurora
+    class="w-full flex justify-center items-center" styleClass="flex justify-center items-center">
+    <div class="playlist-contents__wrapper__header pt-24 w-[95%]">
+      <div class="header flex flex-col items-center gap-4 sm:flex-row sm:items-end">
+        <!-- Playlist Image Cover -->
+        <me-playlist-entry-cover
+          [images]="coverImages()"
+          class="w-full aspect-square max-w-[200px] sm:max-w-[225px] md:max-w-[250px] rounded-md overflow-hidden" />
 
-      <!-- Playlist Meta -->
-      <div class="header-meta flex flex-col items-center gap-1 sm:items-start">
-        <!-- Title -->
-        <h1 class="font-bold text-4xl tracking-tight">{{
-            currentPlaylist()?.name ?? 'Unknown'
-          }}</h1>
-        <!-- Total Items, Last Modification Date-->
-        <div class="header-meta flex gap-4 text-sm text-muted-foreground font-light tracking-wide">
-          <span>{{ currentPlaylist()?.items?.length ?? 0 }} Items</span>
-          <span class="font-black">&middot;</span>
-          <span>Updated {{ lastModificationLabel() }}</span>
+        <!-- Playlist Meta -->
+        <div class="header-meta flex flex-col items-center gap-1 sm:items-start">
+          <!-- Title -->
+          <h1 class="font-bold text-4xl tracking-tight">{{
+              currentPlaylist()?.name ?? 'Unknown'
+            }}</h1>
+          <!-- Total Items, Last Modification Date-->
+          <div
+            class="header-meta flex gap-4 text-sm text-muted-foreground font-light tracking-wide">
+            <span>{{ currentPlaylist()?.items?.length ?? 0 }} Items</span>
+            <span class="font-black">&middot;</span>
+            <span>Updated {{ lastModificationLabel() }}</span>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
+  </om-aurora>
+
+  <!-- Body -->
+  <div class="playlist-contents__wrapper w-[95%] h-full flex flex-col gap-4 relative">
 
     <!-- Controls -->
-    <div class="controls flex flex-row items-center justify-end">
-      <!-- Add Controls Here -->
-      <div hlmButtonGroup>
-        <button hlmBtn variant="outline" class="rounded-full" (click)="toggleSortingDirection()">
-          <ng-icon
-            [name]="(selectedSortingDirection() === 'asc') ? 'lucideArrowUpNarrowWide' : 'lucideArrowDownWideNarrow'"
-          />
-        </button>
-        <button
-          hlmBtn [hlmDropdownMenuTrigger]="sortOptionsDropdown" variant="outline"
-          class="rounded-full">
-          <ng-icon name="lucideArrowUpDown" />
-        </button>
+    <div class="controls flex flex-row items-center justify-between">
+      <div class="right-controls">
+        @if (isAuthenticated()) {
+          <button
+            hlmBtn
+            hlmTooltip="Sync Playlists"
+            variant="outline" [disabled]="isSyncing() || !isAuthenticated()"
+            (click)="syncPlaylists()">
+            <ng-icon
+              [name]="(isSyncing()) ? 'lucideRefreshCw' : 'lucideCloudSync'"
+              [class.animate-spin]="isSyncing()" />
+            @if (bp.sm()) {
+              <span class="text-xs tracking-wide font-light">Sync</span>
+            }
+          </button>
+        }
+      </div>
+
+      <div class="left-controls">
+        <div hlmButtonGroup>
+          <button hlmBtn variant="outline" class="rounded-full" (click)="toggleSortingDirection()">
+            <ng-icon
+              [name]="(selectedSortingDirection() === 'asc') ? 'lucideArrowUpNarrowWide' : 'lucideArrowDownWideNarrow'"
+            />
+          </button>
+          <button
+            hlmBtn [hlmDropdownMenuTrigger]="sortOptionsDropdown" variant="outline"
+            class="rounded-full">
+            <ng-icon name="lucideArrowUpDown" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -56,7 +83,6 @@
       }
     </div>
   </div>
-
 </section>
 
 <ng-template #sortOptionsDropdown>

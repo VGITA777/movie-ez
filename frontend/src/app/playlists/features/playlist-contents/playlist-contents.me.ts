@@ -18,7 +18,7 @@ import {
   TvSeriesDetailsModel,
 } from '@shared/models';
 import { getUpdateLabel, getYearFromDate, toGenres, toTmdbImageUrl } from '@shared/utils';
-import { params, storage } from '@signality/core';
+import { breakpoints, params, storage } from '@signality/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { filter, first, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
@@ -35,8 +35,15 @@ import {
   lucideArrowDownWideNarrow,
   lucideArrowUpDown,
   lucideArrowUpNarrowWide,
+  lucideCloudSync,
+  lucideRefreshCw,
 } from '@ng-icons/lucide';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
+import { NgxAuroraComponent } from '@omnedia/ngx-aurora';
+import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-manager.service';
+import { HlmTooltip } from '@spartan-ng/helm/tooltip';
+import { AuthFacadeService } from '@shared/services/auth-facade-service';
+import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
 
 export interface PlaylistContentsRouteParams {
   readonly playlistId: string;
@@ -78,11 +85,19 @@ const DEFAULT_STORED_SORTING_OPTION: StoredSortingOption<SortingOption> = {
     HlmButtonImports,
     NgIcon,
     HlmDropdownMenuImports,
+    NgxAuroraComponent,
+    HlmTooltip,
   ],
   templateUrl: './playlist-contents.me.html',
   styleUrl: './playlist-contents.me.css',
   providers: [
-    provideIcons({ lucideArrowUpNarrowWide, lucideArrowDownWideNarrow, lucideArrowUpDown }),
+    provideIcons({
+      lucideArrowUpNarrowWide,
+      lucideArrowDownWideNarrow,
+      lucideArrowUpDown,
+      lucideCloudSync,
+      lucideRefreshCw,
+    }),
   ],
 })
 export class PlaylistContentsMe {
@@ -91,12 +106,19 @@ export class PlaylistContentsMe {
   private readonly mediaMovieService: MediaMovieService = inject(MediaMovieService);
   private readonly mediaTvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
   private readonly navigationFacade: NavigationFacade = inject(NavigationFacade);
+  private readonly userPlaylistManagerService: UserPlaylistManagerService = inject(
+    UserPlaylistManagerService,
+  );
+  private readonly authFacadeService: AuthFacadeService = inject(AuthFacadeService);
   private readonly params: Signal<PlaylistContentsRouteParams> =
     params<PlaylistContentsRouteParams>();
   private readonly storedSortingOption: WritableSignal<StoredSortingOption<SortingOption>> =
     storage(PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY, DEFAULT_STORED_SORTING_OPTION);
 
   protected readonly sortingOptions: SortingOptionEntry<SortingOption>[] = SORTING_OPTIONS;
+  protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
+  protected readonly isAuthenticated: Signal<boolean> = this.authFacadeService.isAuthenticated;
+  protected readonly isSyncing: Signal<boolean> = this.userPlaylistManagerService.isSyncing;
   protected readonly isPlaylistContentLoading: WritableSignal<boolean> = signal(false);
   protected readonly playlists: Signal<OfflinePlaylist[]> = this.userLocalPlaylistService.playlists;
   protected readonly currentPlaylist: Signal<OfflinePlaylist | undefined> = computed(() => {
@@ -245,5 +267,9 @@ export class PlaylistContentsMe {
     const parsed: number = Date.parse(value);
 
     return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  protected syncPlaylists(): void {
+    this.userPlaylistManagerService.sync();
   }
 }
