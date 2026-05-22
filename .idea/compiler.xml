@@ -28,6 +28,7 @@
     </option>
   </component>
   <component name="TypeScriptCompiler">
+    <option name="memoryAutoIncrease" value="true" />
     <option name="memoryLimit" value="8192" />
   </component>
 </project>
