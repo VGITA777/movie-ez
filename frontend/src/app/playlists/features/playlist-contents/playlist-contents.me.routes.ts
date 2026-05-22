@@ -18,7 +18,7 @@ function playlistIdGuard(
 
   return userLocalPlaylistService.getPlaylist(id).pipe(
     map((playlist) => {
-      if (!playlist) {
+      if (!playlist || playlist?.deletedOn) {
         return new RedirectCommand(redirectToPlaylist);
       }
       return true;
