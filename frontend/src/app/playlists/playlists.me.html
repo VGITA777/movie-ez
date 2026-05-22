@@ -73,21 +73,26 @@
             animate.enter="slide-up-fade-in-animation"
           />
         }
-        <ng-container *ngTemplateOutlet="newPlaylist" />
+        <ng-container
+          *ngTemplateOutlet="newPlaylist; context: {$implicit: `${playlists().length * 50}ms`}" />
       }
     </div>
 
   </div>
 </section>
 
-<ng-template #newPlaylist>
-  <om-border-beam animationDuration="8s">
+<ng-template #newPlaylist let-delay>
+  <om-border-beam
+    animationDuration="8s"
+    [style.--animation-delay]="delay"
+    animate.enter="slide-up-fade-in-animation"
+  >
     <button
       class="new-playlist flex flex-col gap-2 w-full aspect-square" (click)="createNewPlaylist()">
       <div
         class="new-playlist__img flex flex-col gap-0.5 justify-center bg-accent/20 items-center border border-dashed border-accent h-full w-full rounded-lg transition-all hover:cursor-pointer hover:bg-accent/30">
-        <ng-icon name="lucideCirclePlus" class="text-2xl" />
-        <span class="text-accent-foreground text-sm font-light">Create New</span>
+        <ng-icon name="lucideCirclePlus" class="text-lg" />
+        <span class="text-accent-foreground text-xs font-light tracking-wide">Create New</span>
       </div>
     </button>
   </om-border-beam>
