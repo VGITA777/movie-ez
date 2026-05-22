@@ -109,8 +109,15 @@ my progress here.
 - Added a feature for sorting playlists in the Playlists Page.
 
 ### May 20, 2026
+
 - Started to create the Playlist Content Page
 
 ### May 21, 2026
+
 - Updated the Playlist Content Page.
-- Improved UI fro Playlst and Playlist Content Pages.
+- Improved UI for Playlst and Playlist Content Pages.
+
+### May 22, 2026
+
+- Updated the playlist contents page to have a way to remove it from the current playlist or add it
+  to another playlist.

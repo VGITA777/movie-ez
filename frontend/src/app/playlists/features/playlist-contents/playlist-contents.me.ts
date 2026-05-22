@@ -35,6 +35,7 @@ import {
   lucideArrowDownWideNarrow,
   lucideArrowUpDown,
   lucideArrowUpNarrowWide,
+  lucideBookmark,
   lucideCloudSync,
   lucideRefreshCw,
 } from '@ng-icons/lucide';
@@ -44,6 +45,9 @@ import { UserPlaylistManagerService } from '@shared/services/user/user-playlist-
 import { HlmTooltip } from '@spartan-ng/helm/tooltip';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
+import { NgTemplateOutlet } from '@angular/common';
+import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
 
 export interface PlaylistContentsRouteParams {
   readonly playlistId: string;
@@ -87,6 +91,9 @@ const DEFAULT_STORED_SORTING_OPTION: StoredSortingOption<SortingOption> = {
     HlmDropdownMenuImports,
     NgxAuroraComponent,
     HlmTooltip,
+    NgTemplateOutlet,
+    ShowPlaylistsDirective,
+    HlmIconImports,
   ],
   templateUrl: './playlist-contents.me.html',
   styleUrl: './playlist-contents.me.css',
@@ -97,6 +104,7 @@ const DEFAULT_STORED_SORTING_OPTION: StoredSortingOption<SortingOption> = {
       lucideArrowUpDown,
       lucideCloudSync,
       lucideRefreshCw,
+      lucideBookmark,
     }),
   ],
 })

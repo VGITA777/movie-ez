@@ -96,7 +96,7 @@ export class PlaylistDialogMe implements OnInit {
   }
 
   protected addToPlaylist(name: string): void {
-    const trackId: string = this.dialogContext.trackId;
+    const trackId: string = this.normalizeTrackId(this.dialogContext.trackId);
     if (trackId.trim() === '') {
       this.closeDialog();
       return;
@@ -111,7 +111,7 @@ export class PlaylistDialogMe implements OnInit {
   }
 
   protected removeFromPlaylist(playlistId: string): void {
-    const trackId: string = this.dialogContext.trackId;
+    const trackId: string = this.normalizeTrackId(this.dialogContext.trackId);
 
     if (trackId.trim() === '') {
       this.closeDialog();
@@ -133,7 +133,7 @@ export class PlaylistDialogMe implements OnInit {
     if (!playlist) {
       return false;
     }
-    const trackId: string = this.dialogContext.trackId;
+    const trackId: string = this.normalizeTrackId(this.dialogContext.trackId);
     return playlist.items?.some((item) => item.trackId === trackId) ?? false;
   }
 
@@ -215,7 +215,11 @@ export class PlaylistDialogMe implements OnInit {
     const name: string =
       this.localPlaylists().find((pl) => pl.id === playlistId)?.name ?? 'Unknown Playlist';
     this.localPlaylistService
-      .addToPlaylist(playlistId, this.dialogContext.trackId, this.dialogContext.mediaType)
+      .addToPlaylist(
+        playlistId,
+        this.normalizeTrackId(this.dialogContext.trackId),
+        this.dialogContext.mediaType,
+      )
       .subscribe();
     toast.success(`Track added to playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }
@@ -224,7 +228,11 @@ export class PlaylistDialogMe implements OnInit {
     const name: string =
       this.localPlaylists().find((pl) => pl.id === playlistId)?.name ?? 'Unknown Playlist';
     this.localPlaylistService
-      .removeFromPlaylist(playlistId, this.dialogContext.trackId, this.dialogContext.mediaType)
+      .removeFromPlaylist(
+        playlistId,
+        this.normalizeTrackId(this.dialogContext.trackId),
+        this.dialogContext.mediaType,
+      )
       .subscribe();
     toast.success(`Track removed from playlist "${name}".`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
   }
@@ -245,5 +253,9 @@ export class PlaylistDialogMe implements OnInit {
         toast.error(`Failed to sync playlists.`, PlaylistDialogMe.SHARED_TOAST_OPTIONS);
       },
     });
+  }
+
+  private normalizeTrackId(trackId: string | number): string {
+    return typeof trackId === 'number' ? trackId.toString().trim() : trackId.trim();
   }
 }

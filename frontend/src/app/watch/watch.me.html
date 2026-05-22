@@ -79,7 +79,7 @@
       <div class="buttons flex gap-4 justify-end md:justify-start">
         <button
           hlmBtn hlmTooltip="Add to playlist" class="p-6 lg:p-4" meShowPlaylists
-          [dialogContext]="{trackId: mediaId().toString(), mediaType: mediaType()}">
+          [playlistContext]="{trackId: mediaId().toString(), mediaType: mediaType()}">
           <ng-icon name="lucidePlus" class="text-lg"></ng-icon>
         </button>
         <button hlmBtn hlmTooltip="Share" class="p-6 lg:p-4" variant="secondary">

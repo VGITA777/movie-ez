@@ -65,7 +65,7 @@
       </button>
       <button
         meShowPlaylists
-        [dialogContext]="{trackId: item().id.toString(), mediaType: item().type}"
+        [playlistContext]="{trackId: item().id.toString(), mediaType: item().type}"
         (click)="handleAddToPlaylist.emit(item())"
         class="horizontal px-6 py-4 md:p-0 md:w-full md:max-w-40" hlmBtn
         size="lg" variant="secondary">

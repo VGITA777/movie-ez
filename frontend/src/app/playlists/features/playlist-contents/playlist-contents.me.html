@@ -76,11 +76,9 @@
       lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]
       ">
       @for (playlistItem of sortedPlaylistContents(); track playlistItem.id) {
-        <me-media-carousel-cover-item
-          [item]="playlistItem" [style.--animation-delay]="`${$index * 100}ms`"
-          animate.enter="slide-up-fade-in-animation"
-          (click)="navigateToWatchPage(playlistItem)"
-        />
+        <ng-container
+          *ngTemplateOutlet="playlistItemContent
+          context: {playlistItem: playlistItem, delay: $index}" />
       }
     </div>
   </div>
@@ -100,4 +98,23 @@
       }
     </hlm-dropdown-menu-group>
   </hlm-dropdown-menu>
+</ng-template>
+
+<ng-template #playlistItemContent let-playlistItem="playlistItem" let-delay="delay">
+  <div
+    class="playlist-item-content__wrapper relative" [style.--animation-delay]="`${delay * 100}ms`"
+    animate.enter="slide-up-fade-in-animation">
+    <me-media-carousel-cover-item
+      [item]="playlistItem"
+      (click)="navigateToWatchPage(playlistItem)"
+    />
+    <button
+      hlmBtn meShowPlaylists size="lg" variant="secondary"
+      class="absolute top-2 right-2 bg-secondary/50 rounded-xl"
+      [playlistContext]="{trackId: playlistItem.id, mediaType: playlistItem.type}"
+    >
+      <ng-icon
+        name="lucideBookmark" class="text-lg md:text-lg [&_svg]:fill-foreground text-foreground" />
+    </button>
+  </div>
 </ng-template>
