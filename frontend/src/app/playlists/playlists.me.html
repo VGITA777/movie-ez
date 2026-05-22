@@ -73,15 +73,20 @@
             animate.enter="slide-up-fade-in-animation"
           />
         }
-        <ng-container *ngTemplateOutlet="newPlaylist" />
+        <ng-container
+          *ngTemplateOutlet="newPlaylist; context: {$implicit: `${playlists().length * 50}ms`}" />
       }
     </div>
 
   </div>
 </section>
 
-<ng-template #newPlaylist>
-  <om-border-beam animationDuration="8s">
+<ng-template #newPlaylist let-delay>
+  <om-border-beam
+    animationDuration="8s"
+    [style.--animation-delay]="delay"
+    animate.enter="slide-up-fade-in-animation"
+  >
     <button
       class="new-playlist flex flex-col gap-2 w-full aspect-square" (click)="createNewPlaylist()">
       <div
