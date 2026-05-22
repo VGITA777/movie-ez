@@ -121,3 +121,4 @@ my progress here.
 
 - Updated the playlist contents page to have a way to remove it from the current playlist or add it
   to another playlist.
+- Minor UI improvements for the homepage.
