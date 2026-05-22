@@ -24,7 +24,7 @@
 - [X] Test if the User Playlist and Profile Services created by the AI are functioning properly.
 - [X] Create a way to sync user's playlists with the backend
 - [X] Add Creation date for Playlist and Added Date for Playlist Content.
-- [ ] Implement User Profile Page (Playlists).
+- [X] Implement User Profile Page (Playlists).
 
 ---
 
