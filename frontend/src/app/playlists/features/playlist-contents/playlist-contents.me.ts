@@ -196,6 +196,7 @@ export class PlaylistContentsMe {
       direction: this.selectedSortingDirection(),
     });
   };
+  protected playlistContentSkeletonCount: number[] = Array.from({ length: 5 }, (_, i) => i);
 
   protected toggleSortingDirection() {
     this.selectedSortingDirection.update((current) => (current === 'asc' ? 'desc' : 'asc'));

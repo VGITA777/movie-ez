@@ -69,18 +69,7 @@
 
     <hlm-separator />
 
-    <div
-      class="body grid gap-4 sm:gap-5 lg:gap-6
-      grid-cols-[repeat(auto-fill,minmax(150px,1fr))]
-      sm:grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
-      lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]
-      ">
-      @for (playlistItem of sortedPlaylistContents(); track playlistItem.id) {
-        <ng-container
-          *ngTemplateOutlet="playlistItemContent
-          context: {playlistItem: playlistItem, delay: $index}" />
-      }
-    </div>
+    <ng-container *ngTemplateOutlet="playlistContents"></ng-container>
   </div>
 </section>
 
@@ -117,4 +106,32 @@
         name="lucideBookmark" class="text-lg md:text-lg [&_svg]:fill-foreground text-foreground" />
     </button>
   </div>
+</ng-template>
+
+<ng-template #playlistContents>
+  @defer (on idle) {
+    <div
+      class="body grid gap-4 sm:gap-5 lg:gap-6
+    grid-cols-[repeat(auto-fill,minmax(150px,1fr))]
+    sm:grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
+    lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]
+    ">
+      @for (playlistItem of sortedPlaylistContents(); track playlistItem.id) {
+        <ng-container
+          *ngTemplateOutlet="playlistItemContent;
+        context: { playlistItem: playlistItem, delay: $index }" />
+      }
+    </div>
+  } @placeholder(minimum 100ms) {
+    <div
+      class="body grid gap-4 sm:gap-5 lg:gap-6
+    grid-cols-[repeat(auto-fill,minmax(150px,1fr))]
+    sm:grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
+    lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]
+    ">
+      @for (_ of playlistContentSkeletonCount; track $index) {
+        <div class="aspect-2/3 rounded-xl bg-muted/50 animate-pulse"></div>
+      }
+    </div>
+  }
 </ng-template>
