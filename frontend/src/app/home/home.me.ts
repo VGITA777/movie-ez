@@ -52,6 +52,7 @@ import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { NgTemplateOutlet } from '@angular/common';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
+import { NgxHaloComponent } from '@omnedia/ngx-halo';
 
 type HomeSupportedMediaType = SearchableMediaType;
 
@@ -100,6 +101,7 @@ type PlaylistMedia = {
     HlmSeparatorImports,
     HlmSkeleton,
     NgTemplateOutlet,
+    NgxHaloComponent,
   ],
   templateUrl: './home.me.html',
   styleUrl: './home.me.css',

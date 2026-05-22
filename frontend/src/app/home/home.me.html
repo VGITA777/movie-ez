@@ -96,6 +96,12 @@
     @if (playlists.length > 0) {
       <hlm-separator />
 
+      <om-halo haloSize="100px">
+        <h1 class="tracking-tight text-4xl font-bold text-center z-10">Your Playlists</h1>
+      </om-halo>
+
+      <hlm-separator />
+
       @for (playlist of playlists; track playlist.id) {
         @if (playlist.items.length > 0) {
           <ng-container
