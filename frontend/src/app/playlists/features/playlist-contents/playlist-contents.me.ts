@@ -20,7 +20,18 @@ import {
 import { getUpdateLabel, getYearFromDate, toGenres, toTmdbImageUrl } from '@shared/utils';
 import { breakpoints, params, storage } from '@signality/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { filter, first, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
+import {
+  filter,
+  finalize,
+  first,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+  toArray,
+} from 'rxjs';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
 import { PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY } from '@shared/constants';
@@ -135,28 +146,22 @@ export class PlaylistContentsMe {
   });
   protected readonly currentPlaylistContents: Signal<SharedMediaDetails[]> = toSignal(
     toObservable(this.currentPlaylist).pipe(
-      tap(() => this.isPlaylistContentLoading.set(true)),
       filter((playlist): playlist is OfflinePlaylist => playlist !== undefined),
       switchMap((playlist) => {
-        const detailsRequests$: Observable<DetailsWithDateAdded>[] = playlist.items
-          .map((item): Observable<DetailsWithDateAdded | null | undefined> => {
+        this.isPlaylistContentLoading.set(true);
+        return from(playlist.items).pipe(
+          filter((item) => !Number.isNaN(parseInt(item.trackId, 10))),
+          map((item) => {
             const trackId: number = parseInt(item.trackId, 10);
-
-            if (isNaN(trackId)) {
-              return of(null);
-            }
-
             return this.getMediaDetails(trackId, item.addedOn, item.mediaType);
-          })
-          .filter((request): request is Observable<DetailsWithDateAdded> => request !== undefined);
-
-        return forkJoin(detailsRequests$).pipe(
-          map((details) => {
-            return details.map((detail) => this.toSharedMediaDetails(detail));
           }),
+          mergeMap((requests) => requests, 5),
+          filter((details): details is DetailsWithDateAdded => details !== null),
+          map((details) => this.toSharedMediaDetails(details)),
+          finalize(() => this.isPlaylistContentLoading.set(false)),
+          toArray(),
         );
       }),
-      tap(() => this.isPlaylistContentLoading.set(false)),
     ),
     { initialValue: [] },
   );
