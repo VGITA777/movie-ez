@@ -72,6 +72,7 @@ export class EpisodePickerMe implements OnDestroy {
   });
 
   protected readonly environment = environment;
+  protected readonly carouselStyles: string = 'aspect-4/3.5 basis-[350px]';
   protected readonly episodeSkeletonCount: number[] = Array.from({ length: 10 }, (_, i) => i);
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly selectedSeason: Signal<number> = computed(() => {

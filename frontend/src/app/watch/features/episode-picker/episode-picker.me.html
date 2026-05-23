@@ -42,7 +42,9 @@
       </div>
     </ng-scrollbar>
   } @else {
-    <me-media-carousel [items]="episodes()" [template]="episodeCard" />
+    <me-media-carousel
+      [items]="episodes()" [template]="episodeCard"
+      [itemStyles]="carouselStyles" />
   }
 </ng-template>
 
@@ -58,18 +60,15 @@
     overview     : ep.overview,
   };
   <!-- There is a bug that sometimes does not render the last item -->
-  @let classes = "sm:self-stretch sm:shrink-0 sm:basis-[325px] sm:ml-4";
   @if (isLast) {
     <me-episode-card
-      [class]="classes"
       [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
   } @else {
     @defer (on viewport) {
       <me-episode-card
-        [class]="classes"
         [item]="cardData" (click)="onEpisodeClicked.emit(ep)" />
     } @placeholder (minimum 500ms) {
-      <div class="episode-picker__card" [class]="classes">
+      <div class="episode-picker__card">
         <ng-container *ngTemplateOutlet="episodeCardSkeleton"></ng-container>
       </div>
     }
@@ -96,7 +95,9 @@
       </div>
     </ng-scrollbar>
   } @else {
-    <me-media-carousel [items]="episodeSkeletonCount" [template]="episodeCardSkeletonDesktop" />
+    <me-media-carousel
+      [items]="episodeSkeletonCount" [template]="episodeCardSkeletonDesktop"
+      [itemStyles]="carouselStyles" />
   }
 </ng-template>
 
@@ -116,7 +117,7 @@
 <ng-template #episodeCardSkeletonDesktop>
   <div
     hlmCard
-    class="container flex flex-col gap-4 w-full h-full p-3 self-stretch shrink-0 basis-[325px] ml-4">
+    class="container flex flex-col gap-3 w-full h-full p-3">
     <!-- Image -->
     <hlm-skeleton
       class="relative aspect-video w-full object-cover rounded-md overflow-hidden" />

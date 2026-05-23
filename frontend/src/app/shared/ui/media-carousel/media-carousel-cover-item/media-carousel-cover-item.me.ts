@@ -5,6 +5,9 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideStar } from '@ng-icons/lucide';
 import { MediaCarouselItemBase } from '@shared/ui/media-carousel/media-carousel-item.base';
 
+export const DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES: string =
+  'aspect-[2/3] basis-[225px] md:basis-[250px] lg:basis-[275px]';
+
 @Component({
   selector: 'me-media-carousel-cover-item',
   imports: [NgOptimizedImage, NgIcon],

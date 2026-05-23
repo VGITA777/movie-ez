@@ -11,6 +11,9 @@ export interface MediaCarouselBackdropItem extends MediaCarouselItem {
   readonly runtime: number;
 }
 
+export const DEFAULT_MEDIA_CAROUSEL_BACKDROP_ITEM_STYLES: string =
+  'aspect-video basis-[325px] md:basis-[375px] lg:basis-[425px]';
+
 @Component({
   selector: 'me-media-carousel-backdrop-item',
   imports: [HlmIconImports, InteractiveMediaCardMe],

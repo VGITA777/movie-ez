@@ -122,3 +122,8 @@ my progress here.
 - Updated the playlist contents page to have a way to remove it from the current playlist or add it
   to another playlist.
 - Minor UI improvements for the homepage.
+
+### May 24, 2026
+
+- Updated the media carousel to wrap contents with spartan's hlm-carousel-item.
+- Started to create the more details section in the watch page.

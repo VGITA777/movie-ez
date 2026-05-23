@@ -6,9 +6,16 @@ import {
   MediaCarouselMe,
   MediaCarouselOutput,
 } from '@shared/ui/media-carousel/media-carousel.me';
-import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
-import { MediaCarouselBackdropItemMe } from '@shared/ui/media-carousel/media-carousel-backdrop-item/media-carousel-backdrop-item.me';
 import {
+  DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES,
+  MediaCarouselCoverItemMe,
+} from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
+import {
+  DEFAULT_MEDIA_CAROUSEL_BACKDROP_ITEM_STYLES,
+  MediaCarouselBackdropItemMe,
+} from '@shared/ui/media-carousel/media-carousel-backdrop-item/media-carousel-backdrop-item.me';
+import {
+  DEFAULT_MEDIA_CAROUSEL_TOP_ITEM_STYLES,
   MediaCarouselTopItem,
   MediaCarouselTopItemMe,
   TopRanking,
@@ -117,9 +124,16 @@ export class HomeMe {
   private readonly userLocalPlaylist: UserLocalPlaylistService = inject(UserLocalPlaylistService);
   private readonly playlists: Signal<OfflinePlaylist[]> = this.userLocalPlaylist.playlists;
 
-  protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
+  protected readonly DEFAULT_MEDIA_CAROUSEL_TOP_ITEM_STYLES: string =
+    DEFAULT_MEDIA_CAROUSEL_TOP_ITEM_STYLES;
+  protected readonly DEFAULT_MEDIA_CAROUSEL_BACKDROP_ITEM_STYLES: string =
+    DEFAULT_MEDIA_CAROUSEL_BACKDROP_ITEM_STYLES;
+  protected readonly DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES: string =
+    DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES;
+
   protected readonly carouselSkeletonItems: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   protected readonly heroSkeletonItems: number[] = [1];
+  protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
 
   protected readonly heroItems: Signal<HomeHeroSliderItem[]> = this.toArraySignal(
     from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(

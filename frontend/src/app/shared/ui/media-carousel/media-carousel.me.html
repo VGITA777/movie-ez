@@ -15,9 +15,11 @@
     <hlm-carousel #carousel [options]="carouselOptions()">
       <hlm-carousel-content>
         @for (item of items(); track item) {
-          <ng-container
-            [ngTemplateOutletContext]="{$implicit: item}"
-            [ngTemplateOutlet]="template()"></ng-container>
+          <hlm-carousel-item [class]="itemStyles()">
+            <ng-container
+              [ngTemplateOutletContext]="{$implicit: item}"
+              [ngTemplateOutlet]="template()"></ng-container>
+          </hlm-carousel-item>
         }
       </hlm-carousel-content>
     </hlm-carousel>

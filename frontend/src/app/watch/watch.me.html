@@ -5,8 +5,6 @@
     } @else {
       <ng-container *ngTemplateOutlet="main"></ng-container>
     }
-
-    <button hlmBtn (click)="handleClick()">Home</button>
   </div>
 </section>
 
@@ -28,10 +26,8 @@
       <div class="information-specifics flex gap-5 items-center">
 
         <!-- Release Year -->
-        @let releaseYear = getYearFromDate(movieDetails()?.release_date
-                                             ?? tvDetails()?.first_air_date);
         <span class="information-specifics__release-date text-amber-200 font-bold">{{
-            releaseYear
+            firstShowDateYear()
           }}</span>
 
         <!-- Tv Specific Information -->
@@ -99,6 +95,20 @@
       </div>
     }
 
+    <!--    <hlm-separator />
+
+        <div class="more-description w-full">
+          &lt;!&ndash; Trailers and Clips &ndash;&gt;
+          <div class="trailers-and-clips flex flex-col gap-4">
+            <div class="trailer-and-clips__label flex flex-row gap-2 items-center">
+              <ng-icon name="lucideFilm" />
+              <h3>Trailers and Clips</h3>
+            </div>
+
+            <me-media-carousel [items]="youtubeVideos()" [template]="trailersAndClipsCarouselItem" />
+          </div>
+        </div>-->
+
     <hlm-separator />
 
     <!-- Similar Contents -->
@@ -106,11 +116,10 @@
       title              : 'More Like This',
       items              : similarMediaCarouselItems(),
       template           : similarCarouselItem,
+      itemStyles         : DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES,
       includeProgressDots: true,
     };
-    <ng-container *ngTemplateOutlet="carouselEntry context: context">
-
-    </ng-container>
+    <ng-container *ngTemplateOutlet="carouselEntry context: context"></ng-container>
   </div>
 </ng-template>
 
@@ -119,7 +128,9 @@
   let-title="title"
   let-items="items"
   let-template="template"
-  let-includeProgressDots="includeProgressDots">
+  let-includeProgressDots="includeProgressDots"
+  let-itemStyles="itemStyles"
+>
 
   <div class="carousel-holder flex flex-col gap-4">
     <div class="title-container flex flex-row gap-2 items-center justify-start">
@@ -136,6 +147,7 @@
       <me-media-carousel
         [items]="items"
         [template]="template"
+        [itemStyles]="itemStyles"
         [includeProgressDots]="includeProgressDots ?? false" />
     }
   </div>
@@ -144,10 +156,24 @@
 <!-- Similar Carousel -->
 <ng-template #similarCarouselItem let-item>
   <me-media-carousel-cover-item
-    class="ml-4 self-stretch basis-[175px] md:basis-[200px] shrink-0" [item]="item"
+    [item]="item"
     (itemClick)="navigateToWatchPage($event)" />
 </ng-template>
 
+<!-- Trailers and Clips Carousel Item -->
+<ng-template #trailersAndClipsCarouselItem let-item>
+  <hlm-carousel-item class="basis-1/2">
+    <div class="trailer-and-clips-carousel-item aspect-video">
+      <iframe
+        [src]="item.embedUrl"
+        allow="autoplay; encrypted-media"
+        class="absolute w-full h-full z-1 pointer-events-none"
+        height="100%"
+        width="100%">
+      </iframe>
+    </div>
+  </hlm-carousel-item>
+</ng-template>
 
 <!-- Page Skeleton -->
 <ng-template #skeleton>
@@ -208,7 +234,9 @@
           </div>
         </ng-scrollbar>
       } @else {
-        <me-media-carousel [items]="skeletonCount" [template]="episodeCardSkeletonDesktop" />
+        <me-media-carousel
+          [items]="skeletonCount" [template]="episodeCardSkeletonDesktop"
+          itemStyles="aspect-4/3.5 basis-[350px]" />
       }
     }
 
@@ -217,7 +245,9 @@
     <!-- Similar Contents -->
     <div class="similar flex flex-col gap-4">
       <hlm-skeleton class="w-32 h-8" />
-      <me-media-carousel [items]="skeletonCount" [template]="similarCarouselItemSkeleton" />
+      <me-media-carousel
+        [items]="skeletonCount" [template]="similarCarouselItemSkeleton"
+        [itemStyles]="DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES" />
     </div>
   </div>
 </ng-template>
@@ -238,7 +268,7 @@
 <ng-template #episodeCardSkeletonDesktop>
   <div
     hlmCard
-    class="container flex flex-col gap-4 w-full h-full p-3 self-stretch shrink-0 basis-[325px] ml-4">
+    class="container flex flex-col gap-4 w-full h-full p-3">
     <!-- Image -->
     <hlm-skeleton
       class="relative aspect-video w-full object-cover rounded-md overflow-hidden" />
@@ -252,7 +282,7 @@
 </ng-template>
 
 <ng-template #similarCarouselItemSkeleton>
-  <div class="ml-4 self-stretch basis-[175px] md:basis-[200px] shrink-0">
+  <div>
     <hlm-skeleton class="w-full aspect-2/3 rounded-xl" />
     <div class="flex flex-col gap-1 mt-2">
       <hlm-skeleton class="w-full h-4" />

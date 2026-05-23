@@ -47,11 +47,12 @@ export function getYoutubeEmbedUrl(data: {
   videoKey: string;
   muted: boolean;
   loop: boolean;
+  autoplay?: boolean;
 }): string {
-  const { videoKey, muted, loop } = data;
+  const { videoKey, muted, loop, autoplay } = data;
 
   const params = new URLSearchParams({
-    autoplay: '1',
+    autoplay: autoplay ? '1' : '0',
     mute: muted ? '1' : '0',
     controls: '0',
     loop: loop ? '1' : '0',

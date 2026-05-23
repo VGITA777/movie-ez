@@ -47,6 +47,7 @@ export class MediaCarouselMe {
   public readonly includeControls: InputSignal<boolean> = input(true);
   public readonly includeProgressDots: InputSignal<boolean> = input(true);
   public readonly template: InputSignal<TemplateRef<unknown>> = input.required();
+  public readonly itemStyles: InputSignal<string> = input('basis-full pl-4');
   public readonly carouselOptions: InputSignal<Partial<EmblaOptionsType>> = input<
     Partial<EmblaOptionsType>
   >({

@@ -12,6 +12,8 @@ import {
 } from '@angular/core';
 import { z } from 'zod';
 import {
+  CreditsCast,
+  CreditsModel,
   MediaType,
   MovieDetailsModel,
   MovieShortDetailsWithMediaTypeModel,
@@ -20,23 +22,25 @@ import {
   TvSeriesDetailsModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
   TvSeriesSimilarModel,
+  Video,
   VideosModel,
 } from '@shared/models';
 import { breakpoints, queryParams, storage } from '@signality/core';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
-import { catchError, Observable, of, take } from 'rxjs';
+import { catchError, filter, map, Observable, of, take } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import {
   convertRuntimeToHoursAndMinutes,
   getYearFromDate,
+  getYoutubeEmbedUrl,
   normalizeGenres,
   toGenres,
 } from '@shared/utils';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
+import { lucideFilm, lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
@@ -47,18 +51,26 @@ import { HlmScrollArea } from '@spartan-ng/helm/scroll-area';
 import { MediaCarouselItem, MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HlmCard } from '@spartan-ng/helm/card';
-import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
+import {
+  DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES,
+  MediaCarouselCoverItemMe,
+} from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import { environment } from '@environments/environment';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.me';
 import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
 import { toast } from '@spartan-ng/brain/sonner';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { HlmCarouselImports } from '@spartan-ng/helm/carousel';
 
 export type WatchMediaType = MediaType.MOVIE | MediaType.TV;
-
 export type WatchMediaParams = {
   type: WatchMediaType;
   id: number;
+};
+type EmbedAndYoutubeVideo = Video & {
+  readonly embedUrl: SafeResourceUrl;
+  readonly youtubeUrl: string;
 };
 
 const WATCH_PAGE_MEDIA_TYPES = [MediaType.MOVIE, MediaType.TV] as const;
@@ -89,16 +101,18 @@ export const watchPageQueryParams = z.object({
     HlmSeparatorImports,
     CollapsibleTextMe,
     ShowPlaylistsDirective,
+    HlmCarouselImports,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
-  providers: [provideIcons({ lucideStar, lucidePlus, lucideShare })],
+  providers: [provideIcons({ lucideStar, lucidePlus, lucideShare, lucideFilm })],
 })
 export class WatchMe implements OnDestroy, AfterViewInit {
   private readonly errorWatcher: EffectRef;
   private readonly navFacade: NavigationFacade = inject(NavigationFacade);
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
   private readonly tvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
+  private readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
   private readonly showSiteLogoNavigationToast: WritableSignal<boolean> = storage(
     'showSiteLogoNavigationToast',
     true,
@@ -118,12 +132,35 @@ export class WatchMe implements OnDestroy, AfterViewInit {
         return this.getMediaDetails(params).pipe(take(1));
       },
     });
+  private readonly credits: ResourceRef<CreditsModel | undefined> = rxResource({
+    params: (): WatchMediaParams => this.mediaParams(),
+    stream: ({ params }) => {
+      const { id, type } = params;
+      switch (type) {
+        case MediaType.MOVIE:
+          return this.movieService.getMovieCredits(id).pipe(take(1));
+        case MediaType.TV:
+          return this.tvSeriesService.getTvSeriesCredits(id).pipe(take(1));
+      }
+    },
+  });
+  private readonly videos: ResourceRef<Video[] | undefined> = rxResource({
+    params: (): WatchMediaParams => this.mediaParams(),
+    stream: ({ params }): Observable<Video[]> => {
+      return this.getMediaVideos(params).pipe(
+        take(1),
+        filter((videos) => videos.results.length > 0),
+        map((videos) => videos.results),
+      );
+    },
+  });
 
+  protected readonly DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES =
+    DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES;
+  protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly skeletonCount: number[] = Array.from({ length: 10 }, (_, i) => i);
   protected readonly genresSkeletonCount: number[] = Array.from({ length: 2 }, (_, i) => i);
   protected readonly queryParams = queryParams({ schema: watchPageQueryParams });
-  protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
-  protected readonly getYearFromDate = getYearFromDate;
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly mediaId: Signal<number> = computed(() => this.queryParams.value().id);
   protected readonly mediaType: Signal<WatchMediaType> = computed(() => {
@@ -196,6 +233,36 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     () =>
       this.movieDetails()?.overview ?? this.tvDetails()?.overview ?? 'No description available.',
   );
+  protected readonly casts: Signal<CreditsCast[]> = computed(
+    () => this.credits.value()?.cast ?? [],
+  );
+  protected readonly firstShowDate: Signal<string> = computed(() => {
+    return this.movieDetails()?.release_date ?? this.tvDetails()?.first_air_date ?? 'Unknown';
+  });
+  protected readonly firstShowDateYear: Signal<string> = computed(() => {
+    return getYearFromDate(this.firstShowDate())?.toString() ?? 'Unknown';
+  });
+  protected readonly youtubeVideos: Signal<EmbedAndYoutubeVideo[]> = computed(() => {
+    const videos: Video[] = this.videos.value()?.slice(0, 5) ?? [];
+    if (videos.length === 0) {
+      return [];
+    }
+    return this.getYoutubeVideos(videos).map((video): EmbedAndYoutubeVideo => {
+      const embedUrl: string = getYoutubeEmbedUrl({
+        autoplay: false,
+        loop: false,
+        muted: true,
+        videoKey: video.key,
+      });
+      const trustedEmbedUrl: SafeResourceUrl =
+        this.domSanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+      return {
+        ...video,
+        embedUrl: trustedEmbedUrl,
+        youtubeUrl: `https://www.youtube.com/watch?v=${video.key}`,
+      };
+    });
+  });
 
   constructor() {
     this.errorWatcher = effect(() => {
@@ -314,5 +381,9 @@ export class WatchMe implements OnDestroy, AfterViewInit {
 
   private emptySimilarMedia(): MovieSimilarModel | TvSeriesSimilarModel {
     return {} as MovieSimilarModel | TvSeriesSimilarModel;
+  }
+
+  private getYoutubeVideos(videos: Video[]): Video[] {
+    return videos.filter((video) => video.site.trim().toLowerCase() === 'youtube');
   }
 }
