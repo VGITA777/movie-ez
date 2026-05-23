@@ -1,10 +1,11 @@
 import {
   Component,
+  DestroyRef,
   effect,
-  HostListener,
   inject,
   input,
   InputSignal,
+  OnInit,
   signal,
   Signal,
   viewChild,
@@ -21,6 +22,8 @@ import { SearchMe } from '@search/search.me';
 import { RouterLink } from '@angular/router';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { HlmNavigationMenuImports } from '@spartan-ng/helm/navigation-menu';
+import { auditTime, distinctUntilChanged, fromEvent, map } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'me-navigation',
@@ -39,9 +42,10 @@ import { HlmNavigationMenuImports } from '@spartan-ng/helm/navigation-menu';
   styleUrl: './navigation.me.css',
   providers: [provideIcons({ lucideSearch, lucideUser, lucideLogIn })],
 })
-export class NavigationMe {
+export class NavigationMe implements OnInit {
   private readonly _showBg: WritableSignal<boolean> = signal(false);
   private readonly searchDialog: Signal<HlmDialog> = viewChild.required('searchDialog');
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
   protected readonly authService: AuthFacadeService = inject(AuthFacadeService);
   protected readonly showBg: Signal<boolean> = this._showBg.asReadonly();
@@ -54,6 +58,19 @@ export class NavigationMe {
     });
   }
 
+  public ngOnInit(): void {
+    fromEvent(window, 'scroll')
+      .pipe(
+        auditTime(100),
+        map(() => window.scrollY >= this.threshold()),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((showBg) => {
+        this._showBg.set(showBg);
+      });
+  }
+
   protected closeSearchDialog(): void {
     this.searchDialog().close();
   }
@@ -64,10 +81,5 @@ export class NavigationMe {
 
   protected logout(): void {
     this.authService.logout();
-  }
-
-  @HostListener('window:scroll')
-  protected onScroll(): void {
-    this._showBg.set(window.scrollY >= this.threshold());
   }
 }
