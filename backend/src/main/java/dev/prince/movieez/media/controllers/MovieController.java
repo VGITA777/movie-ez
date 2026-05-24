@@ -12,6 +12,7 @@ import dev.prince.movieez.media.models.movies.MovieSimilarModel;
 import dev.prince.movieez.media.models.shared.CreditsModel;
 import dev.prince.movieez.media.models.shared.ImagesModel;
 import dev.prince.movieez.media.models.shared.VideosModel;
+import dev.prince.movieez.media.models.shared.WatchProvidersModel;
 import dev.prince.movieez.media.tmdb.services.MovieRequestsService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -139,5 +140,15 @@ public class MovieController {
     return ResponseEntityUtils
         .okPrivateOneDay()
         .body(movieRequestsService.getMovieVideos(movieId, (language == null) ? "" : language.getIsoCode()));
+  }
+
+  @GetMapping("/{movieId}/watch-providers")
+  public ResponseEntity<WatchProvidersModel> getMovieWatchProviders(
+      @PathVariable
+      long movieId
+  ) {
+    return ResponseEntityUtils
+        .okPrivateOneDay()
+        .body(movieRequestsService.getMovieWatchProviders(movieId));
   }
 }

@@ -1,9 +1,11 @@
 package dev.prince.movieez.media.tmdb.services;
 
 import dev.prince.movieez.media.caching.utils.TvSeriesCacheConfigurer;
+import dev.prince.movieez.media.caching.utils.WatchProvidersCacheConfigurer;
 import dev.prince.movieez.media.models.shared.CreditsModel;
 import dev.prince.movieez.media.models.shared.ImagesModel;
 import dev.prince.movieez.media.models.shared.VideosModel;
+import dev.prince.movieez.media.models.shared.WatchProvidersModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesDetailsModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesKeywordsModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesLatestModel;
@@ -63,5 +65,9 @@ public class TvSeriesRequestsService {
   public VideosModel getTvSeriesVideos(long seriesId, String language) {
     return tvSeriesRequests.getTvSeriesVideos(seriesId, language);
   }
-}
 
+  @Cacheable(cacheNames = WatchProvidersCacheConfigurer.TV_SERIES_WATCH_PROVIDERS)
+  public WatchProvidersModel getTvSeriesWatchProviders(long seriesId) {
+    return tvSeriesRequests.getTvSeriesWatchProviders(seriesId);
+  }
+}

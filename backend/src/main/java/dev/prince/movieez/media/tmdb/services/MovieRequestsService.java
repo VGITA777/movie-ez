@@ -1,6 +1,7 @@
 package dev.prince.movieez.media.tmdb.services;
 
 import dev.prince.movieez.media.caching.utils.MovieCacheConfigurer;
+import dev.prince.movieez.media.caching.utils.WatchProvidersCacheConfigurer;
 import dev.prince.movieez.media.models.movies.MovieAlternativeTitlesModel;
 import dev.prince.movieez.media.models.movies.MovieDetailsModel;
 import dev.prince.movieez.media.models.movies.MovieKeywordsModel;
@@ -10,6 +11,7 @@ import dev.prince.movieez.media.models.movies.MovieSimilarModel;
 import dev.prince.movieez.media.models.shared.CreditsModel;
 import dev.prince.movieez.media.models.shared.ImagesModel;
 import dev.prince.movieez.media.models.shared.VideosModel;
+import dev.prince.movieez.media.models.shared.WatchProvidersModel;
 import dev.prince.movieez.media.tmdb.requests.MoviesRequests;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -67,5 +69,10 @@ public class MovieRequestsService {
   @Cacheable(cacheNames = MovieCacheConfigurer.MOVIE_VIDEOS_CACHE)
   public VideosModel getMovieVideos(long movieId, String language) {
     return moviesRequests.getMovieVideos(movieId, language);
+  }
+
+  @Cacheable(cacheNames = WatchProvidersCacheConfigurer.MOVIE_WATCH_PROVIDERS)
+  public WatchProvidersModel getMovieWatchProviders(long movieId) {
+    return moviesRequests.getMovieWatchProviders(movieId);
   }
 }

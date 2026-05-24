@@ -5,6 +5,7 @@ import dev.prince.movieez.media.models.enums.Language;
 import dev.prince.movieez.media.models.shared.CreditsModel;
 import dev.prince.movieez.media.models.shared.ImagesModel;
 import dev.prince.movieez.media.models.shared.VideosModel;
+import dev.prince.movieez.media.models.shared.WatchProvidersModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesDetailsModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesKeywordsModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesLatestModel;
@@ -123,5 +124,15 @@ public class TvSeriesController {
     return ResponseEntityUtils
         .okPrivateOneDay()
         .body(tvSeriesRequestsService.getTvSeriesVideos(seriesId, language.getIsoCode()));
+  }
+
+  @GetMapping("/{seriesId}/watch-providers")
+  public ResponseEntity<WatchProvidersModel> getTvSeriesWatchProviders(
+      @PathVariable
+      long seriesId
+  ) {
+    return ResponseEntityUtils
+        .okPrivateOneDay()
+        .body(tvSeriesRequestsService.getTvSeriesWatchProviders(seriesId));
   }
 }

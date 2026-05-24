@@ -9,6 +9,7 @@ import dev.prince.movieez.media.models.movies.MovieSimilarModel;
 import dev.prince.movieez.media.models.shared.CreditsModel;
 import dev.prince.movieez.media.models.shared.ImagesModel;
 import dev.prince.movieez.media.models.shared.VideosModel;
+import dev.prince.movieez.media.models.shared.WatchProvidersModel;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
@@ -84,5 +85,11 @@ public interface MoviesRequests {
       long movieId,
       @RequestParam("language")
       String language
+  );
+
+  @GetExchange("/{movieId}/watch/providers")
+  WatchProvidersModel getMovieWatchProviders(
+      @PathVariable
+      long movieId
   );
 }

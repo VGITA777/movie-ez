@@ -3,6 +3,7 @@ package dev.prince.movieez.media.tmdb.requests;
 import dev.prince.movieez.media.models.shared.CreditsModel;
 import dev.prince.movieez.media.models.shared.ImagesModel;
 import dev.prince.movieez.media.models.shared.VideosModel;
+import dev.prince.movieez.media.models.shared.WatchProvidersModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesDetailsModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesKeywordsModel;
 import dev.prince.movieez.media.models.tvseries.TvSeriesLatestModel;
@@ -75,5 +76,11 @@ public interface TvSeriesRequests {
       long seriesId,
       @RequestParam("language")
       String language
+  );
+
+  @GetExchange("/{seriesId}/watch/providers")
+  WatchProvidersModel getTvSeriesWatchProviders(
+      @PathVariable
+      long seriesId
   );
 }
