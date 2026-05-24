@@ -28,13 +28,12 @@ import {
 import { breakpoints, queryParams, storage } from '@signality/core';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
-import { catchError, filter, map, Observable, of, take } from 'rxjs';
+import { catchError, map, Observable, of, take } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
 import {
   convertRuntimeToHoursAndMinutes,
   getYearFromDate,
-  getYoutubeEmbedUrl,
   normalizeGenres,
   toGenres,
 } from '@shared/utils';
@@ -60,17 +59,13 @@ import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.me';
 import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
 import { toast } from '@spartan-ng/brain/sonner';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { HlmCarouselImports } from '@spartan-ng/helm/carousel';
+import { DomSanitizer } from '@angular/platform-browser';
+import { YouTubePlayer } from '@angular/youtube-player';
 
 export type WatchMediaType = MediaType.MOVIE | MediaType.TV;
 export type WatchMediaParams = {
   type: WatchMediaType;
   id: number;
-};
-type EmbedAndYoutubeVideo = Video & {
-  readonly embedUrl: SafeResourceUrl;
-  readonly youtubeUrl: string;
 };
 
 const WATCH_PAGE_MEDIA_TYPES = [MediaType.MOVIE, MediaType.TV] as const;
@@ -101,7 +96,7 @@ export const watchPageQueryParams = z.object({
     HlmSeparatorImports,
     CollapsibleTextMe,
     ShowPlaylistsDirective,
-    HlmCarouselImports,
+    YouTubePlayer,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
@@ -144,13 +139,21 @@ export class WatchMe implements OnDestroy, AfterViewInit {
       }
     },
   });
-  private readonly videos: ResourceRef<Video[] | undefined> = rxResource({
+  private readonly videos: ResourceRef<Video[]> = rxResource({
+    defaultValue: [],
     params: (): WatchMediaParams => this.mediaParams(),
     stream: ({ params }): Observable<Video[]> => {
       return this.getMediaVideos(params).pipe(
         take(1),
-        filter((videos) => videos.results.length > 0),
-        map((videos) => videos.results),
+        map((videos) => videos.results ?? []),
+        catchError((error) => {
+          console.error(
+            `Failed to load videos for ${params.type}/${params.id}. Videos will be unavailable.`,
+            error,
+          );
+
+          return of([]);
+        }),
       );
     },
   });
@@ -242,26 +245,19 @@ export class WatchMe implements OnDestroy, AfterViewInit {
   protected readonly firstShowDateYear: Signal<string> = computed(() => {
     return getYearFromDate(this.firstShowDate())?.toString() ?? 'Unknown';
   });
-  protected readonly youtubeVideos: Signal<EmbedAndYoutubeVideo[]> = computed(() => {
-    const videos: Video[] = this.videos.value()?.slice(0, 5) ?? [];
+  protected readonly youtubeVideos: Signal<Video[]> = computed(() => {
+    const videos: Video[] = this.videos.value();
+
     if (videos.length === 0) {
       return [];
     }
-    return this.getYoutubeVideos(videos).map((video): EmbedAndYoutubeVideo => {
-      const embedUrl: string = getYoutubeEmbedUrl({
-        autoplay: false,
-        loop: false,
-        muted: true,
-        videoKey: video.key,
-      });
-      const trustedEmbedUrl: SafeResourceUrl =
-        this.domSanitizer.bypassSecurityTrustResourceUrl(embedUrl);
-      return {
-        ...video,
-        embedUrl: trustedEmbedUrl,
-        youtubeUrl: `https://www.youtube.com/watch?v=${video.key}`,
-      };
-    });
+
+    console.debug(
+      `Loaded ${videos.length} videos for media ${this.mediaType()}/${this.mediaId()}`,
+      videos,
+    );
+
+    return this.getYoutubeVideos(videos).slice(0, 5);
   });
 
   constructor() {

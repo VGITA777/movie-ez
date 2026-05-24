@@ -17,10 +17,10 @@
 
   <div class="data__wrapper flex flex-col gap-12 w-[95vw] md:w-[90vw] lg:w-[80vw]">
     <!-- Information Container -->
-    <div class="information flex flex-col gap-4 w-full md:w-[60%] lg:w-[50%]">
+    <div class="information flex flex-col gap-4 w-full lg:w-[70%] xl:w-[60%] max-w-[700px] ">
       <!-- Title -->
       @let title = movieDetails()?.title ?? tvDetails()?.name;
-      <h1 class="information__title text-5xl font-black">{{ title }}</h1>
+      <h1 class="information__title text-4xl font-black">{{ title }}</h1>
 
       <!-- Specific Information Container -->
       <div class="information-specifics flex gap-5 items-center">
@@ -95,19 +95,23 @@
       </div>
     }
 
-    <!--    <hlm-separator />
 
-        <div class="more-description w-full">
-          &lt;!&ndash; Trailers and Clips &ndash;&gt;
-          <div class="trailers-and-clips flex flex-col gap-4">
-            <div class="trailer-and-clips__label flex flex-row gap-2 items-center">
-              <ng-icon name="lucideFilm" />
-              <h3>Trailers and Clips</h3>
-            </div>
+    <div class="more-description w-full">
+      <!-- Trailers and Clips -->
+      @if (youtubeVideos().length > 0) {
+        <hlm-separator />
 
-            <me-media-carousel [items]="youtubeVideos()" [template]="trailersAndClipsCarouselItem" />
+        <div class="trailers-and-clips flex flex-col gap-4">
+          <div class="trailer-and-clips__label flex flex-row gap-2 items-center">
+            <ng-icon name="lucideFilm" class="text-2xl"/>
+            <h3 class="text-2xl font-bold line-clamp-1">Trailers and Clips</h3>
           </div>
-        </div>-->
+          <me-media-carousel
+            [items]="youtubeVideos()" [template]="trailersAndClipsCarouselItem"
+            itemStyles="basis-[320px] sm:basis-[400px] md:basis-[450px]" />
+        </div>
+      }
+    </div>
 
     <hlm-separator />
 
@@ -162,17 +166,16 @@
 
 <!-- Trailers and Clips Carousel Item -->
 <ng-template #trailersAndClipsCarouselItem let-item>
-  <hlm-carousel-item class="basis-1/2">
-    <div class="trailer-and-clips-carousel-item aspect-video">
-      <iframe
-        [src]="item.embedUrl"
-        allow="autoplay; encrypted-media"
-        class="absolute w-full h-full z-1 pointer-events-none"
-        height="100%"
-        width="100%">
-      </iframe>
-    </div>
-  </hlm-carousel-item>
+  <div class="trailer-and-clips-carousel-item aspect-video w-full rounded-lg overflow-hidden">
+    <youtube-player
+      [videoId]="item.key"
+      class="inline-block h-full w-full
+             [&>div]:h-full [&>div]:w-full
+             [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:object-cover
+             [&>youtube-player-placeholder]:object-cover
+             [&>youtube-player-placeholder]:h-full!
+             [&>youtube-player-placeholder]:w-full!" />
+  </div>
 </ng-template>
 
 <!-- Page Skeleton -->

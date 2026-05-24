@@ -127,3 +127,4 @@ my progress here.
 
 - Updated the media carousel to wrap contents with spartan's hlm-carousel-item.
 - Started to create the more details section in the watch page.
+- Added trailers and Videos in the watch page and minor UI changes and optimizations.

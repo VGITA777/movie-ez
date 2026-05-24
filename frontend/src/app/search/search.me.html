@@ -39,10 +39,14 @@
     @if ((search.length > 0 && isLoading()) || items.length > 0) {
       <ng-scrollbar hlm class="w-full h-full " appearance="compact">
         <div
-          class="results h-full p-1 grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(175px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]">
+          class="results h-full p-1 grid gap-4
+          grid-cols-[repeat(auto-fill,minmax(125px,1fr))]
+          md:grid-cols-[repeat(auto-fill,minmax(175px,1fr))]
+          lg:grid-cols-[repeat(auto-fill,minmax(225px,1fr))]"
+        >
           @if (isLoading() && search.length > 0) {
             <!-- Loading Items Skeleton -->
-            @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track item) {
+            @for (item of skeletonCount; track item) {
               <ng-container *ngTemplateOutlet="mediaCoverItemSkeleton"></ng-container>
             }
           } @else {
@@ -55,26 +59,15 @@
         </div>
       </ng-scrollbar>
     } @else if (items.length === 0 && search.length > 0) {
-      <!-- No Results in Search -->
-      @let context = {
-        title  : 'Nothing Found',
-        message: 'No results found for your search query.',
-        icon   : 'lucideArchiveX'
-      };
+      <!-- Empty Result in Search -->
       <ng-container
-        *ngTemplateOutlet="emptyState; context: context"></ng-container>
+        *ngTemplateOutlet="emptyState; context: emptyResultInSearchContext"></ng-container>
     } @else {
       <!-- Start Searching -->
-      @let context = {
-        title  : 'Search Anything',
-        message: 'Start typing to search for Movies and TV shows.',
-        icon   : 'lucideKeyboard'
-      };
       <ng-container
-        *ngTemplateOutlet="emptyState; context: context"></ng-container>
+        *ngTemplateOutlet="emptyState; context: startSearchingContext"></ng-container>
     }
   </div>
-
 </section>
 
 <!-- Searched Item -->

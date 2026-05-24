@@ -48,24 +48,29 @@ export function getYoutubeEmbedUrl(data: {
   muted: boolean;
   loop: boolean;
   autoplay?: boolean;
+  controls?: boolean;
 }): string {
-  const { videoKey, muted, loop, autoplay } = data;
+  const { videoKey, muted, loop, autoplay, controls = true } = data;
 
   const params = new URLSearchParams({
     autoplay: autoplay ? '1' : '0',
     mute: muted ? '1' : '0',
-    controls: '0',
+    controls: controls ? '1' : '0',
+    // Allow fullscreen button in the YouTube player UI.
+    fs: '1',
+    // Useful for mobile/browser behavior.
+    playsinline: '1',
     loop: loop ? '1' : '0',
-    disablekb: '1',
+    disablekb: controls ? '0' : '1',
+    rel: '0',
   });
 
   if (loop) {
     params.set('playlist', videoKey);
   }
 
-  return `https://www.youtube.com/embed/${videoKey}?${params.toString()}`;
+  return `https://www.youtube.com/embed/${encodeURIComponent(videoKey)}?${params.toString()}`;
 }
-
 export function pickYoutubeTrailer(videos: VideosModel): Video | undefined {
   const candidates = videos.results.filter(
     (video) => video.site === 'YouTube' && video.type === 'Trailer',

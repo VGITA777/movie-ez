@@ -11,6 +11,7 @@ import {
   withAppInitializerAuthCheck,
 } from 'angular-auth-oidc-client';
 import { environment } from '@environments/environment';
+import { YOUTUBE_PLAYER_CONFIG } from '@angular/youtube-player';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -41,5 +42,11 @@ export const appConfig: ApplicationConfig = {
       },
       withAppInitializerAuthCheck(),
     ),
+    {
+      provide: YOUTUBE_PLAYER_CONFIG,
+      useValue: {
+        placeholderImageQuality: 'high',
+      },
+    },
   ],
 };

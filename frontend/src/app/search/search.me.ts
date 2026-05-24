@@ -65,6 +65,17 @@ export class SearchMe {
   private readonly searchService: MediaSearchService = inject(MediaSearchService);
   private readonly navigationFacade: NavigationFacade = inject(NavigationFacade);
 
+  protected readonly skeletonCount: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  protected readonly emptyResultInSearchContext = {
+    title: 'Nothing Found',
+    message: 'No results found for your search query.',
+    icon: 'lucideArchiveX',
+  };
+  protected readonly startSearchingContext = {
+    title: 'Search Anything',
+    message: 'Start typing to search for Movies and TV shows.',
+    icon: 'lucideKeyboard',
+  };
   protected readonly searchQuery: ModelSignal<string> = model('');
   protected readonly debouncedSearch: Signal<string> = debounced(this.searchQuery, 500);
   protected readonly selectedType: WritableSignal<SearchType> = signal<SearchType>('mixed');
