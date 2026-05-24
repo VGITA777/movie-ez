@@ -33,7 +33,7 @@ import {
   toArray,
 } from 'rxjs';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
-import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
+import { MediaTvSeriesService } from '@shared/services/media/media-tv-series.service';
 import {
   MAX_CONCURRENT_REQUESTS,
   PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY,

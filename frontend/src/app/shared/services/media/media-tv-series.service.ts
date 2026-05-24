@@ -9,6 +9,7 @@ import {
   TvSeriesRecommendationsModel,
   TvSeriesSimilarModel,
   VideosModel,
+  WatchProvidersModel,
 } from '@shared/models';
 import { AbstractMediaBackendService } from './abstract-media-backend-service';
 import { environment } from '@environments/environment';
@@ -79,5 +80,9 @@ export class MediaTvSeriesService extends AbstractMediaBackendService {
     return this.performRequest<VideosModel, { language?: LanguageCode }>(`${seriesId}/videos`, {
       language,
     });
+  }
+
+  public getTvSeriesWatchProviders(seriesId: ID): Observable<WatchProvidersModel> {
+    return this.performRequest<WatchProvidersModel, undefined>(`${seriesId}/watch-providers`);
   }
 }

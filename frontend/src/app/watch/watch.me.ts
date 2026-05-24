@@ -24,10 +24,12 @@ import {
   TvSeriesSimilarModel,
   Video,
   VideosModel,
+  WatchProviderRegion,
+  WatchProvidersModel,
 } from '@shared/models';
 import { breakpoints, queryParams, storage } from '@signality/core';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
-import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
+import { MediaTvSeriesService } from '@shared/services/media/media-tv-series.service';
 import { catchError, map, Observable, of, take } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NavigationFacade } from '@shared/services/navigation-facade.service';
@@ -36,36 +38,46 @@ import {
   getYearFromDate,
   normalizeGenres,
   toGenres,
+  toTmdbImageUrl,
 } from '@shared/utils';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
-import { lucideFilm, lucidePlus, lucideShare, lucideStar } from '@ng-icons/lucide';
+import { lucideFilm, lucidePlus, lucideShare, lucideStar, lucideUsers } from '@ng-icons/lucide';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmTooltipImports } from '@spartan-ng/helm/tooltip';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
-import { NgTemplateOutlet } from '@angular/common';
+import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { EpisodePickerMe } from '@watch/features/episode-picker/episode-picker.me';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
 import { HlmScrollArea } from '@spartan-ng/helm/scroll-area';
 import { MediaCarouselItem, MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
 import { NgScrollbar } from 'ngx-scrollbar';
-import { HlmCard } from '@spartan-ng/helm/card';
+import { HlmCard, HlmCardImports } from '@spartan-ng/helm/card';
 import {
   DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES,
   MediaCarouselCoverItemMe,
 } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
-import { environment } from '@environments/environment';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.me';
 import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
 import { toast } from '@spartan-ng/brain/sonner';
 import { DomSanitizer } from '@angular/platform-browser';
 import { YouTubePlayer } from '@angular/youtube-player';
+import { HlmItemImports } from '@spartan-ng/helm/item';
+import { UserSettings, UserSettingService } from '@shared/services/user/user-setting.service';
+import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
 
 export type WatchMediaType = MediaType.MOVIE | MediaType.TV;
 export type WatchMediaParams = {
   type: WatchMediaType;
   id: number;
+};
+
+type WatchProviderItem = {
+  id: number;
+  name: string;
+  logoUrl: string;
+  link: string;
 };
 
 const WATCH_PAGE_MEDIA_TYPES = [MediaType.MOVIE, MediaType.TV] as const;
@@ -97,16 +109,21 @@ export const watchPageQueryParams = z.object({
     CollapsibleTextMe,
     ShowPlaylistsDirective,
     YouTubePlayer,
+    NgOptimizedImage,
+    HlmCardImports,
+    HlmItemImports,
+    HlmAvatarImports,
   ],
   templateUrl: './watch.me.html',
   styleUrl: './watch.me.css',
-  providers: [provideIcons({ lucideStar, lucidePlus, lucideShare, lucideFilm })],
+  providers: [provideIcons({ lucideStar, lucidePlus, lucideShare, lucideFilm, lucideUsers })],
 })
 export class WatchMe implements OnDestroy, AfterViewInit {
   private readonly errorWatcher: EffectRef;
   private readonly navFacade: NavigationFacade = inject(NavigationFacade);
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
   private readonly tvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
+  private readonly userSettingsService: UserSettingService = inject(UserSettingService);
   private readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
   private readonly showSiteLogoNavigationToast: WritableSignal<boolean> = storage(
     'showSiteLogoNavigationToast',
@@ -114,7 +131,6 @@ export class WatchMe implements OnDestroy, AfterViewInit {
   );
   private readonly mediaParams: Signal<WatchMediaParams> = computed(() => {
     const params = this.queryParams.value();
-
     return {
       id: params.id,
       type: params.type,
@@ -157,6 +173,19 @@ export class WatchMe implements OnDestroy, AfterViewInit {
       );
     },
   });
+  private readonly watchProviders: ResourceRef<WatchProvidersModel | undefined> = rxResource({
+    params: (): WatchMediaParams => this.mediaParams(),
+    stream: ({ params }) => {
+      const { id, type } = params;
+      switch (type) {
+        case MediaType.MOVIE:
+          return this.movieService.getMovieWatchProviders(id).pipe(take(1));
+        case MediaType.TV:
+          return this.tvSeriesService.getTvSeriesWatchProviders(id).pipe(take(1));
+      }
+    },
+  });
+  private readonly userSettings: Signal<UserSettings> = this.userSettingsService.userSettings;
 
   protected readonly DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES =
     DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES;
@@ -237,7 +266,16 @@ export class WatchMe implements OnDestroy, AfterViewInit {
       this.movieDetails()?.overview ?? this.tvDetails()?.overview ?? 'No description available.',
   );
   protected readonly casts: Signal<CreditsCast[]> = computed(
-    () => this.credits.value()?.cast ?? [],
+    () =>
+      this.credits
+        .value()
+        ?.cast?.map((c) => {
+          return {
+            ...c,
+            profile_path: toTmdbImageUrl(c.profile_path, 'w185', '/images/placeholder-profile.png'),
+          };
+        })
+        ?.slice(0, 5) ?? [],
   );
   protected readonly firstShowDate: Signal<string> = computed(() => {
     return this.movieDetails()?.release_date ?? this.tvDetails()?.first_air_date ?? 'Unknown';
@@ -247,6 +285,8 @@ export class WatchMe implements OnDestroy, AfterViewInit {
   });
   protected readonly youtubeVideos: Signal<Video[]> = computed(() => {
     const videos: Video[] = this.videos.value();
+
+    console.debug(`Raw videos loaded for media ${this.mediaType()}/${this.mediaId()}:`, videos);
 
     if (videos.length === 0) {
       return [];
@@ -258,6 +298,14 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     );
 
     return this.getYoutubeVideos(videos).slice(0, 5);
+  });
+  protected readonly watchProviderItems: Signal<WatchProviderItem[]> = computed(() => {
+    const region = this.pickWatchProviderRegion(this.watchProviders.value());
+    if (!region) {
+      return [];
+    }
+
+    return this.toWatchProviderItems(region);
   });
 
   constructor() {
@@ -290,10 +338,6 @@ export class WatchMe implements OnDestroy, AfterViewInit {
         },
       });
     }
-  }
-
-  protected handleClick(): void {
-    this.navFacade.navigateToHomePage();
   }
 
   protected handleOnEpisodeClicked(ep: TvSeasonDetailsEpisode): void {
@@ -343,6 +387,88 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     return this.mediaDetails.isLoading() || this.mediaDetails.error() !== undefined;
   }
 
+  private pickWatchProviderRegion(
+    providers: WatchProvidersModel | undefined,
+  ): WatchProviderRegion | undefined {
+    const results = providers?.results;
+    if (!results) {
+      return undefined;
+    }
+
+    const preferredRegion = this.getPreferredRegionCode();
+    if (preferredRegion && results[preferredRegion]) {
+      return results[preferredRegion];
+    }
+
+    if (results['US']) {
+      return results['US'];
+    }
+
+    const firstKey = Object.keys(results)[0];
+    return firstKey ? results[firstKey] : undefined;
+  }
+
+  private toWatchProviderItems(region: WatchProviderRegion): WatchProviderItem[] {
+    const providers = new Map<number, WatchProviderItem>();
+    const link = region.link ?? '';
+    const groups = [region.flatrate, region.rent, region.buy, region.ads, region.free];
+
+    groups.forEach((group) => {
+      group?.forEach((provider) => {
+        if (providers.has(provider.provider_id)) {
+          return;
+        }
+
+        providers.set(provider.provider_id, {
+          id: provider.provider_id,
+          name: provider.provider_name,
+          logoUrl: toTmdbImageUrl(provider.logo_path, 'w92', '/images/placeholder.png'),
+          link,
+        });
+      });
+    });
+
+    return [...providers.values()].sort((left, right) => left.name.localeCompare(right.name));
+  }
+
+  private getPreferredRegionCode(): string | undefined {
+    const preferredLanguage = this.userSettings().preferredLanguage;
+    if (!preferredLanguage) {
+      return undefined;
+    }
+
+    if (preferredLanguage.includes('-')) {
+      const region = preferredLanguage.split('-')[1];
+      return region ? region.toUpperCase() : undefined;
+    }
+
+    const languageRegionMap: Record<string, string> = {
+      en: 'US',
+      ja: 'JP',
+      ko: 'KR',
+      zh: 'CN',
+      fr: 'FR',
+      es: 'ES',
+      pt: 'PT',
+      de: 'DE',
+      it: 'IT',
+      hi: 'IN',
+      ar: 'SA',
+      ru: 'RU',
+      tr: 'TR',
+      nl: 'NL',
+      sv: 'SE',
+      no: 'NO',
+      da: 'DK',
+      fi: 'FI',
+      pl: 'PL',
+      cs: 'CZ',
+      el: 'GR',
+    };
+
+    return languageRegionMap[preferredLanguage] ?? preferredLanguage.toUpperCase();
+  }
+
   private toSimilarCarouselItem(
     item: MovieShortDetailsWithMediaTypeModel | TvSeriesShortDetailsModelWithMediaTypeModel,
   ): MediaCarouselItem {
@@ -359,20 +485,12 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     return {
       id: item.id,
       title: title ?? '',
-      imgSrc: this.toTmdbImageUrl(item.poster_path),
+      imgSrc: toTmdbImageUrl(item.poster_path),
       rating: item.vote_average,
       year: getYearFromDate(date) ?? 0,
       type: item.media_type,
       genres: toGenres(item.genre_ids),
     };
-  }
-
-  private toTmdbImageUrl(path: string | null | undefined): string {
-    if (!path) {
-      return '';
-    }
-
-    return `${environment.tmdb.imageBaseUrl}original${path}`;
   }
 
   private emptySimilarMedia(): MovieSimilarModel | TvSeriesSimilarModel {

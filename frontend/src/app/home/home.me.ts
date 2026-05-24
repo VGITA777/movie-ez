@@ -54,7 +54,7 @@ import {
 import { getYearFromDate, loadFile, pickYoutubeTrailerFromArray, toGenres } from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { MediaListsService } from '@shared/services/media/media-lists.service';
-import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
+import { MediaTvSeriesService } from '@shared/services/media/media-tv-series.service';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { CuratedContents } from '@shared/shared-types';
 import { YoutubeEmbedService } from '@shared/services/media/youtube-embed-service';

@@ -12,6 +12,7 @@ import {
   MovieRecommendationsModel,
   MovieSimilarModel,
   VideosModel,
+  WatchProvidersModel,
 } from '@shared/models';
 import { environment } from '@environments/environment';
 import { Observable } from 'rxjs';
@@ -87,5 +88,9 @@ export class MediaMovieService extends AbstractMediaBackendService {
     return this.performRequest<VideosModel, { language?: LanguageCode }>(`${id}/videos`, {
       language,
     });
+  }
+
+  public getMovieWatchProviders(id: ID): Observable<WatchProvidersModel> {
+    return this.performRequest<WatchProvidersModel, undefined>(`${id}/watch-providers`);
   }
 }

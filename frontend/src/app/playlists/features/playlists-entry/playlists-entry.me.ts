@@ -16,7 +16,7 @@ import {
   SearchableMediaType,
 } from '@shared/models';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
-import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
+import { MediaTvSeriesService } from '@shared/services/media/media-tv-series.service';
 import { first, map, Observable } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { forkJoinOrEmpty, getUpdateLabel } from '@shared/utils';

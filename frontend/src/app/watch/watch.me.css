@@ -1,0 +1,7 @@
+:host ::ng-deep .where-to-watch__scroll .ng-scroll-viewport {
+  overflow-x: hidden !important;
+}
+
+:host ::ng-deep .where-to-watch__scroll {
+  background: transparent !important;
+}

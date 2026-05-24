@@ -80,6 +80,27 @@ export interface VideosModel {
   results: Video[];
 }
 
+export interface WatchProvider {
+  display_priority: number;
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+}
+
+export interface WatchProviderRegion {
+  link: string;
+  flatrate?: WatchProvider[];
+  rent?: WatchProvider[];
+  buy?: WatchProvider[];
+  ads?: WatchProvider[];
+  free?: WatchProvider[];
+}
+
+export interface WatchProvidersModel {
+  id: number;
+  results: Record<string, WatchProviderRegion>;
+}
+
 export interface CreditsCast {
   adult: boolean;
   gender: number;

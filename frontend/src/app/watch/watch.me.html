@@ -95,22 +95,103 @@
       </div>
     }
 
+    <hlm-separator />
 
-    <div class="more-description w-full">
-      <!-- Trailers and Clips -->
-      @if (youtubeVideos().length > 0) {
-        <hlm-separator />
-
-        <div class="trailers-and-clips flex flex-col gap-4">
-          <div class="trailer-and-clips__label flex flex-row gap-2 items-center">
-            <ng-icon name="lucideFilm" class="text-2xl"/>
-            <h3 class="text-2xl font-bold line-clamp-1">Trailers and Clips</h3>
+    <div class="more-description w-full flex flex-col md:flex-row gap-12">
+      <!-- More Description (Left)-->
+      <div class="more-decription__left flex flex-col gap-12 w-full md:gap-8 md:w-[70%]">
+        <!-- Trailers and Clips -->
+        @if (youtubeVideos().length > 0) {
+          <div class="trailers-and-clips flex flex-col gap-4">
+            <div class="trailer-and-clips__label flex flex-row gap-2 items-center">
+              <ng-icon name="lucideFilm" class="text-2xl" />
+              <h3 class="text-2xl font-bold line-clamp-1">Trailers and Clips</h3>
+            </div>
+            <me-media-carousel
+              [items]="youtubeVideos()" [template]="trailersAndClipsCarouselItem"
+              itemStyles="basis-[320px] sm:basis-[400px] md:basis-[450px]" />
           </div>
-          <me-media-carousel
-            [items]="youtubeVideos()" [template]="trailersAndClipsCarouselItem"
-            itemStyles="basis-[320px] sm:basis-[400px] md:basis-[450px]" />
+        }
+
+        @if (!bp.md()) {
+          <hlm-separator />
+        }
+
+        <!-- Casts -->
+        <div class="casts flex flex-col gap-2">
+          <div class="casts__label flex flex-row gap-2 items-center">
+            <ng-icon name="lucideUsers" class="text-2xl" />
+            <h3 class="text-2xl font-bold line-clamp-1">
+              Casts
+            </h3>
+          </div>
+          <ng-scrollbar hlm appearance="compact" class="w-full">
+            <div class="casts__list flex flex-row gap-6">
+              @for (cast of casts(); track cast.id) {
+                <ng-container
+                  *ngTemplateOutlet="castItem; context: { $implicit: cast }"></ng-container>
+              }
+            </div>
+          </ng-scrollbar>
         </div>
+      </div>
+
+      @if (!bp.md()) {
+        <hlm-separator />
       }
+
+      <!-- More Description (Right)-->
+      <div class="more-description__right flex flex-col w-full md:w-[30%]">
+        <div
+          class="where-to-watch w-full p-4 flex flex-col gap-4 rounded-3xl border border-muted bg-card/25">
+          <!-- Where To Watch (Label) -->
+          <h3 class="where-to-watch__label text-2xl font-bold line-clamp-1">
+            Where to Watch
+          </h3>
+
+          <!-- Where To Watch (Providers)-->
+          @let providers = watchProviderItems();
+          <ng-scrollbar
+            hlm
+            orientation="vertical"
+            visibility="visible"
+            appearance="compact"
+            class="where-to-watch__scroll max-h-[350px] md:max-h-[425px] w-full min-w-0 rounded-2xl">
+            <div
+              class="flex w-full min-w-0 max-w-full flex-col gap-2 overflow-x-hidden p-1 pr-3">
+              @if (providers.length === 0) {
+                <div class="flex h-full items-center justify-center px-4 text-center">
+                  <p class="text-sm text-muted-foreground">
+                    No watch providers available.
+                  </p>
+                </div>
+              } @else {
+                @for (provider of providers; track provider.id) {
+                  <a
+                    hlmItem variant="muted" size="sm"
+                    class="w-full min-w-0 max-w-full overflow-hidden"
+                    [href]="provider.link" target="_blank" rel="noopener noreferrer">
+                    <span hlmItemMedia variant="image" class="shrink-0">
+                      <hlm-avatar>
+                        <img
+                          hlmAvatarImage [src]="provider.logoUrl" [alt]="provider.name + ' logo'" />
+                        <span hlmAvatarFallback>
+                          {{ provider.name.trim().slice(0, 2) }}
+                        </span>
+                      </hlm-avatar>
+                    </span>
+                    <hlm-item-content class="min-w-0 overflow-hidden">
+                      <hlm-item-title class="truncate">
+                        {{ provider.name }}
+                      </hlm-item-title>
+                    </hlm-item-content>
+                  </a>
+                }
+              }
+            </div>
+          </ng-scrollbar>
+        </div>
+      </div>
     </div>
 
     <hlm-separator />
@@ -124,6 +205,27 @@
       includeProgressDots: true,
     };
     <ng-container *ngTemplateOutlet="carouselEntry context: context"></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #castItem let-cast>
+  <div class="cast flex flex-col gap-2 items-center">
+    <div
+      size="lg"
+      class="cast-img__container relative aspect-square w-[90px] sm:w-[95px] lg:w-[100px] rounded-full overflow-hidden">
+      <img
+        class="object-cover"
+        [alt]="cast.name"
+        [ngSrc]="cast.profile_path"
+        fill
+      />
+    </div>
+    <div class="cast-meta flex flex-col text-center">
+      <span class="cast-name text-sm font-bold">{{ cast.name }}</span>
+      <span class="cast-character text-xs font-thin text-accent-foreground">{{
+          cast.character
+        }}</span>
+    </div>
   </div>
 </ng-template>
 

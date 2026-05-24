@@ -25,9 +25,13 @@ export function toGenres(genreIds: number[] | undefined): string[] {
   return genreIds.map((genreId) => GENRE_MAP[genreId] ?? '').filter((genre) => genre !== '');
 }
 
-export function toTmdbImageUrl(path: string | null, size: string = 'original'): string {
+export function toTmdbImageUrl(
+  path: string | null,
+  size: string = 'original',
+  placeholder: string = '/images/placeholder.png',
+): string {
   if (!path) {
-    return '/images/placeholder-poster.png';
+    return placeholder;
   }
 
   return `${environment.tmdb.imageBaseUrl ?? 'https://image.tmdb.org/t/p/'}${size}${path}`;
