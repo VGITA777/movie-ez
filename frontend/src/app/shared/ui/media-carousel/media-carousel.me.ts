@@ -53,6 +53,7 @@ export class MediaCarouselMe {
   >({
     loop: true,
     dragFree: true,
+    align: 'start',
   });
   public readonly itemClick: OutputEmitterRef<MediaCarouselOutput> = output();
 
