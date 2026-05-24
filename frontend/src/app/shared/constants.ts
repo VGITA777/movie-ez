@@ -1,5 +1,6 @@
 import { ToastT } from '@spartan-ng/brain/sonner';
 
+export const MAX_CONCURRENT_REQUESTS: number = 5;
 export const USER_LOCAL_STORAGE_PLAYLIST_KEY: string = 'offlinePlaylist';
 export const PLAYLIST_SORT_OPTION_STORAGE_KEY: string = 'playlistsSortingOption';
 export const PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY: string = 'playlistContentsSortingOption';

@@ -34,7 +34,10 @@ import {
 } from 'rxjs';
 import { MediaMovieService } from '@shared/services/media/media-movie.service';
 import { MediaTvSeriesService } from '@shared/services/media/media-tv-series-series.service';
-import { PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY } from '@shared/constants';
+import {
+  MAX_CONCURRENT_REQUESTS,
+  PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY,
+} from '@shared/constants';
 import { MediaCarouselCoverItemMe } from '@shared/ui/media-carousel/media-carousel-cover-item/media-carousel-cover-item.me';
 import { MediaCarouselItem } from '@shared/ui/media-carousel/media-carousel.me';
 import { PlaylistEntryCoverMe } from '@playlists/features/playlists-entry/ui/playlist-entry-cover/playlist-entry-cover.me';
@@ -155,7 +158,7 @@ export class PlaylistContentsMe {
             const trackId: number = parseInt(item.trackId, 10);
             return this.getMediaDetails(trackId, item.addedOn, item.mediaType);
           }),
-          mergeMap((requests) => requests, 5),
+          mergeMap((requests) => requests, MAX_CONCURRENT_REQUESTS),
           filter((details): details is DetailsWithDateAdded => details !== null),
           map((details) => this.toSharedMediaDetails(details)),
           finalize(() => this.isPlaylistContentLoading.set(false)),

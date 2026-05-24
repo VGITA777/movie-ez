@@ -26,14 +26,17 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   catchError,
   defaultIfEmpty,
+  filter,
   first,
   forkJoin,
   from,
   map,
+  mergeMap,
   Observable,
   of,
   switchMap,
   take,
+  toArray,
 } from 'rxjs';
 import {
   DiscoverMovieModel,
@@ -114,6 +117,8 @@ type PlaylistMedia = {
   styleUrl: './home.me.css',
 })
 export class HomeMe {
+  private readonly MAX_CONCURRENT_PLAYLISTS: number = 2;
+  private readonly MAX_CONCURRENT_PLAYLIST_ITEMS: number = 3;
   private readonly discoverService: MediaDiscoverService = inject(MediaDiscoverService);
   private readonly mediaListService: MediaListsService = inject(MediaListsService);
   private readonly mediaTvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
@@ -198,7 +203,6 @@ export class HomeMe {
 
   protected readonly userPlaylistsFullDetails: Signal<PlaylistMedia[]> = toSignal(
     toObservable(this.playlists).pipe(
-      // Remove unnecessary properties and filter out empty playlists.
       map((playlists: OfflinePlaylist[]) => {
         return playlists
           .map((playlist) => {
@@ -210,19 +214,21 @@ export class HomeMe {
           })
           .filter((playlist) => playlist.items.length > 0);
       }),
-      // Request for details, videos and images for each playlist item.
       switchMap((playlists) => {
-        const playlistItemsRequests$: Observable<PlaylistMedia>[] = playlists.map(
-          (playlist, playlistIndex): Observable<PlaylistMedia> => {
-            const playlistItemRequests$: Observable<PlaylistMediaItem | null>[] =
-              playlist.items.map((media): Observable<PlaylistMediaItem | null> => {
+        if (playlists.length === 0) {
+          return of([]);
+        }
+
+        return from(playlists).pipe(
+          mergeMap((playlist, playlistIndex): Observable<PlaylistMedia> => {
+            return from(playlist.items).pipe(
+              filter((media) => {
+                const trackId: number = Number.parseInt(media.trackId.trim(), 10);
+                return !Number.isNaN(trackId) && isSearchableMediaType(media.mediaType);
+              }),
+              mergeMap((media): Observable<PlaylistMediaItem | null> => {
                 const mediaType: SearchableMediaType = media.mediaType as SearchableMediaType;
                 const trackId: number = Number.parseInt(media.trackId.trim(), 10);
-
-                if (Number.isNaN(trackId)) {
-                  console.error(`Invalid track ID for playlist item: ${media.trackId}`);
-                  return of(null);
-                }
 
                 const details$ = this.getDetails(mediaType, trackId).pipe(
                   first(),
@@ -231,8 +237,7 @@ export class HomeMe {
                       `Failed to load details for playlist item: ${media.mediaType}/${media.trackId}`,
                       error,
                     );
-
-                    return of({} as MovieDetailsModel | TvSeriesDetailsModel);
+                    return of(null);
                   }),
                 );
 
@@ -262,15 +267,22 @@ export class HomeMe {
 
                 return forkJoin({
                   details: details$,
-                  videos: videos$,
                   images: images$,
+                  videos: videos$,
                 }).pipe(
-                  map(({ details, videos, images }): PlaylistMediaItem => {
+                  map(({ details, videos, images }): PlaylistMediaItem | null => {
+                    if (!details) {
+                      return null;
+                    }
+
                     const item: MovieDetailsModel | TvSeriesDetailsModel = details;
                     const videoResults: Video[] = videos.results;
 
-                    const backdropPath: string | undefined =
-                      this.getBestBackdropPath(images.backdrops) ?? item.backdrop_path;
+                    const backdropPath: string =
+                      this.getBestBackdropPath(images.backdrops) ??
+                      images.backdrops[0]?.file_path ??
+                      item.backdrop_path ??
+                      '';
 
                     const videoSrc: string | undefined = this.getYoutubeEmbedTrailer(videoResults);
 
@@ -280,9 +292,7 @@ export class HomeMe {
                       videoSrc,
                     });
 
-                    const backdropImg: string = backdropPath
-                      ? `${environment.tmdb.imageBaseUrl}original${backdropPath}`
-                      : mediaCarouselItem.imgSrc;
+                    const backdropImg: string = `${environment.tmdb.imageBaseUrl}original${backdropPath}`;
 
                     return {
                       ...mediaCarouselItem,
@@ -290,38 +300,38 @@ export class HomeMe {
                     };
                   }),
                 );
-              });
-
-            return this.joinOrEmpty(playlistItemRequests$).pipe(
-              map((items) => {
-                return items.filter((item): item is PlaylistMediaItem => item !== null);
-              }),
-              map((items): PlaylistMedia => {
+              }, this.MAX_CONCURRENT_PLAYLIST_ITEMS),
+              filter((item): item is PlaylistMediaItem => item !== null),
+              toArray(),
+              map((mediaCarouselItems: PlaylistMediaItem[]): PlaylistMedia => {
                 const displayMode: PlaylistDisplayMode =
                   playlistIndex % 2 === 0 ? 'cover' : 'backdrop';
-
-                const displayItems: MediaCarouselItem[] =
-                  displayMode === 'cover'
-                    ? items
-                    : items.map((item): MediaCarouselItem => {
-                        return {
-                          ...item,
-                          imgSrc: item.backdropImg,
-                        };
-                      });
+                const items = mediaCarouselItems.map((item) => {
+                  if (displayMode === 'cover') {
+                    return {
+                      ...item,
+                      imgSrc: item.imgSrc, // use poster image
+                    };
+                  } else {
+                    return {
+                      ...item,
+                      imgSrc: item.backdropImg, // use backdrop image
+                    };
+                  }
+                });
 
                 return {
                   id: playlist.id,
                   name: playlist.name,
-                  displayMode,
-                  items: displayItems,
+                  displayMode: displayMode,
+                  items: items,
                 };
               }),
             );
-          },
-        );
+          }, this.MAX_CONCURRENT_PLAYLISTS),
 
-        return this.joinOrEmpty(playlistItemsRequests$);
+          toArray(),
+        );
       }),
     ),
     { initialValue: [] },
