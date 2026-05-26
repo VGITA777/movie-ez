@@ -132,3 +132,7 @@ my progress here.
 ### May 25, 2026
 
 - Finished the more details section of the watch page.
+
+### May 26, 2026
+
+- Some minor UI improvements for the homepage and watch page.
