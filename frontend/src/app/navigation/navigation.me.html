@@ -31,39 +31,40 @@
     </hlm-dialog-content>
   </hlm-dialog>
   <div class="settings-container">
-    <ng-container *ngTemplateOutlet="provileNavigation"></ng-container>
+    <button [hlmDropdownMenuTrigger]="profileMenu" class="w-fit p-0 rounded-full">
+      <hlm-avatar size="lg" class="bg-accent">
+        @let username = authService.user()?.nickname
+          ?? authService.user()?.preferred_username
+          ?? 'ME';
+        <span hlmAvatarFallback>{{ username.slice(0, 2).toUpperCase() }}</span>
+      </hlm-avatar>
+    </button>
   </div>
 </nav>
 
 
-<ng-template #provileNavigation>
-  <nav hlmNavigationMenu orientation="vertical" openOn="click">
-    <ul hlmNavigationMenuList>
-      <li hlmNavigationMenuItem>
-        <button hlmNavigationMenuTrigger class="w-fit p-0 rounded-full">
-          <hlm-avatar size="lg" class="bg-accent">
-            @let username = authService.user()?.nickname
-              ?? authService.user()?.preferred_username
-              ?? 'ME';
-            <span hlmAvatarFallback>{{ username.slice(0, 2).toUpperCase() }}</span>
-          </hlm-avatar>
-        </button>
+<ng-template #profileMenu>
+  <hlm-dropdown-menu>
+    <hlm-dropdown-menu-label>
+      My Account
+    </hlm-dropdown-menu-label>
+    <hlm-dropdown-menu-group>
+      <button hlmDropdownMenuItem [routerLink]="['/playlists']">Playlists</button>
+    </hlm-dropdown-menu-group>
 
-          <div hlmNavigationMenuContent *hlmNavigationMenuPortal class=" min-w-[150px]">
-          <ul>
-            <li>
-              @if (authService.isAuthenticated()) {
-                <a hlmNavigationMenuLink (click)="logout()">Logout</a>
-              } @else {
-                <a hlmNavigationMenuLink (click)="login()">Login</a>
-              }
-            </li>
-            <li>
-              <a hlmNavigationMenuLink [routerLink]="['/playlists']">Playlists</a>
-            </li>
-          </ul>
-        </div>
-      </li>
-    </ul>
-  </nav>
+    <hlm-dropdown-menu-separator />
+
+    <hlm-dropdown-menu-group>
+      <button
+        hlmDropdownMenuItem (click)="handleLoginAndLogout()"
+        (keydown.shift.alt.L)="handleLoginAndLogout()">
+        {{
+          authService.isAuthenticated() ? 'Logout' : 'Login'
+        }}
+        <hlm-dropdown-menu-shortcut>
+          ⇧+alt+L
+        </hlm-dropdown-menu-shortcut>
+      </button>
+    </hlm-dropdown-menu-group>
+  </hlm-dropdown-menu>
 </ng-template>

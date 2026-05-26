@@ -137,6 +137,7 @@ export class PlaylistContentsMe {
   private readonly storedSortingOption: WritableSignal<StoredSortingOption<SortingOption>> =
     storage(PLAYLIST_CONTENTS_SORT_OPTION_STORAGE_KEY, DEFAULT_STORED_SORTING_OPTION);
 
+  protected playlistContentSkeletonCount: number[] = Array.from({ length: 5 }, (_, i) => i);
   protected readonly sortingOptions: SortingOptionEntry<SortingOption>[] = SORTING_OPTIONS;
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly isAuthenticated: Signal<boolean> = this.authFacadeService.isAuthenticated;
@@ -195,7 +196,6 @@ export class PlaylistContentsMe {
 
       return SORTING_OPTIONS_MAP[storedValue] ?? SORTING_OPTIONS_MAP.date_added;
     });
-
   protected readonly updateSortingOption = (option: SortingOptionEntry<SortingOption>): void => {
     this.selectedSortingOption.set(option);
 
@@ -204,7 +204,6 @@ export class PlaylistContentsMe {
       direction: this.selectedSortingDirection(),
     });
   };
-  protected playlistContentSkeletonCount: number[] = Array.from({ length: 5 }, (_, i) => i);
 
   protected toggleSortingDirection() {
     this.selectedSortingDirection.update((current) => (current === 'asc' ? 'desc' : 'asc'));

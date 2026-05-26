@@ -26,6 +26,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   catchError,
   defaultIfEmpty,
+  EMPTY,
   filter,
   first,
   forkJoin,
@@ -41,6 +42,7 @@ import {
 import {
   DiscoverMovieModel,
   DiscoverTvModel,
+  ImagesModel,
   isSearchableMediaType,
   MediaType,
   MovieDetailsModel,
@@ -50,6 +52,7 @@ import {
   TvSeriesDetailsModel,
   TvSeriesShortDetailsModelWithMediaTypeModel,
   Video,
+  VideosModel,
 } from '@shared/models';
 import { getYearFromDate, loadFile, pickYoutubeTrailerFromArray, toGenres } from '@shared/utils';
 import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
@@ -63,6 +66,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
 import { UserLocalPlaylistService } from '@shared/services/user/user-local-playlist.service';
 import { NgxHaloComponent } from '@omnedia/ngx-halo';
+import { MAX_CONCURRENT_REQUESTS } from '@shared/constants';
 
 type HomeSupportedMediaType = SearchableMediaType;
 
@@ -135,72 +139,58 @@ export class HomeMe {
     DEFAULT_MEDIA_CAROUSEL_BACKDROP_ITEM_STYLES;
   protected readonly DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES: string =
     DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES;
-
   protected readonly carouselSkeletonItems: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   protected readonly heroSkeletonItems: number[] = [1];
   protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
-
   protected readonly heroItems: Signal<HomeHeroSliderItem[]> = this.toArraySignal(
     from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(
       map((contents) => contents.homeHeroSlider),
       switchMap((entries): Observable<HomeHeroSliderItem[]> => {
-        const requests$ = entries
-          .filter((entry): entry is typeof entry & { mediaType: HomeSupportedMediaType } => {
-            return isSearchableMediaType(entry.mediaType);
-          })
-          .map((entry) => {
-            return this.getHeroSliderItem(entry.mediaType, entry.id).pipe(
-              catchError((error) => {
-                console.error(
-                  `Failed to load curated hero item: ${entry.mediaType}/${entry.id}`,
-                  error,
-                );
-
-                return of(null);
-              }),
-            );
-          });
-
-        return this.joinOrEmpty(requests$).pipe(
-          map((items) => {
-            return items.filter((item): item is HomeHeroSliderItem => item !== null);
-          }),
+        return from(entries).pipe(
+          filter((entry) => isSearchableMediaType(entry.mediaType)),
+          mergeMap(
+            ({ id, mediaType }) =>
+              this.getHeroSliderItem(mediaType as HomeSupportedMediaType, id).pipe(
+                first(),
+                catchError(() => {
+                  console.debug(
+                    `Failed to load hero slider item for ${mediaType}/${id}, skipping...`,
+                  );
+                  return EMPTY;
+                }),
+              ),
+            MAX_CONCURRENT_REQUESTS,
+          ),
+          toArray(),
         );
       }),
     ),
     'hero items',
   );
-
   protected readonly discoverMovies: Signal<MediaCarouselItem[]> = this.toArraySignal(
     this.toCarouselItems(this.discoverService.discoverMovies({ page: 1 })),
     'discover movies',
   );
-
   protected readonly discoverTvShows: Signal<MediaCarouselItem[]> = this.toArraySignal(
     this.toCarouselItems(this.discoverService.discoverTvShows({ page: 1 })),
     'discover TV shows',
   );
-
   protected readonly topMovies: Signal<MediaCarouselTopItem[]> = this.toArraySignal(
     this.toTopRankingItems(this.mediaListService.getMovieTopRated()),
     'top movies',
   );
-
   protected readonly topTvShows: Signal<MediaCarouselTopItem[]> = this.toArraySignal(
     this.toTopRankingItems(this.mediaListService.getTvSeriesTopRated()),
     'top TV shows',
   );
-
   protected readonly popularMovies: Signal<MediaCarouselItem[]> = this.toArraySignal(
     this.toPopularBackdropItems(this.mediaListService.getMoviePopular(), MediaType.MOVIE),
     'popular movies',
   );
-
   protected readonly popularTvShows: Signal<MediaCarouselItem[]> = this.toArraySignal(
     this.toPopularBackdropItems(this.mediaListService.getTvSeriesPopular(), MediaType.TV),
     'popular TV shows',
   );
-
   protected readonly userPlaylistsFullDetails: Signal<PlaylistMedia[]> = toSignal(
     toObservable(this.playlists).pipe(
       map((playlists: OfflinePlaylist[]) => {
@@ -483,13 +473,13 @@ export class HomeMe {
       : this.mediaTvSeriesService.getTvSeriesDetails(id);
   }
 
-  private getVideos(mediaType: HomeSupportedMediaType, id: number): Observable<VideoResponse> {
+  private getVideos(mediaType: HomeSupportedMediaType, id: number): Observable<VideosModel> {
     return mediaType === MediaType.MOVIE
       ? this.mediaMovieService.getMovieVideos(id)
       : this.mediaTvSeriesService.getTvSeriesVideos(id);
   }
 
-  private getImages(mediaType: HomeSupportedMediaType, id: number): Observable<ImagesResponse> {
+  private getImages(mediaType: HomeSupportedMediaType, id: number): Observable<ImagesModel> {
     return mediaType === MediaType.MOVIE
       ? this.mediaMovieService.getMovieImages(id)
       : this.mediaTvSeriesService.getTvSeriesImages(id);

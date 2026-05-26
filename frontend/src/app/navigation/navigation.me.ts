@@ -16,14 +16,14 @@ import { HlmIconImports } from '@spartan-ng/helm/icon';
 import { provideIcons } from '@ng-icons/core';
 import { lucideLogIn, lucideSearch, lucideUser } from '@ng-icons/lucide';
 import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
-import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { HlmDialog, HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { SearchMe } from '@search/search.me';
 import { RouterLink } from '@angular/router';
 import { AuthFacadeService } from '@shared/services/auth-facade-service';
-import { HlmNavigationMenuImports } from '@spartan-ng/helm/navigation-menu';
 import { auditTime, distinctUntilChanged, fromEvent, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 
 @Component({
   selector: 'me-navigation',
@@ -35,8 +35,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     HlmDialogImports,
     SearchMe,
     RouterLink,
-    HlmNavigationMenuImports,
-    NgTemplateOutlet,
+    HlmDropdownMenuImports,
   ],
   templateUrl: './navigation.me.html',
   styleUrl: './navigation.me.css',
@@ -81,5 +80,13 @@ export class NavigationMe implements OnInit {
 
   protected logout(): void {
     this.authService.logout();
+  }
+
+  protected handleLoginAndLogout() {
+    if (this.authService.isAuthenticated()) {
+      this.logout();
+    } else {
+      this.login();
+    }
   }
 }

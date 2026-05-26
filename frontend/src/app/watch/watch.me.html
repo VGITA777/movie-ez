@@ -41,7 +41,7 @@
         <!-- Movie Specific Information -->
         @if (movieDetails()) {
           <span class="information-specifics__duration font-thin">{{
-              convertRuntimeToHoursAndMinutes(movieDetails()?.runtime ?? 0)
+              movieDetailsRuntime()
             }}</span>
         }
 
@@ -347,6 +347,66 @@
 
     <hlm-separator />
 
+    <!-- More Description Skeleton -->
+    <div class="more-description w-full flex flex-col md:flex-row gap-12">
+      <!-- More Description (Left) -->
+      <div class="more-decription__left flex flex-col gap-12 w-full md:gap-8 md:w-[70%]">
+        <!-- Trailers and Clips -->
+        <div class="trailers-and-clips flex flex-col gap-4">
+          <div class="trailer-and-clips__label flex flex-row gap-2 items-center">
+            <hlm-skeleton class="h-6 w-6 rounded"></hlm-skeleton>
+            <hlm-skeleton class="h-6 w-40 rounded"></hlm-skeleton>
+          </div>
+          <me-media-carousel
+            [items]="skeletonCount" [template]="trailersAndClipsCarouselItemSkeleton"
+            itemStyles="basis-[320px] sm:basis-[400px] md:basis-[450px]" />
+        </div>
+
+        @if (!bp.md()) {
+          <hlm-separator />
+        }
+
+        <!-- Casts -->
+        <div class="casts flex flex-col gap-2">
+          <div class="casts__label flex flex-row gap-2 items-center">
+            <hlm-skeleton class="h-6 w-6 rounded"></hlm-skeleton>
+            <hlm-skeleton class="h-6 w-24 rounded"></hlm-skeleton>
+          </div>
+          <ng-scrollbar hlm appearance="compact" class="w-full">
+            <div class="casts__list flex flex-row gap-6">
+              @for (_ of watchProviderSkeletonCount; track $index) {
+                <div class="cast flex flex-col gap-2 items-center">
+                  <hlm-skeleton
+                    class="aspect-square w-[90px] sm:w-[95px] lg:w-[100px] rounded-full"></hlm-skeleton>
+                  <hlm-skeleton class="h-4 w-20 rounded"></hlm-skeleton>
+                  <hlm-skeleton class="h-3 w-16 rounded"></hlm-skeleton>
+                </div>
+              }
+            </div>
+          </ng-scrollbar>
+        </div>
+      </div>
+
+      @if (!bp.md()) {
+        <hlm-separator />
+      }
+
+      <!-- More Description (Right) -->
+      <div class="more-description__right flex flex-col w-full md:w-[30%]">
+        <div
+          class="where-to-watch w-full p-4 flex flex-col gap-4 rounded-3xl border border-muted bg-card/25">
+          <hlm-skeleton class="h-7 w-36 rounded"></hlm-skeleton>
+          <div class="flex w-full flex-col gap-2">
+            @for (_ of watchProviderSkeletonCount; track $index) {
+              <hlm-skeleton class="h-12 w-full rounded-xl"></hlm-skeleton>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hlm-separator />
+
     <!-- Similar Contents -->
     <div class="similar flex flex-col gap-4">
       <hlm-skeleton class="w-32 h-8" />
@@ -355,6 +415,11 @@
         [itemStyles]="DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES" />
     </div>
   </div>
+</ng-template>
+
+<!-- Trailers and Clips Carousel Item Skeleton -->
+<ng-template #trailersAndClipsCarouselItemSkeleton>
+  <hlm-skeleton class="aspect-video w-full rounded-lg"></hlm-skeleton>
 </ng-template>
 
 <!-- Episode Entry Skeleton (Mobile) -->

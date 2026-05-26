@@ -21,6 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideAuth(
       {
         config: {
+          configId: 'movie-ez-client',
           authority: environment.auth.authority,
           clientId: environment.auth.clientId,
           useRefreshToken: true,

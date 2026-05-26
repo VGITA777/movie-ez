@@ -61,7 +61,6 @@ import { HlmSeparatorImports } from '@spartan-ng/helm/separator';
 import { CollapsibleTextMe } from '@shared/ui/collapsible-text/collapsible-text.me';
 import { ShowPlaylistsDirective } from '@shared/directives/show-playlists-directive';
 import { toast } from '@spartan-ng/brain/sonner';
-import { DomSanitizer } from '@angular/platform-browser';
 import { YouTubePlayer } from '@angular/youtube-player';
 import { HlmItemImports } from '@spartan-ng/helm/item';
 import { UserSettings, UserSettingService } from '@shared/services/user/user-setting.service';
@@ -124,7 +123,6 @@ export class WatchMe implements OnDestroy, AfterViewInit {
   private readonly movieService: MediaMovieService = inject(MediaMovieService);
   private readonly tvSeriesService: MediaTvSeriesService = inject(MediaTvSeriesService);
   private readonly userSettingsService: UserSettingService = inject(UserSettingService);
-  private readonly domSanitizer: DomSanitizer = inject(DomSanitizer);
   private readonly showSiteLogoNavigationToast: WritableSignal<boolean> = storage(
     'showSiteLogoNavigationToast',
     true,
@@ -189,9 +187,9 @@ export class WatchMe implements OnDestroy, AfterViewInit {
 
   protected readonly DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES =
     DEFAULT_MEDIA_CAROUSEL_COVER_ITEM_STYLES;
-  protected readonly convertRuntimeToHoursAndMinutes = convertRuntimeToHoursAndMinutes;
   protected readonly skeletonCount: number[] = Array.from({ length: 10 }, (_, i) => i);
   protected readonly genresSkeletonCount: number[] = Array.from({ length: 2 }, (_, i) => i);
+  protected readonly watchProviderSkeletonCount: number[] = Array.from({ length: 5 }, (_, i) => i);
   protected readonly queryParams = queryParams({ schema: watchPageQueryParams });
   protected readonly bp = breakpoints(DEFAULT_BREAKPOINTS);
   protected readonly mediaId: Signal<number> = computed(() => this.queryParams.value().id);
@@ -229,6 +227,13 @@ export class WatchMe implements OnDestroy, AfterViewInit {
     }
 
     return details as MovieDetailsModel;
+  });
+  protected readonly movieDetailsRuntime: Signal<string> = computed(() => {
+    const runtime: number | undefined = this.movieDetails()?.runtime;
+    if (!runtime) {
+      return 'Unknown';
+    }
+    return convertRuntimeToHoursAndMinutes(runtime ?? 0);
   });
   protected readonly tvDetails: Signal<TvSeriesDetailsModel | undefined> = computed(() => {
     if (this.checkIfErrorOrLoading()) {
