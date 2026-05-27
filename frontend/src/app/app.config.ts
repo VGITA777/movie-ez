@@ -23,6 +23,7 @@ export const appConfig: ApplicationConfig = {
         config: {
           configId: 'movie-ez-client',
           authority: environment.auth.authority,
+          authWellknownEndpointUrl: environment.auth.wellKnown,
           clientId: environment.auth.clientId,
           useRefreshToken: true,
           silentRenew: true,
@@ -38,6 +39,7 @@ export const appConfig: ApplicationConfig = {
             'http://localhost:4000/users/*',
             'http://192.168.1.108:4000/users/*',
             'http://192.168.0.117:4000/users/*',
+            'https://movieez-api.princecodes.page/users/*',
           ],
         },
       },

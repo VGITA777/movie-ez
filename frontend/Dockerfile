@@ -18,7 +18,7 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 
 # Build the Angular application
-RUN npm run build -c production
+RUN npm run build
 
 # =========================================
 # Stage 2: Prepare Nginx to Serve Static Files
