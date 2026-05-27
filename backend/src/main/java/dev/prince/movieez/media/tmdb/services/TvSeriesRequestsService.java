@@ -33,7 +33,7 @@ public class TvSeriesRequestsService {
 
   @Cacheable(cacheNames = TvSeriesCacheConfigurer.TV_SERIES_DETAILS)
   public TvSeriesDetailsModel getTvSeriesDetails(long seriesId, String language) {
-    return tvSeriesRequests.getTvSeriesDetails(seriesId, language);
+    return tvSeriesRequests.getTvSeriesDetails(seriesId, language, System.currentTimeMillis());
   }
 
   @Cacheable(cacheNames = TvSeriesCacheConfigurer.TV_SERIES_IMAGES)

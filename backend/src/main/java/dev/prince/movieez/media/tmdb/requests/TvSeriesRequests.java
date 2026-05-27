@@ -30,7 +30,9 @@ public interface TvSeriesRequests {
       @PathVariable
       long seriesId,
       @RequestParam("language")
-      String language
+      String language,
+      @RequestParam("_")
+      long cacheBuster
   );
 
   @GetExchange("/{seriesId}/images")
