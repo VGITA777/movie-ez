@@ -5,7 +5,7 @@
 - [X] Finish the Homepage.
 - [X] Implement the Search Functionality.
 - [X] Create a Navigation System.
-- [ ] Dockerize the Application.
+- [X] Dockerize the Application.
 
 ### Media Player
 
@@ -136,3 +136,7 @@ my progress here.
 ### May 26, 2026
 
 - Some minor UI improvements for the homepage and watch page.
+
+### May 27, 2026
+
+- Containerized the application.
