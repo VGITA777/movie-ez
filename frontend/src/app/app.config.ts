@@ -23,6 +23,7 @@ export const appConfig: ApplicationConfig = {
         config: {
           configId: 'movie-ez-client',
           authority: environment.auth.authority,
+          authWellknownEndpointUrl: environment.auth.wellKnown,
           clientId: environment.auth.clientId,
           useRefreshToken: true,
           silentRenew: true,

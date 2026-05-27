@@ -1,0 +1,41 @@
+name: movie-ez
+
+services:
+  # Port 4000
+  movie-ez-api:
+    image: movie-ez-api:latest
+    networks:
+      - home-server-network
+    secrets:
+      - source: DB_USERNAME
+        target: DB_USERNAME
+      - source: DB_PASSWORD
+        target: DB_PASSWORD
+      - source: TMDB_API_KEY
+        target: TMDB_API_KEY
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configtree:/run/secrets/
+      DB_URL: jdbc:postgresql://home-server-db:5432/movieez
+      JWT_ISSUER_URI: https://auth.princecodes.page/application/o/movie-ez/
+      JWT_JWKS_URI: "https://auth.princecodes.page/application/o/movie-ez/jwks/"
+      PROFILE: prod
+
+  # Port 8081
+  movie-ez-frontend:
+    image: movie-ez-frontend:latest
+    ports:
+      - "8081:8081"
+    networks:
+      - home-server-network
+
+secrets:
+  DB_USERNAME:
+    file: ./secrets/db_username.txt
+  DB_PASSWORD:
+    file: ./secrets/db_password.txt
+  TMDB_API_KEY:
+    file: ./secrets/tmdb_api-key.txt
+
+networks:
+  home-server-network:
+    external: true

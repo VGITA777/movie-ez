@@ -34,8 +34,8 @@ public class SecurityConfigs {
   @Value("${app.allowed-origins}")
   private List<String> allowedOrigins;
 
-  @Value("${app.allowed-origins-pattern}")
-  private List<String> allowedOriginsPattern;
+  @Value("${app.allowed-origin-patterns}")
+  private List<String> allowedOriginPatterns;
 
   @Bean
   public SecurityFilterChain commonConfigs(HttpSecurity httpSecurity, RateLimiterServiceImpl rateLimiterService) {
@@ -53,6 +53,7 @@ public class SecurityConfigs {
   public SecurityFilterChain mediaConfigs(HttpSecurity httpSecurity) {
     return httpSecurity
         .securityMatcher("/media/**")
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> {
           auth
               .anyRequest()
@@ -66,6 +67,7 @@ public class SecurityConfigs {
   public SecurityFilterChain userConfigs(HttpSecurity httpSecurity, UserRepository userRepository) {
     return httpSecurity
         .securityMatcher("/users/**")
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> {
           auth
               .anyRequest()
@@ -82,22 +84,51 @@ public class SecurityConfigs {
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
-    log.info("Configuring CORS with allowed origins: {}", String.join(", ", allowedOrigins));
-    log.info("Configuring CORS with allowed origin patterns: {}", String.join(", ", allowedOriginsPattern));
+    var cleanAllowedOrigins = allowedOrigins
+        .stream()
+        .map(String::trim)
+        .filter(origin -> !origin.isBlank())
+        .toList();
+
+    var cleanAllowedOriginPatterns = allowedOriginPatterns
+        .stream()
+        .map(String::trim)
+        .filter(pattern -> !pattern.isBlank())
+        .toList();
+
+    var allowedHeaders = List.of("Authorization", "Content-Type", "Accept", "Origin");
 
     var defaultOption = new CorsConfiguration();
-    defaultOption.setAllowedOrigins(allowedOrigins);
     defaultOption.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
-    defaultOption.setAllowedHeaders(List.of("*"));
-    defaultOption.setAllowedOriginPatterns(allowedOriginsPattern);
+    defaultOption.setAllowedHeaders(allowedHeaders);
     defaultOption.setAllowCredentials(false);
 
     var userOption = new CorsConfiguration();
-    userOption.setAllowedOrigins(allowedOrigins);
-    userOption.setAllowedOriginPatterns(allowedOriginsPattern);
     userOption.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS", "PATCH"));
-    userOption.setAllowedHeaders(List.of("*"));
+    userOption.setAllowedHeaders(allowedHeaders);
     userOption.setAllowCredentials(true);
+
+    if (!cleanAllowedOrigins.isEmpty()) {
+      log.info(
+          "CORS allowed origins: {}",
+          String
+              .join(", ", cleanAllowedOrigins)
+              .trim()
+      );
+      defaultOption.setAllowedOrigins(cleanAllowedOrigins);
+      userOption.setAllowedOrigins(cleanAllowedOrigins);
+    }
+
+    if (!cleanAllowedOriginPatterns.isEmpty()) {
+      log.info(
+          "CORS allowed origin patterns: {}",
+          String
+              .join(", ", cleanAllowedOriginPatterns)
+              .trim()
+      );
+      defaultOption.setAllowedOriginPatterns(cleanAllowedOriginPatterns);
+      userOption.setAllowedOriginPatterns(cleanAllowedOriginPatterns);
+    }
 
     var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/users/**", userOption);

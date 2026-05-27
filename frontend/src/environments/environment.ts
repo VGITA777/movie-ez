@@ -6,12 +6,14 @@ export const environment = {
     embedBaseUrl: 'https://www.youtube.com/embed/',
   },
   api: {
-    baseUrl: 'http://192.168.1.108:4000/',
-    mediaBaseUrl: 'http://192.168.1.108:4000/media/',
-    userBaseUrl: 'http://192.168.1.108:4000/users/',
+    baseUrl: 'https://movieez-api.princecodes.page/',
+    mediaBaseUrl: 'https://movieez-api.princecodes.page/media/',
+    userBaseUrl: 'https://movieez-api.princecodes.page/users/',
   },
   auth: {
-    authority: 'http://192.168.1.108:9000/application/o/movie-ez',
+    authority: 'https://auth.princecodes.page/application/o/movie-ez/',
+    wellKnown:
+      'https://auth.princecodes.page/application/o/movie-ez/.well-known/openid-configuration',
     clientId: 'movie-ez-client',
     isDebug: false,
   },
