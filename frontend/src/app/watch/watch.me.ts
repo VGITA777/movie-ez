@@ -65,6 +65,7 @@ import { YouTubePlayer } from '@angular/youtube-player';
 import { HlmItemImports } from '@spartan-ng/helm/item';
 import { UserSettings, UserSettingService } from '@shared/services/user/user-setting.service';
 import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
+import { ASSETS_PATHS } from '@shared/constants';
 
 export type WatchMediaType = MediaType.MOVIE | MediaType.TV;
 export type WatchMediaParams = {
@@ -277,7 +278,7 @@ export class WatchMe implements OnDestroy, AfterViewInit {
         ?.cast?.map((c) => {
           return {
             ...c,
-            profile_path: toTmdbImageUrl(c.profile_path, 'w185', '/images/placeholder-profile.png'),
+            profile_path: toTmdbImageUrl(c.profile_path, 'w185', ASSETS_PATHS.PLACEHOLDER_PROFILE),
           };
         })
         ?.slice(0, 5) ?? [],

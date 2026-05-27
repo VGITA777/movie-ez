@@ -143,7 +143,7 @@ export class HomeMe {
   protected readonly heroSkeletonItems: number[] = [1];
   protected readonly isAuthenticated: Signal<boolean> = this.authFacade.isAuthenticated;
   protected readonly heroItems: Signal<HomeHeroSliderItem[]> = this.toArraySignal(
-    from(loadFile<CuratedContents>('/configs/curated-contents.json')).pipe(
+    from(loadFile<CuratedContents>('/assets/configs/curated-contents.json')).pipe(
       map((contents) => contents.homeHeroSlider),
       switchMap((entries): Observable<HomeHeroSliderItem[]> => {
         return from(entries).pipe(

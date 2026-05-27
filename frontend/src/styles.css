@@ -9,22 +9,22 @@
 
 @font-face {
   font-family: 'Quicksand';
-  src: url("/fonts/Quicksand.ttf") format("truetype");
+  src: url("/assets/fonts/Quicksand.ttf") format("truetype");
 }
 
 @font-face {
   font-family: 'Noto Sans';
-  src: url("/fonts/NotoSans.ttf") format("truetype");
+  src: url("/assets/fonts/NotoSans.ttf") format("truetype");
 }
 
 @font-face {
   font-family: 'Montserrat';
-  src: url("/fonts/Montserrat.ttf") format("truetype");
+  src: url("/assets/fonts/Montserrat.ttf") format("truetype");
 }
 
 @font-face {
   font-family: 'GoogleSans';
-  src: url("/fonts/GoogleSans.ttf") format("truetype");
+  src: url("/assets/fonts/GoogleSans.ttf") format("truetype");
 }
 
 * {

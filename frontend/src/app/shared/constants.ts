@@ -13,3 +13,14 @@ export const DEFAULT_PLAYLIST_CONFIG: Omit<ToastT, 'id' | 'type' | 'title'> = {
   duration: 3000,
 };
 export const MAX_PLAYLIST_NAME_LENGTH: number = 25;
+
+/* Asset Paths */
+export const ASSETS_PATHS = {
+  PLACEHOLDER: '/assets/images/placeholder.png',
+  PLACEHOLDER_EMPTY_PLAYLIST: '/assets/images/placeholder-empty-playlist.png',
+  PLACEHOLDER_PROFILE: '/assets/images/placeholder-profile.png',
+};
+
+export const CONFIG_PATHS = {
+  CURATED_CONTENTS: '/assets/configs/curated-contents.json',
+};

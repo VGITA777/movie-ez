@@ -7,6 +7,7 @@ import {
   Signal,
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
+import { ASSETS_PATHS } from '@shared/constants';
 
 @Component({
   selector: 'me-playlist-entry-cover',
@@ -29,4 +30,5 @@ export class PlaylistEntryCoverMe {
         .slice(0, 4) ?? []
     );
   });
+  protected placeholderEmptyPlaylist: string = ASSETS_PATHS.PLACEHOLDER_EMPTY_PLAYLIST;
 }

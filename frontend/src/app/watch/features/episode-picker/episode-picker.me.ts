@@ -31,6 +31,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { DEFAULT_BREAKPOINTS } from '@shared/shared-types';
 import { HlmCard } from '@spartan-ng/helm/card';
 import { MediaCarouselMe } from '@shared/ui/media-carousel/media-carousel.me';
+import { ASSETS_PATHS } from '@shared/constants';
 
 type SeasonEntry = {
   id: number;
@@ -139,4 +140,6 @@ export class EpisodePickerMe implements OnDestroy {
   protected seasonLabelEncoder(season: number): string {
     return `Season ${season}`;
   }
+
+  protected readonly ASSETS_PATHS = ASSETS_PATHS;
 }

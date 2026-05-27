@@ -6,13 +6,13 @@ export const environment = {
     embedBaseUrl: 'https://www.youtube.com/embed/',
   },
   api: {
-    baseUrl: '',
-    mediaBaseUrl: '',
-    userBaseUrl: '',
+    baseUrl: 'http://192.168.1.108:4000/',
+    mediaBaseUrl: 'http://192.168.1.108:4000/media/',
+    userBaseUrl: 'http://192.168.1.108:4000/users/',
   },
   auth: {
-    authority: '',
-    clientId: '',
+    authority: 'http://192.168.1.108:9000/application/o/movie-ez',
+    clientId: 'movie-ez-client',
     isDebug: false,
   },
 };

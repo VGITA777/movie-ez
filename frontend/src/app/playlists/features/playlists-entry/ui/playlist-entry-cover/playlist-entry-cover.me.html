@@ -3,7 +3,7 @@
   @if (imagesToUse.length === 0) {
     <div class="playlist-entry__image w-full h-full relative">
       <img
-        ngSrc="/images/placeholder-empty-playlist.png"
+        [ngSrc]="placeholderEmptyPlaylist"
         class="object-cover"
         alt="Cover Image"
         loading="lazy"
