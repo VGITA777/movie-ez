@@ -53,6 +53,7 @@ public class SecurityConfigs {
   public SecurityFilterChain mediaConfigs(HttpSecurity httpSecurity) {
     return httpSecurity
         .securityMatcher("/media/**")
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> {
           auth
               .anyRequest()
@@ -66,6 +67,7 @@ public class SecurityConfigs {
   public SecurityFilterChain userConfigs(HttpSecurity httpSecurity, UserRepository userRepository) {
     return httpSecurity
         .securityMatcher("/users/**")
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> {
           auth
               .anyRequest()
